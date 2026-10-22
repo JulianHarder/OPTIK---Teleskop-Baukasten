@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPTIK – Teleskop-Baukasten</title>
+  <meta name="description" content="Ein Teleskop in 3D: drehen, aufschrauben und sehen, wie das Licht hindurchläuft.">
+
+  <link rel="stylesheet" href="css/variablen.css">
+  <link rel="stylesheet" href="css/grundlage.css">
+</head>
+<body>
+
+  <main class="buehne" id="buehne" aria-label="3D-Ansicht des Teleskops"></main>
+
+  <header class="kopf leiste">
+    <div class="marke">
+      <span class="marke-name">OPTIK</span>
+      <span class="marke-zusatz">Teleskop-Baukasten</span>
+    </div>
+    <div class="teleskop-zeile" id="teleskop-zeile"></div>
+  </header>
+
+  <div class="bildrate leiste" id="bildrate" hidden></div>
+
+  <footer class="fuss leiste" id="fuss"></footer>
+
+  <!--
+    Klassische Skripte in fester Reihenfolge – keine ES-Module, weil
+    Browser Module über file:// blockieren (siehe CLAUDE.md).
+    Eigene Dateien hängen sich an globalThis.OPTIK.
+  -->
+
+  <!-- Three.js r128, lokal (MIT, siehe lib/LIZENZ-three.txt) -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/OrbitControls.js"></script>
+
+  <!-- Daten -->
+  <script src="js/daten/texte.js"></script>
+
+  <!-- Kern -->
+  <script src="js/kern/Vektor.js"></script>
+  <script src="js/kern/Format.js"></script>
+  <script src="js/kern/Zufall.js"></script>
+  <script src="js/kern/Ereignisse.js"></script>
+  <script src="js/kern/Zustand.js"></script>
+
+  <!-- Physik -->
+  <script src="js/physik/Optik.js"></script>
+
+  <!-- Szene -->
+  <script src="js/szene/Material.js"></script>
+  <script src="js/szene/Himmel.js"></script>
+  <script src="js/szene/Umgebung.js"></script>
+  <script src="js/szene/Buehne.js"></script>
+
+  <!-- Modelle -->
+  <script src="js/modell/Teile.js"></script>
+  <script src="js/modell/Newton.js"></script>
+  <script src="js/modell/Dobson.js"></script>
+
+  <!-- Oberfläche -->
+  <script src="js/ui/Oberflaeche.js"></script>
+
+  <!-- Einstieg -->
+  <script src="js/main.js"></script>
+</body>
+</html>

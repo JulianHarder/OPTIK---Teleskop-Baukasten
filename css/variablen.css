@@ -1,0 +1,33 @@
+/*
+  Design-Stellrad: alle Farben, Abstände und Schriften an einer Stelle.
+  Nacht, aber nicht stockdunkel: die Leisten sind dunkles, halbdurch-
+  sichtiges Blaugrau, damit Himmel und Teleskop durchscheinen.
+  Die Farben der 3D-Szene stehen in js/szene/ (Himmel.js, Material.js).
+*/
+:root {
+  /* Flächen */
+  --hintergrund: #0a1020;
+  --flaeche: #1f2b3b;
+  --rand: #3a4d63;
+  --leiste: rgba(14, 21, 34, 0.72);
+  --leiste-rand: rgba(140, 170, 210, 0.18);
+
+  /* Schrift */
+  --text: #e6edf5;
+  --text-leise: #9fb2c7;
+  --akzent: #7cc4ff;
+
+  /* Ampel */
+  --gut: #7ee787;
+  --warnung: #ffd479;
+  --schlecht: #ff7b72;
+
+  /* Maße */
+  --abstand: 14px;
+  --radius: 10px;
+
+  --schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --schrift-mono: ui-monospace, "SFMono-Regular", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+
+  color-scheme: dark;
+}

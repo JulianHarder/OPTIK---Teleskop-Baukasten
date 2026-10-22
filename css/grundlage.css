@@ -1,0 +1,149 @@
+/*
+  Vollbild-3D, die Bedienung schwebt darüber in halbdurchsichtigen,
+  dunklen Leisten.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--hintergrund);
+  color: var(--text);
+  font-family: var(--schrift);
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Bühne ---------- */
+
+.buehne {
+  position: fixed;
+  inset: 0;
+}
+
+.buehne canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;   /* Drehen und Kneifen übernimmt OrbitControls */
+  outline: none;
+}
+
+/* ---------- Schwebende Leisten ---------- */
+
+.leiste {
+  position: fixed;
+  z-index: 1;
+  border: 1px solid var(--leiste-rand);
+  border-radius: var(--radius);
+  background: var(--leiste);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.kopf {
+  top: var(--abstand);
+  left: var(--abstand);
+  padding: 10px 14px;
+}
+
+.marke {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.marke-name {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: var(--akzent);
+}
+
+.marke-zusatz {
+  color: var(--text-leise);
+  font-size: 13px;
+}
+
+.teleskop-zeile {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.bildrate {
+  top: var(--abstand);
+  right: var(--abstand);
+  padding: 6px 10px;
+  font-family: var(--schrift-mono);
+  font-size: 12px;
+}
+
+.bildrate[hidden] {
+  display: none;
+}
+
+.fuss {
+  bottom: var(--abstand);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  max-width: calc(100% - 2 * var(--abstand));
+  padding: 7px 14px;
+  color: var(--text-leise);
+  font-size: 12px;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 5px;
+  border: 1px solid var(--rand);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--flaeche);
+  color: var(--text);
+  font-family: var(--schrift);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ---------- Fehlermeldung (kein WebGL) ---------- */
+
+.fehler {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 420px;
+  padding: 18px 20px;
+  border: 1px solid var(--schlecht);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  line-height: 1.5;
+}
+
+/* ---------- Schmale Fenster ---------- */
+
+@media (max-width: 600px) {
+  .kopf {
+    right: var(--abstand);
+  }
+
+  .fuss {
+    width: calc(100% - 2 * var(--abstand));
+  }
+}

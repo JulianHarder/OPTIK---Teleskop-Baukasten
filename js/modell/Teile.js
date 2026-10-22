@@ -1,0 +1,122 @@
+/*
+  Bausteine für die Teleskop-Modelle: Zylinder und Ringe entlang einer
+  Achse, Drehteile aus einem Profil, Rändelknöpfe, das Okular.
+
+  Konvention: Drehteile werden um die y-Achse gebaut (wie Three.js es
+  tut). Die Funktionen mit „Z“ im Namen legen das Teil auf die z-Achse –
+  die optische Achse im Tubus.
+
+  Jedes Netz bekommt in userData.teil den Namen seines Bauteils. Etappe 2
+  (Aufschrauben, Infokarten) braucht ihn, um zu wissen, was angeklickt wurde.
+*/
+(function (O) {
+  'use strict';
+
+  var Y = new THREE.Vector3(0, 1, 0);
+
+  // Netz mit Schatten und Bauteil-Namen
+  function netz(geo, mat, teil) {
+    var m = new THREE.Mesh(geo, mat);
+    m.castShadow = true;
+    m.receiveShadow = true;
+    if (teil) m.userData.teil = teil;
+    return m;
+  }
+
+  // Alle Netze einer Gruppe einem Bauteil zuordnen
+  function benenne(gruppe, teil) {
+    gruppe.userData.teil = teil;
+    gruppe.traverse(function (o) {
+      if (o.isMesh && !o.userData.teil) o.userData.teil = teil;
+    });
+    return gruppe;
+  }
+
+  // Zylinder auf der z-Achse, von z0 bis z1
+  function zylinderZ(r, z0, z1, seg, offen) {
+    var g = new THREE.CylinderGeometry(r, r, z1 - z0, seg || 48, 1, !!offen);
+    g.rotateX(Math.PI / 2);
+    g.translate(0, 0, (z0 + z1) / 2);
+    return g;
+  }
+
+  // Drehteil aus einem Profil [[r, y], …] um die y-Achse.
+  // Profil gegen den Uhrzeigersinn (r nach rechts, y nach oben) ergibt
+  // Flächen, die nach außen zeigen. scharf = jede Ecke bekommt eigene
+  // Normalen (Kanten statt weicher Rundung).
+  function drehteil(profil, seg, scharf) {
+    var punkte = [];
+    profil.forEach(function (p, i) {
+      var v = new THREE.Vector2(p[0], p[1]);
+      punkte.push(v);
+      if (scharf && i > 0 && i < profil.length - 1) punkte.push(v.clone());
+    });
+    return new THREE.LatheGeometry(punkte, seg || 48);
+  }
+
+  // Ring (Rohr mit Wandstärke) auf der z-Achse, von z0 bis z1
+  function ringZ(rInnen, rAussen, z0, z1, seg) {
+    var h = z1 - z0;
+    var g = drehteil([
+      [rInnen, 0], [rAussen, 0], [rAussen, h], [rInnen, h], [rInnen, 0]
+    ], seg || 64, true);
+    g.rotateX(Math.PI / 2);
+    g.translate(0, 0, z0);
+    return g;
+  }
+
+  // Rändelknopf: viele flache Seiten mit harten Kanten (Material „raendel“)
+  // Achse entlang y, von 0 bis h
+  function raendel(r, h, zaehne) {
+    var g = new THREE.CylinderGeometry(r, r, h, zaehne || 24, 1);
+    g.translate(0, h / 2, 0);
+    return g;
+  }
+
+  // Objekt so drehen, dass seine y-Achse in Richtung dir zeigt
+  function richte(objekt, dir) {
+    objekt.quaternion.setFromUnitVectors(Y, dir.clone().normalize());
+    return objekt;
+  }
+
+  // Okular: Steckhülse (31,75 mm), gummierter Griff, Augenmuschel, Linse.
+  // Achse entlang y, die Anlage (Schulter) liegt bei y = 0.
+  function okular(M) {
+    var g = new THREE.Group();
+
+    var huelse = netz(new THREE.CylinderGeometry(15.9, 15.9, 28, 40, 1), M.chrom);
+    huelse.position.y = -14;
+    g.add(huelse);
+
+    // Griff mit Rillen: Profil von unten nach oben
+    var p = [[0, 0], [21, 0], [21, 6]];
+    for (var y = 8; y < 34; y += 4) {
+      p.push([20.2, y], [21, y + 2]);
+    }
+    p.push([21, 38], [19.5, 40], [19.5, 50], [17.5, 52], [11, 52], [11, 49]);
+    var griff = netz(drehteil(p, 48, false), M.gummi);
+    g.add(griff);
+
+    var streifen = netz(drehteil([[21.1, 0], [21.3, 0], [21.3, 2], [21.1, 2]], 48, true), M.gold);
+    streifen.position.y = 36;
+    g.add(streifen);
+
+    var linse = netz(new THREE.CircleGeometry(11, 32), M.linse);
+    linse.rotation.x = -Math.PI / 2;
+    linse.position.y = 49.5;
+    g.add(linse);
+
+    return benenne(g, 'okular');
+  }
+
+  O.Teile = {
+    netz: netz,
+    benenne: benenne,
+    zylinderZ: zylinderZ,
+    drehteil: drehteil,
+    ringZ: ringZ,
+    raendel: raendel,
+    richte: richte,
+    okular: okular
+  };
+})(globalThis.OPTIK = globalThis.OPTIK || {});
