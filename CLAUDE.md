@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (22.10.2026)
 
-**Fertig: Etappen 1 bis 3.**
+**Fertig: Etappen 1 bis 4.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -47,8 +47,19 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    (0–1,5°) mit Status *im Bild* / *am Rand (dunkler)* / *nicht im Bild* –
    alles aus der Strahlverfolgung, nichts geschätzt.
 
-Als Nächstes: **Etappe 4** – Selbst bauen (Konfigurator für Öffnung,
-Brennweite, Okular; Modell und Licht bauen sich live um; Datenblatt).
+4. **Selbst bauen** – linke Spalte mit „Selbst bauen“ (Vorlagen Klein /
+   Klassiker / Groß / Riese, Regler für Öffnung 100–400 mm, Brennweite
+   f/4–f/10, Okular aus 11 handelsüblichen Brennweiten) und **Datenblatt**
+   (11 Kennzahlen mit Ampel und Erklärung zum Aufklappen,
+   `physik/Kennzahlen.js`). Das Teleskop baut sich bei jeder Änderung neu
+   (`baueTeleskop` in `main.js`, höchstens einmal pro Bild), das alte wird
+   freigegeben; beim Loslassen zieht die Kamera nach. Ein Mensch (1,75 m)
+   steht zum Größenvergleich daneben und ist anklickbar. Das Teleskop wird
+   im Browser gemerkt (`kern/Speicher.js`, `optik.stand.v1`). Auf dem
+   Handy sind Bauen und Datenblatt hinter dem Knopf „Bauen“.
+
+Als Nächstes: **Etappe 5** – Ausrichten und Durchschauen (Objekt wählen,
+Teleskop schwenkt hin, Flug ins Okular, Okular-Blick).
 
 ### Wo vom Plan abgewichen wurde
 
@@ -77,6 +88,19 @@ Brennweite, Okular; Modell und Licht bauen sich live um; Datenblatt).
   beim Ausschalten und wenn der Tab im Hintergrund ist.
 - **Die Spinne ist kein optisches Element** – ihre 1-mm-Streben würden
   kaum Strahlen treffen. Ihre Wirkung (Zacken) kommt im Okular-Blick.
+- **Datenblatt und Konfigurator stehen links** (Plan: Datenblatt rechts) –
+  rechts sind schon Infokarte und Sternlicht. Die Bedienhinweise sind
+  dort als aufklappbare „Bedienung“ untergekommen.
+- **Die Bildmitte ist nach rechts verschoben** (`kamera.setViewOffset`,
+  `buehne.linksBelegt`), damit das Teleskop in der Mitte des freien
+  Bereichs steht. Auf schmalen Bildschirmen (≤ 900 px) nicht.
+- **Die Höhe des Okularauszugs wächst mit der Öffnung** (45 + 0,15·D mm,
+  bei 200 mm wie bisher 75 mm). Mit festen 75 mm brauchten kleine
+  Teleskope Fangspiegel mit über 50 % Abschattung.
+- **Brennweite nur im Bereich f/4 bis f/10** (höchstens 3 m): Der Regler
+  passt seine Grenzen der Öffnung an. Kennzahlen-Ampel warnt unter f/4,5.
+- **Okular wechseln baut nicht neu**, nur Licht und Zahlen – das Modell
+  hängt nicht von der Okularbrennweite ab.
 - Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
   (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
 
@@ -108,6 +132,10 @@ Brennweite, Okular; Modell und Licht bauen sich live um; Datenblatt).
   Name ist der Schlüssel in `js/daten/teile.js`. Bauteil-Gruppen tragen in
   `userData.anker` den Punkt für ihr Schild (`Teile.anker()`).
   `teleskop.teile` (aus `Dobson.erzeuge`) listet alle Bauteil-Gruppen.
+- **Umbauen nur über `baueTeleskop()`** (main.js): altes Teleskop
+  entsorgen, neues bauen, dann allen Abhängigen das neue geben
+  (`auswahl.neuesTeleskop`, `new Ansicht`, `licht.neuesTeleskop`,
+  Schilder neu). Wer etwas Neues ans Teleskop hängt, muss dort mitmachen.
 - **Geteilte Materialien nie direkt ändern.** Tubus und Spiegelzelle haben
   eigene Kopien (für Schnitt und Röntgen, `Ansicht.eigeneMaterialien`),
   Hervorheben tauscht vorübergehend gegen Leucht-Kopien (`Auswahl.js`).
@@ -143,6 +171,13 @@ Brennweite, Okular; Modell und Licht bauen sich live um; Datenblatt).
   `/home/julian/Programmieren/.claude/launch.json`), nicht für die Szene.
 
 ## Fallstricke
+- **`material.clone()` erbt `userData.geteilt`.** Wer eine Kopie für ein
+  einzelnes Teleskop anlegt, muss `userData` neu setzen – sonst wird die
+  Kopie beim Umbau nie freigegeben (`Dobson.entsorge`).
+- **Prüfungen mit vielen Umbauten:** Der Software-Renderer braucht pro Bild
+  mit Schatten mehrere Sekunden; 40 Umbauten mit Zeichnen sprengen die
+  2 Minuten von `ansicht.sh`. 10 reichen, um ein Speicherleck zu sehen
+  (`renderer.info.memory` vorher/nachher, Licht dabei an).
 - **Parabel ≠ atan(h/f):** Ein Parabolspiegel lenkt einen Strahl in Höhe h
   um 2·atan(h/2f) ab. Prüfwerte mit der Kleinwinkel-Näherung liegen am
   Rand um ~0,15 % daneben – das ist kein Rechenfehler.

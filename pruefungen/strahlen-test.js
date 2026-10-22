@@ -16,7 +16,9 @@ var wurzel = pfad.join(__dirname, '..');
   'js/physik/Paraxial.js',
   'js/physik/Strahlverfolger.js',
   'js/physik/Flaeche.js',
-  'js/physik/Optik.js'
+  'js/physik/Optik.js',
+  'js/physik/Kennzahlen.js',
+  'js/daten/bauarten.js'
 ].forEach(function (datei) {
   require(pfad.join(wurzel, datei));
 });
@@ -262,6 +264,45 @@ console.log('\nDas ganze Newton-Teleskop 200/1200');
   pruefe('Stern 1° daneben: kein Licht im Okular', O.Optik.lichtNewton(m, zustand, 1.0).imBild === 0);
   pruefe('Wahres Gesichtsfeld 25 mm-Okular ≈ 52° / 48', Math.abs(O.Optik.wahresFeldGrad(m, 25) - 1.16) < 0.02,
     O.Optik.wahresFeldGrad(m, 25).toFixed(3) + '°');
+})();
+
+console.log('\nKennzahlen fürs Datenblatt');
+
+(function () {
+  var z = { oeffnungMm: 200, brennweiteMm: 1200, okularMm: 25 };
+  var k = O.Kennzahlen.berechne(O.Optik.masseNewton(z), z);
+  pruefe('200/1200 + 25 mm: 48-fach', Math.abs(k.vergroesserung.wert - 48) < 1e-12);
+  pruefe('Austrittspupille D / V = 4,17 mm', Math.abs(k.austrittspupille.wert - 200 / 48) < 1e-12);
+  pruefe('Auflösung ≈ 138″ / D = 0,69″', Math.abs(k.aufloesung.wert - 138.4 / 200) < 0.005, k.aufloesung.wert.toFixed(3) + '″');
+  pruefe('Lichtsammeln (200 / 7)² ≈ 816-mal das Auge', Math.round(k.lichtsammeln.wert) === 816);
+  pruefe('Ampeln im grünen Bereich', k.vergroesserung.ampel[0] === 'gut' && k.austrittspupille.ampel[0] === 'gut');
+
+  var z4 = { oeffnungMm: 200, brennweiteMm: 1200, okularMm: 4 };
+  pruefe('4-mm-Okular: 300-fach ist noch erlaubt (≤ 2·D)',
+    O.Kennzahlen.berechne(O.Optik.masseNewton(z4), z4).vergroesserung.ampel[0] === 'gut');
+  var klein = { oeffnungMm: 100, brennweiteMm: 900, okularMm: 4 };
+  var kk = O.Kennzahlen.berechne(O.Optik.masseNewton(klein), klein);
+  pruefe('100/900 + 4 mm: 225-fach ist leere Vergrößerung', kk.vergroesserung.ampel[0] === 'schlecht');
+  pruefe('… und die Austrittspupille (0,44 mm) zu klein', kk.austrittspupille.ampel[0] === 'schlecht');
+  var hell = { oeffnungMm: 300, brennweiteMm: 1200, okularMm: 40 };
+  pruefe('300/1200 + 40 mm: Austrittspupille 10 mm > Augenpupille',
+    O.Kennzahlen.berechne(O.Optik.masseNewton(hell), hell).austrittspupille.ampel[1] === 'zuBreit');
+})();
+
+(function () {
+  // Über den ganzen Bereich des Konfigurators: Maße bleiben stimmig
+  var B = O.BAUARTEN.dobson;
+  var fehlerhaft = [];
+  for (var D = B.oeffnung.min; D <= B.oeffnung.max; D += 10) {
+    for (var N = B.oeffnungsverhaeltnis.min; N <= B.oeffnungsverhaeltnis.max; N += 0.5) {
+      var f = Math.min(D * N, B.brennweiteMax);
+      var m = O.Optik.masseNewton({ oeffnungMm: D, brennweiteMm: f });
+      var licht = O.Optik.lichtNewton(m, { oeffnungMm: D, brennweiteMm: f, okularMm: 25 }, 0);
+      if (!(m.fang >= m.fangNoetig && m.zFang > m.D && licht.imBild === 1)) fehlerhaft.push(D + '/' + f);
+    }
+  }
+  pruefe('Ganzer Bereich 100–400 mm, f/4–f/10: Fangspiegel passt, Licht kommt im Okular an',
+    fehlerhaft.length === 0, fehlerhaft.length ? 'Probleme bei ' + fehlerhaft.slice(0, 5).join(', ') : '');
 })();
 
 console.log(fehler ? '\n' + fehler + ' Prüfung(en) fehlgeschlagen.' : '\nAlles grün.');

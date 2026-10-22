@@ -19,7 +19,6 @@
   // Handelsübliche Fangspiegel (kleine Achse in mm)
   var FANGSPIEGEL_MM = [25, 30, 35, 40, 50, 63, 70, 82, 100, 127, 152];
 
-  var AUSZUG_HOEHE_MM = 75;   // Tubusoberfläche → Brennpunkt (Okularauszug eingefahren)
   var FELD_RESERVE = 1.25;    // Fangspiegel größer als nötig, damit auch der Bildrand voll beleuchtet ist
 
   function masseNewton(zustand) {
@@ -30,8 +29,11 @@
     var rAussen = rInnen + 2;                   // 2 mm Blech
     var spiegelDicke = Math.max(10, D / 8);
 
-    // Brennpunkt liegt seitlich außen, oben im Okularauszug
-    var seitlich = rAussen + AUSZUG_HOEHE_MM;   // Abstand Achse → Brennpunkt
+    // Brennpunkt liegt seitlich außen, oben im Okularauszug. Kleine
+    // Teleskope haben flachere Auszüge (bei 200 mm Öffnung: 75 mm) –
+    // je höher der Auszug, desto größer muss der Fangspiegel werden.
+    var auszugHoehe = 45 + 0.15 * D;
+    var seitlich = rAussen + auszugHoehe;       // Abstand Achse → Brennpunkt
     var zFang = f - seitlich;                   // Mitte des Fangspiegels auf der Achse
 
     // Der Lichtkegel ist am Fangspiegel noch D · seitlich / f breit
@@ -52,7 +54,7 @@
       spiegelDicke: spiegelDicke,
       sag: function (r) { return r * r / (4 * f); },   // Parabel: Tiefe bei Radius r
       seitlich: seitlich,
-      auszugHoehe: AUSZUG_HOEHE_MM,
+      auszugHoehe: auszugHoehe,
       zFang: zFang,
       fangNoetig: fangNoetig,
       fang: fang,

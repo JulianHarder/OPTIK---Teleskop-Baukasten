@@ -19,7 +19,9 @@
     gewaehlt: { farbe: 0xd9a63a, staerke: 0.5 }
   };
 
-  // optionen = { wurzel, istSichtbar(treffer) → bool, beiWahl(teil|null), beiSchweben(teil|null, x, y) }
+  // optionen = { wurzeln() → [Object3D], istSichtbar(treffer) → bool,
+  //             beiWahl(teil|null), beiSchweben(teil|null, x, y) }
+  // wurzeln ist eine Funktion, weil das Teleskop beim Umbauen ersetzt wird.
   function Auswahl(buehne, optionen) {
     this.buehne = buehne;
     this.o = optionen;
@@ -63,7 +65,7 @@
     var c = this.buehne.renderer.domElement.getBoundingClientRect();
     this.zeiger.set(((x - c.left) / c.width) * 2 - 1, -((y - c.top) / c.height) * 2 + 1);
     this.strahl.setFromCamera(this.zeiger, this.buehne.kamera);
-    var treffer = this.strahl.intersectObject(this.o.wurzel, true);
+    var treffer = this.strahl.intersectObjects(this.o.wurzeln(), true);
     for (var i = 0; i < treffer.length; i++) {
       var t = treffer[i];
       if (t.object.userData.teil && t.object.visible && this.o.istSichtbar(t)) {
@@ -120,11 +122,13 @@
     var self = this;
     [[this.gewaehlt, 'gewaehlt'], [this.schwebt, 'schweben']].forEach(function (paar) {
       if (!paar[0]) return;
-      self.o.wurzel.traverse(function (n) {
-        if (!n.isMesh || n.userData.teil !== paar[0] || self.getauscht.indexOf(n) >= 0) return;
-        n.userData.eigenesMaterial = n.material;
-        n.material = self.kopie(n.material, paar[1]);
-        self.getauscht.push(n);
+      self.o.wurzeln().forEach(function (w) {
+        w.traverse(function (n) {
+          if (!n.isMesh || n.userData.teil !== paar[0] || self.getauscht.indexOf(n) >= 0) return;
+          n.userData.eigenesMaterial = n.material;
+          n.material = self.kopie(n.material, paar[1]);
+          self.getauscht.push(n);
+        });
       });
     });
     this.buehne.zeichneBald();
@@ -138,6 +142,18 @@
       var art = n.material === self.kopien[n.userData.eigenesMaterial.uuid + 'gewaehlt'] ? 'gewaehlt' : 'schweben';
       n.material = self.kopie(n.userData.eigenesMaterial, art);
     });
+  };
+
+  // Das Teleskop wurde neu gebaut: Leucht-Kopien gehören zu alten
+  // Materialien und werden freigegeben. Die Wahl bleibt (gleicher Name),
+  // das neue Teil leuchtet gleich wieder.
+  Auswahl.prototype.neuesTeleskop = function () {
+    var k = this.kopien;
+    Object.keys(k).forEach(function (s) { k[s].dispose(); });
+    this.kopien = {};
+    this.getauscht = [];
+    this.schwebt = null;
+    this.leuchten();
   };
 
   O.Auswahl = Auswahl;

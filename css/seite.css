@@ -1,0 +1,253 @@
+/*
+  Linke Spalte: Kopf, „Selbst bauen“, Datenblatt, Bedienung.
+  Die Spalte selbst lässt Klicks durch (zur 3D-Bühne), nur ihre Leisten
+  nicht. Wird sie zu lang, rollt sie.
+*/
+
+.seite {
+  position: fixed;
+  top: var(--abstand);
+  left: var(--abstand);
+  bottom: var(--abstand);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  pointer-events: none;
+}
+
+.seite > * {
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+/* In der Spalte stehen die Leisten im Fluss, nicht frei */
+.seite .leiste {
+  position: static;
+  transform: none;
+}
+
+.bauen-knopf {
+  display: none;
+}
+
+.leiste-titel {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akzent);
+}
+
+/* ---------- Selbst bauen ---------- */
+
+.bauen {
+  padding: 12px 14px;
+}
+
+.vorlagen {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.vorlage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.vorlage:hover {
+  border-color: var(--akzent);
+}
+
+.vorlage[aria-pressed="true"] {
+  border-color: var(--akzent);
+  background: rgba(124, 196, 255, 0.16);
+}
+
+.vorlage-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.vorlage-mass {
+  color: var(--text-leise);
+  font-size: 10px;
+  font-family: var(--schrift-mono);
+}
+
+.bau-regler {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.bau-regler-kopf {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bau-regler-wert {
+  font-family: var(--schrift-mono);
+}
+
+.bau-regler input {
+  width: 100%;
+  margin: 4px 0 0;
+  accent-color: var(--akzent);
+}
+
+.bau-regler-zusatz {
+  display: block;
+  color: var(--text-leise);
+  font-size: 12px;
+  text-align: right;
+}
+
+.bau-hinweis {
+  margin: 0;
+  color: var(--text-leise);
+  font-size: 12px;
+}
+
+/* ---------- Datenblatt ---------- */
+
+.datenblatt {
+  padding: 12px 14px 8px;
+}
+
+.kennzahl summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.kennzahl summary::-webkit-details-marker {
+  display: none;
+}
+
+.kennzahl summary:hover .kennzahl-name {
+  color: var(--text);
+}
+
+.kennzahl-name {
+  flex: 1;
+  color: var(--text-leise);
+  font-size: 13px;
+}
+
+.kennzahl[open] .kennzahl-name {
+  color: var(--text);
+}
+
+.kennzahl-wert {
+  font-family: var(--schrift-mono);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.ampel {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ampel.gut { background: var(--gut); }
+.ampel.warnung { background: var(--warnung); }
+.ampel.schlecht { background: var(--schlecht); }
+
+.kennzahl-text {
+  margin: 0 0 8px 16px;
+  color: var(--text-leise);
+  font-size: 12px;
+}
+
+.kennzahl-grund {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- Bedienung ---------- */
+
+.seite .fuss {
+  display: block;
+  max-width: none;
+  padding: 8px 14px;
+}
+
+.fuss summary {
+  color: var(--text-leise);
+  cursor: pointer;
+}
+
+.fuss[open] summary {
+  margin-bottom: 6px;
+}
+
+.fuss-zeile {
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* ---------- Handy: Bauen und Datenblatt eingeklappt ---------- */
+
+@media (max-width: 600px) {
+  .seite {
+    right: var(--abstand);
+    bottom: auto;
+    width: auto;
+    max-height: calc(100% - 2 * var(--abstand) - 150px);
+  }
+
+  .kopf {
+    position: relative;
+  }
+
+  .bauen-knopf {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    border: 1px solid var(--akzent);
+    border-radius: 6px;
+    background: none;
+    color: var(--akzent);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .bauen-knopf[aria-expanded="true"] {
+    background: var(--akzent);
+    color: #0a1020;
+  }
+
+  .bauen,
+  .datenblatt,
+  .seite .fuss {
+    display: none;
+  }
+
+  .bauen-offen .bauen,
+  .bauen-offen .datenblatt {
+    display: block;
+  }
+}

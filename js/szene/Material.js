@@ -157,7 +157,13 @@
   O.Material = {
     // alle Materialien – beim ersten Aufruf angelegt
     alle: function () {
-      if (!cache) cache = erzeuge();
+      if (!cache) {
+        cache = erzeuge();
+        // Geteilt = gehört keinem einzelnen Teleskop, wird beim Umbauen
+        // nicht freigegeben (Dobson.entsorge). Kopien (clone) erben die
+        // Markierung – wer kopiert, muss userData selbst neu setzen.
+        Object.keys(cache).forEach(function (k) { cache[k].userData.geteilt = true; });
+      }
       return cache;
     }
   };

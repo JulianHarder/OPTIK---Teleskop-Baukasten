@@ -48,6 +48,7 @@
     s.maxPolarAngle = Math.PI / 2 - 0.03;   // nicht unter die Wiese
     this.steuerung = s;
 
+    this.linksBelegt = 314;  // px, Breite der Bedienspalte samt Rand (css/seite.css)
     this.bedarf = true;      // ein Bild ist bestellt
     this.laeuft = false;     // Schleife aktiv
     this.festhalten = false; // Maus gedrückt
@@ -78,6 +79,12 @@
     if (b < 1 || h < 1) return;
     this.renderer.setSize(b, h);
     this.kamera.aspect = b / h;
+    // Links liegt die Bedienspalte über der Bühne: Bildmitte um die halbe
+    // Spaltenbreite nach rechts schieben, damit das Teleskop in der Mitte
+    // des freien Bereichs steht (nicht auf schmalen Bildschirmen)
+    var versatz = b > 900 ? this.linksBelegt / 2 : 0;
+    if (versatz) this.kamera.setViewOffset(b, h, -versatz, 0, b, h);
+    else this.kamera.clearViewOffset();
     this.kamera.updateProjectionMatrix();
     this.zeichneBald();
   };

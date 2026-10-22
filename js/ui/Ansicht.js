@@ -70,7 +70,8 @@
 
   // ---------- Wechsel ----------
 
-  Ansicht.prototype.setze = function (modus, sofort) {
+  // kameraLassen: beim Umbau des Teleskops die Kamera nicht anfassen
+  Ansicht.prototype.setze = function (modus, sofort, kameraLassen) {
     if (!ZIELE[modus]) return;
     this.modus = modus;
     if (modus === 'aufgeschnitten') this.merkeSchnittRichtung();
@@ -94,7 +95,7 @@
     } else {
       this.buehne.animiere('ansicht', DAUER_MS, schritt);
     }
-    this.kameraNachfuehren(sofort);
+    if (!kameraLassen) this.kameraNachfuehren(sofort);
     O.Ereignisse.melde('ansicht-geaendert', modus);
   };
 

@@ -178,6 +178,10 @@
         drehpunktY: drehpunktY
       };
       O.Dobson.richte(ergebnis, zustand.hoeheGrad, zustand.azimutGrad);
+
+      // Wie hoch liegt das Okular über dem Boden? (für das Datenblatt)
+      wurzel.updateMatrixWorld(true);
+      ergebnis.okularHoeheMm = teile.okular.localToWorld(new THREE.Vector3(0, 50, 0)).y;
       return ergebnis;
     },
 
@@ -207,6 +211,20 @@
         { objekt: teile.okular, versatz: new THREE.Vector3(0, 130, 0) },
         { objekt: teile.sucher, versatz: T.quer(m.fokusWinkel + 1.0).multiplyScalar(200) }
       ];
+    },
+
+    // Alles freigeben, was nur zu diesem Teleskop gehört: Geometrien,
+    // eigene Materialien (Schnitt-Kopien, Beschriftung) und deren Texturen.
+    // Geteilte Materialien aus Material.alle() bleiben.
+    entsorge: function (t) {
+      t.wurzel.traverse(function (o) {
+        if (o.geometry) o.geometry.dispose();
+        var mat = o.material;
+        if (mat && !mat.userData.geteilt) {
+          if (mat.map) mat.map.dispose();
+          mat.dispose();
+        }
+      });
     },
 
     // Kugel, die das ganze Teleskop umschließt (für die Kamera)

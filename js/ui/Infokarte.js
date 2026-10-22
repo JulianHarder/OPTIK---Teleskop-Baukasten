@@ -21,7 +21,8 @@
     this.teil = null;
   }
 
-  Infokarte.prototype.zeige = function (teil, masse, zustand) {
+  Infokarte.prototype.zeige = function (teil, teleskop, zustand) {
+    var masse = teleskop.masse;
     var info = O.TEILE[teil];
     if (!info) {
       this.schliesse();
@@ -45,7 +46,7 @@
 
     if (info.werte) {
       var dl = el('dl', 'karte-werte');
-      info.werte(masse, zustand).forEach(function (w) {
+      info.werte(masse, zustand, teleskop).forEach(function (w) {
         dl.appendChild(el('dt', null, w[0]));
         dl.appendChild(el('dd', null, w[1]));
       });

@@ -3,13 +3,15 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Aufgeschnittenes Teleskop mit dem Sternlicht im Tubus](screenshots/etappe-3.png)
+![Ein selbst gebauter 400-mm-Dobson neben einem Menschen, links Regler und Datenblatt](screenshots/etappe-4.png)
 
-> **Im Aufbau.** Fertig sind Etappe 1 bis 3 von 8: ein Dobson-Teleskop
-> 200/1200 zum Ansehen, Aufschneiden und Zerlegen, mit einer Erklärung zu
-> jedem Teil – und dem Licht eines Sterns, das man durch den Tubus bis ins
-> Okular laufen sieht. Was noch kommt – selbst bauen, durchs Okular
-> schauen, berühmte Teleskope – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> **Im Aufbau.** Fertig sind Etappe 1 bis 4 von 8: ein Dobson-Teleskop zum
+> Ansehen, Aufschneiden und Zerlegen, mit einer Erklärung zu jedem Teil,
+> dem Licht eines Sterns, das man bis ins Okular laufen sieht – und alles
+> selbst gebaut: Öffnung, Brennweite und Okular per Regler, mit Datenblatt
+> und einem Menschen zum Größenvergleich. Was noch kommt – durchs Okular
+> schauen, Linsenfernrohre, berühmte Teleskope – steht in
+> [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -28,6 +30,8 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |
 | `Esc` | Infokarte schließen |
 | `L` | Sternlicht an/aus; Regler: Stern neben die Mitte schieben |
+| Links: Selbst bauen | Vorlagen, Öffnung, Brennweite, Okular – das Teleskop baut sich sofort um |
+| Links: Datenblatt | Zeile anklicken für die Erklärung |
 | `F` | ganzes Teleskop zeigen |
 | `P` | Bildrate ein/aus (steht still bei 0, wenn sich nichts bewegt) |
 

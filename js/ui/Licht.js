@@ -131,11 +131,21 @@
 
   Licht.prototype.abbauen = function () {
     if (!this.gruppe) return;
-    this.t.tubus.remove(this.gruppe);
+    if (this.gruppe.parent) this.gruppe.parent.remove(this.gruppe);
     this.pulse.entsorge();
     this.ringPulse.entsorge();
     O.Strahlenbild.entsorge(this.gruppe);
     this.gruppe = null;
+  };
+
+  // Teleskop wurde umgebaut (oder nur das Okular gewechselt): Licht neu
+  Licht.prototype.neuesTeleskop = function (teleskop, ansicht) {
+    if (this.gruppe && this.gruppe.parent) this.gruppe.parent.remove(this.gruppe);
+    this.abbauen();
+    this.t = teleskop;
+    this.ansicht = ansicht;
+    if (O.zustand.lichtAn) this.baue();
+    else this.sichtbarkeit();
   };
 
   // Sichtbar, wenn an und nicht zerlegt; nur dann laufen die Pulse

@@ -35,6 +35,12 @@
     this.schilder.push({ schluessel: schluessel, objekt: objekt, el: el, an: false, links: !!links });
   };
 
+  // Alle Schilder entfernen (vor dem Umbau des Teleskops)
+  Beschriftung.prototype.leeren = function () {
+    this.schilder.forEach(function (s) { s.el.remove(); });
+    this.schilder = [];
+  };
+
   // zeigen(schild) → bool entscheidet je Schild, ob es sichtbar ist
   Beschriftung.prototype.zeige = function (zeigen) {
     this.schilder.forEach(function (s) {

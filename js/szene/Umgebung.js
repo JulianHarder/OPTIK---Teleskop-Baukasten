@@ -13,11 +13,14 @@
 (function (O) {
   'use strict';
 
+  var mond = null;
+  var MOND_RICHTUNG = new THREE.Vector3(-2600, 3800, 1900).normalize();
+
   function licht(szene) {
     var himmel = new THREE.HemisphereLight(0x7d8fbf, 0x1b2416, 0.75);
     szene.add(himmel);
 
-    var mond = new THREE.DirectionalLight(0xc6d4ff, 1.35);
+    mond = new THREE.DirectionalLight(0xc6d4ff, 1.35);
     mond.position.set(-2600, 3800, 1900);
     mond.target.position.set(0, 500, 0);
     mond.castShadow = true;
@@ -88,7 +91,24 @@
     return ziel.texture;
   }
 
+  // Die Schattenkamera des Monds so legen, dass das ganze Teleskop
+  // (huelle = Kugel) hineinpasst – ein großer Dobson wirft sonst einen
+  // abgeschnittenen Schatten.
+  function schattenFuer(huelle) {
+    var r = huelle.radius * 1.6 + 300;     // der Schatten fällt schräg, also weiter als das Teleskop reicht
+    var k = mond.shadow.camera;
+    mond.target.position.copy(huelle.center);
+    mond.position.copy(huelle.center).addScaledVector(MOND_RICHTUNG, r * 3);
+    k.left = k.bottom = -r;
+    k.right = k.top = r;
+    k.near = r;
+    k.far = r * 5;
+    k.updateProjectionMatrix();
+  }
+
   O.Umgebung = {
+    schattenFuer: schattenFuer,
+
     erzeuge: function (szene, renderer) {
       licht(szene);
       wiese(szene);

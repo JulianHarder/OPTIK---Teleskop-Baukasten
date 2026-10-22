@@ -10,18 +10,27 @@
   <link rel="stylesheet" href="css/grundlage.css">
   <link rel="stylesheet" href="css/leisten.css">
   <link rel="stylesheet" href="css/karten.css">
+  <link rel="stylesheet" href="css/seite.css">
 </head>
 <body>
 
   <main class="buehne" id="buehne" aria-label="3D-Ansicht des Teleskops"></main>
 
-  <header class="kopf leiste">
-    <div class="marke">
-      <span class="marke-name">OPTIK</span>
-      <span class="marke-zusatz">Teleskop-Baukasten</span>
-    </div>
-    <div class="teleskop-zeile" id="teleskop-zeile"></div>
-  </header>
+  <div class="seite" id="seite">
+    <header class="kopf leiste">
+      <div class="marke">
+        <span class="marke-name">OPTIK</span>
+        <span class="marke-zusatz">Teleskop-Baukasten</span>
+      </div>
+      <div class="teleskop-zeile" id="teleskop-zeile"></div>
+      <button type="button" class="bauen-knopf" id="bauen-knopf" aria-expanded="false"></button>
+    </header>
+    <section class="bauen leiste" id="bauen" aria-label="Selbst bauen"></section>
+    <section class="datenblatt leiste" id="datenblatt" aria-label="Datenblatt"></section>
+    <details class="fuss leiste" id="fuss">
+      <summary>Bedienung</summary>
+    </details>
+  </div>
 
   <div class="schilder" id="schilder"></div>
   <div class="hinweis" id="hinweis" hidden></div>
@@ -34,7 +43,6 @@
 
   <nav class="ansicht leiste" id="ansicht" aria-label="Ansicht"></nav>
 
-  <footer class="fuss leiste" id="fuss"></footer>
 
   <!--
     Klassische Skripte in fester Reihenfolge – keine ES-Module, weil
@@ -49,6 +57,7 @@
   <!-- Daten -->
   <script src="js/daten/texte.js"></script>
   <script src="js/daten/teile.js"></script>
+  <script src="js/daten/bauarten.js"></script>
 
   <!-- Kern -->
   <script src="js/kern/Vektor.js"></script>
@@ -56,12 +65,14 @@
   <script src="js/kern/Zufall.js"></script>
   <script src="js/kern/Ereignisse.js"></script>
   <script src="js/kern/Zustand.js"></script>
+  <script src="js/kern/Speicher.js"></script>
 
   <!-- Physik -->
   <script src="js/physik/Paraxial.js"></script>
   <script src="js/physik/Strahlverfolger.js"></script>
   <script src="js/physik/Flaeche.js"></script>
   <script src="js/physik/Optik.js"></script>
+  <script src="js/physik/Kennzahlen.js"></script>
 
   <!-- Szene -->
   <script src="js/szene/Material.js"></script>
@@ -76,6 +87,7 @@
   <script src="js/modell/Anbauteile.js"></script>
   <script src="js/modell/Newton.js"></script>
   <script src="js/modell/Dobson.js"></script>
+  <script src="js/modell/Mensch.js"></script>
 
   <!-- Licht -->
   <script src="js/licht/Strahlenbild.js"></script>
@@ -86,6 +98,8 @@
   <script src="js/ui/Ansicht.js"></script>
   <script src="js/ui/Infokarte.js"></script>
   <script src="js/ui/Licht.js"></script>
+  <script src="js/ui/Konfigurator.js"></script>
+  <script src="js/ui/Datenblatt.js"></script>
 
   <!-- Einstieg -->
   <script src="js/main.js"></script>

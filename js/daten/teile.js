@@ -2,8 +2,9 @@
   Infokarten der Bauteile: was es ist, wozu es dient, woraus es besteht,
   ein Fakt. Der Schlüssel ist der Name in userData.teil.
 
-  werte(m, z) liefert Zahlen zum aktuellen Teleskop (m = Maße aus
-  Optik.masseNewton, z = Zustand) als Liste [Beschriftung, Wert].
+  werte(m, z, t) liefert Zahlen zum aktuellen Teleskop (m = Maße aus
+  Optik.masseNewton, z = Zustand, t = gebautes Teleskop aus Dobson.erzeuge)
+  als Liste [Beschriftung, Wert].
   innen: true = das Teil liegt im Tubus; seine Beschriftung erscheint
   auch in den Ansichten „aufgeschnitten“ und „Röntgen“.
   schild: 'links' = Text links vom Punkt, wo zwei Schilder sonst
@@ -173,6 +174,22 @@
       woraus: 'Sperrholz, Gummifüße, Teflon-Gleitpunkte.',
       fakt: 'Drei Füße wackeln nie, auch nicht auf einer unebenen Wiese – ' +
         'ein Tisch mit vier Beinen schon.'
+    },
+
+    mensch: {
+      name: 'Mensch zum Vergleich',
+      wozu: 'Steht nur da, damit man sieht, wie groß das Teleskop wirklich ' +
+        'ist: 1,75 m.',
+      woraus: 'Ein paar Zylinder und eine Kugel.',
+      fakt: 'Bei Dobsons mit 40 cm Spiegel und mehr steht man zum Beobachten ' +
+        'auf einer Leiter. Die größten Amateur-Dobsons haben über einen ' +
+        'Meter Öffnung – dort ist die Leiter mehrere Meter hoch.',
+      werte: function (m, z, t) {
+        return [
+          ['Augenhöhe', O.Format.zahl(O.Mensch.AUGENHOEHE_MM / 1000, 2) + ' m'],
+          ['Okular über dem Boden', O.Format.zahl(t.okularHoeheMm / 1000, 2) + ' m']
+        ];
+      }
     },
 
     ablage: {

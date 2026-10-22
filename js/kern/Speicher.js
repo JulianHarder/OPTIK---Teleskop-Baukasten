@@ -1,0 +1,53 @@
+/*
+  Das eigene Teleskop im Browser merken (localStorage), damit es beim
+  nächsten Öffnen wieder da ist.
+
+  localStorage kann fehlen oder gesperrt sein (privates Fenster, Datei
+  über file:// in manchen Browsern) – dann geht es eben ohne Merken.
+  Gelesene Werte werden geprüft: Was nicht in die Grenzen passt, fliegt raus.
+*/
+(function (O) {
+  'use strict';
+
+  var SCHLUESSEL = 'optik.stand.v1';
+  var ANSICHTEN = ['ganz', 'aufgeschnitten', 'zerlegt', 'roentgen'];
+
+  function zahlIn(wert, min, max) {
+    return typeof wert === 'number' && isFinite(wert) && wert >= min && wert <= max;
+  }
+
+  O.Speicher = {
+    // → { zustand: {…}, ansicht: '…' } mit nur den gültigen Werten, oder null
+    lade: function () {
+      var roh;
+      try {
+        roh = JSON.parse(localStorage.getItem(SCHLUESSEL) || 'null');
+      } catch (e) {
+        return null;
+      }
+      if (!roh || typeof roh !== 'object') return null;
+
+      var B = O.BAUARTEN.dobson;
+      var z = {};
+      if (zahlIn(roh.oeffnungMm, B.oeffnung.min, B.oeffnung.max)) z.oeffnungMm = roh.oeffnungMm;
+      if (zahlIn(roh.brennweiteMm, 100, B.brennweiteMax)) z.brennweiteMm = roh.brennweiteMm;
+      if (B.okulare.indexOf(roh.okularMm) >= 0) z.okularMm = roh.okularMm;
+      if (typeof roh.lichtAn === 'boolean') z.lichtAn = roh.lichtAn;
+      return { zustand: z, ansicht: ANSICHTEN.indexOf(roh.ansicht) >= 0 ? roh.ansicht : null };
+    },
+
+    sichere: function (zustand, ansicht) {
+      try {
+        localStorage.setItem(SCHLUESSEL, JSON.stringify({
+          oeffnungMm: zustand.oeffnungMm,
+          brennweiteMm: zustand.brennweiteMm,
+          okularMm: zustand.okularMm,
+          lichtAn: zustand.lichtAn,
+          ansicht: ansicht
+        }));
+      } catch (e) {
+        // ohne Speicher weiter – nichts zu tun
+      }
+    }
+  };
+})(globalThis.OPTIK = globalThis.OPTIK || {});

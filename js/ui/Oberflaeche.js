@@ -24,15 +24,27 @@
 
   O.Oberflaeche = {
     baue: function () {
-      document.getElementById('teleskop-zeile').textContent = teleskopZeile(O.zustand);
+      O.Oberflaeche.zeigeTeleskop();
 
       var fuss = document.getElementById('fuss');
       O.TEXTE.fuss.forEach(function (eintrag) {
-        var span = el('span');
+        var span = el('span', 'fuss-zeile');
         span.appendChild(el('kbd', null, eintrag[0]));
         span.appendChild(document.createTextNode(' ' + eintrag[1]));
         fuss.appendChild(span);
       });
+
+      // Auf dem Handy sind Bauen und Datenblatt eingeklappt
+      var knopf = document.getElementById('bauen-knopf');
+      knopf.textContent = O.TEXTE.bauen.knopfHandy;
+      knopf.addEventListener('click', function () {
+        var offen = document.body.classList.toggle('bauen-offen');
+        knopf.setAttribute('aria-expanded', offen ? 'true' : 'false');
+      });
+    },
+
+    zeigeTeleskop: function () {
+      document.getElementById('teleskop-zeile').textContent = teleskopZeile(O.zustand);
     },
 
     // Ansicht-Schalter: ein Knopf je Ansicht, Ziffer als Taste

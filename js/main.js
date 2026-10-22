@@ -1,6 +1,11 @@
 /*
-  Einstieg: Bühne, Himmel, Wiese und das Teleskop zusammensetzen, dazu
-  Ansichten, Auswahl per Klick, Beschriftungen und Infokarte.
+  Einstieg: Bühne, Himmel und Wiese aufbauen, dann das Teleskop – und alles,
+  was am Teleskop hängt (Ansichten, Auswahl, Schilder, Licht, Datenblatt).
+
+  Das Teleskop wird bei jeder Änderung im Konfigurator komplett neu gebaut
+  (baueTeleskop). Was daran hängt, bekommt das neue Teleskop übergeben;
+  das alte wird freigegeben (Dobson.entsorge), damit der Grafikspeicher
+  nicht volläuft.
 */
 (function (O) {
   'use strict';
@@ -17,10 +22,18 @@
   buehne.himmel = O.Himmel.erzeuge();
   O.Umgebung.erzeuge(buehne.szene, buehne.renderer);
 
-  var teleskop = O.Dobson.erzeuge(O.zustand);
-  buehne.szene.add(teleskop.wurzel);
+  // Gemerktes Teleskop vom letzten Besuch
+  var gemerkt = O.Speicher.lade();
+  if (gemerkt) Object.assign(O.zustand, gemerkt.zustand);
 
-  // ---------- Karte, Auswahl, Schilder, Ansicht ----------
+  var mensch = O.Mensch.erzeuge();
+  buehne.szene.add(mensch);
+
+  var teleskop = null;
+  var ansicht = null;
+  var licht = null;
+
+  // ---------- Karte, Auswahl, Schilder ----------
 
   var karte = new O.Infokarte(
     document.getElementById('karte'),
@@ -28,12 +41,11 @@
     function () { waehle(null); }
   );
 
-  var ansicht;
   var auswahl = new O.Auswahl(buehne, {
-    wurzel: teleskop.wurzel,
+    wurzeln: function () { return [teleskop.wurzel, mensch]; },
     istSichtbar: function (treffer) { return ansicht.istSichtbar(treffer); },
     beiWahl: function (teil) {
-      if (teil) karte.zeige(teil, teleskop.masse, O.zustand);
+      if (teil) karte.zeige(teil, teleskop, O.zustand);
       else karte.schliesse();
     },
     beiSchweben: function (teil, x, y) { karte.schwebe(teil, x, y); }
@@ -44,28 +56,96 @@
   }
 
   var beschriftung = new O.Beschriftung(buehne, document.getElementById('schilder'));
-  Object.keys(teleskop.teile).forEach(function (schluessel) {
-    var objekt = teleskop.teile[schluessel];
-    var info = O.TEILE[objekt.userData.teil];
-    if (info) beschriftung.neu(schluessel, objekt, info.name, waehle, info.schild === 'links');
-  });
-
-  ansicht = new O.Ansicht(buehne, teleskop, auswahl, beschriftung);
-
+  var datenblatt = new O.Datenblatt(document.getElementById('datenblatt'));
   var nav = document.getElementById('ansicht');
+
   O.Oberflaeche.baueAnsicht(nav, function (id) { ansicht.setze(id); });
   O.Ereignisse.an('ansicht-geaendert', function (id) {
     O.Oberflaeche.markiereAnsicht(nav, id);
+    merken();
   });
 
-  var licht = new O.Licht(buehne, teleskop, ansicht, document.getElementById('licht'), nav);
+  // ---------- Teleskop bauen ----------
 
-  // zum Nachsehen in der Konsole und für pruefungen/blicke.js
-  O.licht = licht;
-  O.teleskop = teleskop;
-  O.buehne = buehne;
-  O.ansicht = ansicht;
-  O.auswahl = auswahl;
+  function baueTeleskop() {
+    var modus = ansicht ? ansicht.modus : (gemerkt && gemerkt.ansicht) || 'ganz';
+
+    if (teleskop) {
+      buehne.szene.remove(teleskop.wurzel);
+      O.Dobson.entsorge(teleskop);
+    }
+    teleskop = O.Dobson.erzeuge(O.zustand);
+    buehne.szene.add(teleskop.wurzel);
+
+    beschriftung.leeren();
+    Object.keys(teleskop.teile).forEach(function (schluessel) {
+      var objekt = teleskop.teile[schluessel];
+      var info = O.TEILE[objekt.userData.teil];
+      if (info) beschriftung.neu(schluessel, objekt, info.name, waehle, info.schild === 'links');
+    });
+
+    auswahl.neuesTeleskop();
+    ansicht = new O.Ansicht(buehne, teleskop, auswahl, beschriftung);
+    ansicht.setze(modus, true, true);
+
+    if (licht) licht.neuesTeleskop(teleskop, ansicht);
+    else licht = new O.Licht(buehne, teleskop, ansicht, document.getElementById('licht'), nav);
+
+    O.Mensch.stelle(mensch, teleskop);
+    O.Umgebung.schattenFuer(O.Dobson.huelle(teleskop));
+    nachAenderung();
+
+    // zum Nachsehen in der Konsole und für pruefungen/blicke.js
+    O.teleskop = teleskop;
+    O.ansicht = ansicht;
+    O.licht = licht;
+  }
+
+  // Was nach jeder Änderung neu angezeigt wird
+  function nachAenderung() {
+    datenblatt.zeige(teleskop, O.zustand);
+    O.Oberflaeche.zeigeTeleskop();
+    if (karte.teil) karte.zeige(karte.teil, teleskop, O.zustand);
+    merken();
+    buehne.zeichneBald();
+  }
+
+  function merken() {
+    O.Speicher.sichere(O.zustand, ansicht ? ansicht.modus : 'ganz');
+  }
+
+  // Während man zieht, kommen viele Änderungen kurz hintereinander –
+  // gebaut wird höchstens einmal pro Bild. Der Timer ist die Rückfallebene
+  // für verdeckte Fenster ohne requestAnimationFrame.
+  var umbauBestellt = false;
+  function bestelleUmbau() {
+    if (umbauBestellt) return;
+    umbauBestellt = true;
+    function los() {
+      if (!umbauBestellt) return;
+      umbauBestellt = false;
+      baueTeleskop();
+    }
+    requestAnimationFrame(los);
+    setTimeout(los, 80);
+  }
+
+  baueTeleskop();
+
+  // ---------- Konfigurator ----------
+
+  var konfigurator = new O.Konfigurator(
+    document.getElementById('bauen'),
+    function (art) {
+      if (art === 'form') {
+        bestelleUmbau();
+      } else {
+        licht.neuesTeleskop(teleskop, ansicht);   // anderes Okular: nur Licht und Zahlen
+        nachAenderung();
+      }
+    },
+    function () { kameraNachziehen(); }
+  );
 
   // ---------- Kamera ----------
 
@@ -73,13 +153,38 @@
   // Teleskop noch Himmel zu sehen ist.
   var START_RICHTUNG = new THREE.Vector3(-0.85, 0.14, -0.62);
 
-  function ganzesTeleskop() {
-    var h = O.Dobson.huelle(teleskop);
+  function blickZiel() {
+    var box = new THREE.Box3().setFromObject(teleskop.wurzel).expandByObject(mensch);
+    var h = box.getBoundingSphere(new THREE.Sphere());
     var mitte = h.center.clone();
     mitte.y += h.radius * 0.12;     // Teleskop etwas unter die Bildmitte
-    buehne.blickAuf(mitte, h.radius * 0.9, START_RICHTUNG);
+    return { mitte: mitte, radius: h.radius * 0.97 };
   }
+
+  function ganzesTeleskop() {
+    var z = blickZiel();
+    buehne.blickAuf(z.mitte, z.radius, START_RICHTUNG);
+  }
+
+  // Nach dem Umbau: Blickrichtung behalten, aber Abstand und Mitte so
+  // nachführen, dass das neue Teleskop wieder gut ins Bild passt
+  function kameraNachziehen() {
+    if (ansicht.modus === 'zerlegt') return;
+    var k = buehne.kamera;
+    var s = buehne.steuerung;
+    var z = blickZiel();
+    var richtung = k.position.clone().sub(s.target).normalize();
+    var vonZiel = s.target.clone();
+    var vonPos = k.position.clone();
+    var nachPos = z.mitte.clone().addScaledVector(richtung, buehne.abstandFuer(z.radius) * 1.05);
+    buehne.animiere('kamera', 700, function (t) {
+      s.target.lerpVectors(vonZiel, z.mitte, t);
+      k.position.lerpVectors(vonPos, nachPos, t);
+    });
+  }
+
   ganzesTeleskop();
+  if (O.zustand.lichtAn) licht.setze(true);
 
   // ---------- Tasten ----------
 
@@ -88,7 +193,8 @@
 
   window.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.target && e.target.tagName === 'INPUT') return;
+    // In Reglern bleiben die Pfeiltasten beim Regler, Buchstaben gehen durch
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
 
     if (ansichtTaste[e.key]) {
       ansicht.setze(ansichtTaste[e.key]);
@@ -101,6 +207,7 @@
         break;
       case 'l':
         licht.umschalten();
+        merken();
         break;
       case 'p':
         bildrate.hidden = !bildrate.hidden;
@@ -115,5 +222,11 @@
     e.preventDefault();
   });
 
+  O.buehne = buehne;
+  O.auswahl = auswahl;
+  O.konfigurator = konfigurator;
+  O.mensch = mensch;
+  O.baueTeleskop = baueTeleskop;
+  O.ganzesTeleskop = ganzesTeleskop;
   buehne.zeichneBald();
 })(globalThis.OPTIK);
