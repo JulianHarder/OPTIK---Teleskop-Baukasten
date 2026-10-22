@@ -23,6 +23,7 @@
       ['Rechts ziehen', 'verschieben'],
       ['Klick', 'Teil erklären'],
       ['L', 'Sternlicht'],
+      ['O', 'durchs Okular schauen'],
       ['F', 'ganzes Teleskop'],
       ['P', 'Bildrate']
     ],
@@ -57,7 +58,7 @@
       zoll: '{zoll} Zoll',
       fZahl: 'f/{N}',
       fach: '{V}-fach',
-      knopfHandy: 'Bauen',
+      knopfHandy: 'Menü',
       hinweis: 'Ziehen verändert das Teleskop sofort – der Spiegel, das Rohr ' +
         'und das Licht rechnen sich neu.'
     },
@@ -116,6 +117,25 @@
         grossesLoch: 'Großer Fangspiegel – Planeten zeigen etwas weniger Kontrast.',
         leiter: 'Höher als deine Augen – du brauchst eine Leiter.'
       }
+    },
+
+    beobachten: {
+      titel: 'Beobachten',
+      luft: 'Luft',
+      zielen: 'Anklicken: Das Teleskop schwenkt hin.',
+      zieltAuf: 'zielt auf {name}',
+      ort: 'Die Richtungen am Himmel sind ausgedacht – sie zeigen nur, wie das ' +
+        'Teleskop zielt, nicht wo das Objekt heute Nacht steht.',
+      durchschauen: 'Durchschauen',
+      zurueck: 'Zurück',
+      okular: 'Okular',
+      lupe: 'Lupe: so fein sieht dein Auge',
+      lupeLang: 'Ein Bildschirm hat zu wenig Bildpunkte für das, was das Auge im ' +
+        'Okular erkennt. Die Lupe zeigt die Mitte so fein, wie dein Auge sie sieht.',
+      zahlen: '{V}-fach · zeigt {feld}° · Austrittspupille {ap} mm',
+      achte: 'Achte auf',
+      ehrlich: 'Simulation: Sie vergleicht Teleskope richtig. So hell und so fein ' +
+        'wie ein echtes Okular ist aber kein Bildschirm.'
     },
 
     karte: {

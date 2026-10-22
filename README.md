@@ -3,14 +3,14 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Ein selbst gebauter 400-mm-Dobson neben einem Menschen, links Regler und Datenblatt](screenshots/etappe-4.png)
+![Blick durchs Okular auf Saturn: das ganze Feld und die Lupe](screenshots/etappe-5.png)
 
-> **Im Aufbau.** Fertig sind Etappe 1 bis 4 von 8: ein Dobson-Teleskop zum
-> Ansehen, Aufschneiden und Zerlegen, mit einer Erklärung zu jedem Teil,
-> dem Licht eines Sterns, das man bis ins Okular laufen sieht – und alles
-> selbst gebaut: Öffnung, Brennweite und Okular per Regler, mit Datenblatt
-> und einem Menschen zum Größenvergleich. Was noch kommt – durchs Okular
-> schauen, Linsenfernrohre, berühmte Teleskope – steht in
+> **Im Aufbau.** Fertig sind Etappe 1 bis 5 von 8: ein Dobson-Teleskop zum
+> Ansehen, Aufschneiden, Zerlegen und Selbstbauen, mit dem Licht eines
+> Sterns, das man bis ins Okular laufen sieht – und man kann hindurch-
+> schauen: auf Saturn, Jupiter, den Mond, Doppelsterne und einen
+> Kugelsternhaufen, so wie genau dieses Teleskop sie zeigen würde. Was noch
+> kommt – Linsenfernrohre, berühmte Teleskope – steht in
 > [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
@@ -30,6 +30,8 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |
 | `Esc` | Infokarte schließen |
 | `L` | Sternlicht an/aus; Regler: Stern neben die Mitte schieben |
+| `O` / Durchschauen | durchs Okular schauen (vorher schwenkt das Teleskop zum Objekt), `Esc` zurück |
+| Links: Beobachten | Objekt und Luft wählen |
 | Links: Selbst bauen | Vorlagen, Öffnung, Brennweite, Okular – das Teleskop baut sich sofort um |
 | Links: Datenblatt | Zeile anklicken für die Erklärung |
 | `F` | ganzes Teleskop zeigen |
@@ -42,6 +44,14 @@ Fangspiegel, Feldblende und Okular verfolgt. Alle treffen sich auf
 10⁻¹² mm genau im Brennpunkt, der Fangspiegel schattet 6,3 % der Fläche ab,
 und am Bildrand wird es dunkler, weil dort Licht den Fangspiegel verfehlt –
 wie bei echten Newton-Teleskopen.
+
+Der Blick durchs Okular rechnet mit echten Winkelgrößen (Saturn 18″, die
+Cassini-Teilung 0,7″), mit der Unschärfe aus Beugung und Luftunruhe, der
+Helligkeit nach der Austrittspupille und der Grenzgröße für Sterne. Bei
+ruhiger Luft zeigt ein 300-mm-Spiegel die Cassini-Teilung mit 67 %
+Kontrast, ein 100-mm-Spiegel mit 28 % – bei unruhiger Luft keiner von
+beiden. Ein Bildschirm hat zu wenig Pixel für das, was das Auge im Okular
+sieht; deshalb zeigt eine Lupe die Bildmitte so fein wie das Auge.
 
 Das Modell ist vereinfacht, aber die Maße kommen aus der Optik: Der
 Hauptspiegel ist eine echte Parabel (bei 200/1200 am Rand 2,08 mm tief), der

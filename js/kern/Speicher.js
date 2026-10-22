@@ -33,6 +33,8 @@
       if (zahlIn(roh.brennweiteMm, 100, B.brennweiteMax)) z.brennweiteMm = roh.brennweiteMm;
       if (B.okulare.indexOf(roh.okularMm) >= 0) z.okularMm = roh.okularMm;
       if (typeof roh.lichtAn === 'boolean') z.lichtAn = roh.lichtAn;
+      if (O.HIMMEL.objekte.some(function (o) { return o.id === roh.objektId; })) z.objektId = roh.objektId;
+      if (O.HIMMEL.luft.some(function (l) { return l.id === roh.luftId; })) z.luftId = roh.luftId;
       return { zustand: z, ansicht: ANSICHTEN.indexOf(roh.ansicht) >= 0 ? roh.ansicht : null };
     },
 
@@ -43,6 +45,8 @@
           brennweiteMm: zustand.brennweiteMm,
           okularMm: zustand.okularMm,
           lichtAn: zustand.lichtAn,
+          objektId: zustand.objektId,
+          luftId: zustand.luftId,
           ansicht: ansicht
         }));
       } catch (e) {

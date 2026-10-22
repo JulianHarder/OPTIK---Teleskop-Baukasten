@@ -240,12 +240,14 @@
     color: #0a1020;
   }
 
+  .beobachten,
   .bauen,
   .datenblatt,
   .seite .fuss {
     display: none;
   }
 
+  .bauen-offen .beobachten,
   .bauen-offen .bauen,
   .bauen-offen .datenblatt {
     display: block;

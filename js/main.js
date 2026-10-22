@@ -32,6 +32,8 @@
   var teleskop = null;
   var ansicht = null;
   var licht = null;
+  var beobachten = null;
+  var okularansicht = null;
 
   // ---------- Karte, Auswahl, Schilder ----------
 
@@ -91,6 +93,9 @@
     if (licht) licht.neuesTeleskop(teleskop, ansicht);
     else licht = new O.Licht(buehne, teleskop, ansicht, document.getElementById('licht'), nav);
 
+    if (beobachten) beobachten.neuesTeleskop(teleskop, ansicht);
+    if (okularansicht) okularansicht.neuesTeleskop(teleskop);
+
     O.Mensch.stelle(mensch, teleskop);
     O.Umgebung.schattenFuer(O.Dobson.huelle(teleskop));
     nachAenderung();
@@ -147,6 +152,38 @@
     function () { kameraNachziehen(); }
   );
 
+  function wechsleOkular(mm) {
+    O.zustand.okularMm = mm;
+    konfigurator.auffrischen();
+    licht.neuesTeleskop(teleskop, ansicht);
+    nachAenderung();
+  }
+
+  // ---------- Beobachten und Durchschauen ----------
+
+  beobachten = new O.Beobachten(buehne, document.getElementById('beobachten'), nav, {
+    geschwenkt: nachAenderung,
+    luftGeaendert: merken,
+    durchschauen: durchschauen
+  });
+  beobachten.neuesTeleskop(teleskop, ansicht);
+
+  okularansicht = new O.Okularansicht(buehne, document.getElementById('okular-blick'), beobachten, {
+    okular: wechsleOkular,
+    luft: function () { beobachten.auffrischen(); merken(); },
+    objekt: function (id) { beobachten.waehle(id); merken(); }
+  });
+  okularansicht.neuesTeleskop(teleskop);
+
+  // Erst zum Objekt schwenken (falls nötig), dann ins Okular fliegen
+  function durchschauen() {
+    if (okularansicht.offen) return;
+    waehle(null);
+    if (ansicht.modus === 'zerlegt') ansicht.setze('ganz', true);
+    if (O.zustand.zielt) okularansicht.oeffne();
+    else beobachten.waehle(O.zustand.objektId, function () { okularansicht.oeffne(); });
+  }
+
   // ---------- Kamera ----------
 
   // Startblick: schräg von vorne links, eher flach, damit über dem
@@ -196,6 +233,15 @@
     // In Reglern bleiben die Pfeiltasten beim Regler, Buchstaben gehen durch
     if (e.target && e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
 
+    // Im Okular gibt es nur einen Weg: zurück
+    if (okularansicht.offen) {
+      if (e.key === 'Escape') {
+        okularansicht.schliesse();
+        e.preventDefault();
+      }
+      return;
+    }
+
     if (ansichtTaste[e.key]) {
       ansicht.setze(ansichtTaste[e.key]);
       e.preventDefault();
@@ -208,6 +254,9 @@
       case 'l':
         licht.umschalten();
         merken();
+        break;
+      case 'o':
+        durchschauen();
         break;
       case 'p':
         bildrate.hidden = !bildrate.hidden;
@@ -227,6 +276,9 @@
   O.konfigurator = konfigurator;
   O.mensch = mensch;
   O.baueTeleskop = baueTeleskop;
+  O.beobachten = beobachten;
+  O.okularansicht = okularansicht;
+  O.durchschauen = durchschauen;
   O.ganzesTeleskop = ganzesTeleskop;
   buehne.zeichneBald();
 })(globalThis.OPTIK);

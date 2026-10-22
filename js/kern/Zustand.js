@@ -19,7 +19,10 @@
     hoeheGrad: 42,        // Neigung des Tubus über dem Horizont
     azimutGrad: -32,      // Drehung der Rockerbox
     lichtAn: false,       // Sternlicht im Teleskop zeigen
-    sternVersatzGrad: 0   // wie weit der Stern neben der Blickrichtung steht
+    sternVersatzGrad: 0,  // wie weit der Stern neben der Blickrichtung steht
+    objektId: 'saturn',   // was beobachtet wird (js/daten/himmel.js)
+    luftId: 'normal',     // wie ruhig die Luft ist
+    zielt: false          // zeigt das Teleskop gerade auf das Objekt?
   };
 
   O.Zustand = {

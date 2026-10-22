@@ -172,12 +172,17 @@
   Buehne.prototype.schritt = function (zeit) {
     if (!this.animationen.length) return false;
     zeit = zeit || performance.now();
-    this.animationen = this.animationen.filter(function (a) {
+    // Über eine Kopie laufen: Eine Animation darf am Ende eine neue
+    // starten (Schwenken → Flug ins Okular). Würde hier die Liste direkt
+    // neu gefiltert, ginge die neue verloren.
+    var fertig = [];
+    this.animationen.slice().forEach(function (a) {
       if (a.start === null) a.start = zeit;
       var t = Math.min(1, (zeit - a.start) / a.dauer);
+      if (t >= 1) fertig.push(a);
       a.fn(t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-      return t < 1;
     });
+    this.animationen = this.animationen.filter(function (a) { return fertig.indexOf(a) < 0; });
     return true;
   };
 

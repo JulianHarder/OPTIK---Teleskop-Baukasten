@@ -18,6 +18,8 @@ var wurzel = pfad.join(__dirname, '..');
   'js/physik/Flaeche.js',
   'js/physik/Optik.js',
   'js/physik/Kennzahlen.js',
+  'js/physik/Sehen.js',
+  'js/daten/himmel.js',
   'js/daten/bauarten.js'
 ].forEach(function (datei) {
   require(pfad.join(wurzel, datei));
@@ -303,6 +305,30 @@ console.log('\nKennzahlen fürs Datenblatt');
   }
   pruefe('Ganzer Bereich 100–400 mm, f/4–f/10: Fangspiegel passt, Licht kommt im Okular an',
     fehlerhaft.length === 0, fehlerhaft.length ? 'Probleme bei ' + fehlerhaft.slice(0, 5).join(', ') : '');
+})();
+
+console.log('\nSehen am Okular');
+
+(function () {
+  var S = O.Sehen;
+  pruefe('Beugungsscheibchen 200 mm: Halbwertsbreite ≈ 116″ / D = 0,58″',
+    Math.abs(S.beugungFwhmBs(200) - 0.5836) < 0.001, S.beugungFwhmBs(200).toFixed(4) + '″');
+  pruefe('Ohne Luft: Unschärfe = reine Beugung',
+    Math.abs(S.sigmaBs(200, 0) * 2 * Math.sqrt(2 * Math.log(2)) - S.beugungFwhmBs(200)) < 1e-12);
+  pruefe('Bei unruhiger Luft (3″) macht die Öffnung kaum noch einen Unterschied',
+    S.sigmaBs(100, 3) / S.sigmaBs(400, 3) < 1.1, (S.sigmaBs(100, 3) / S.sigmaBs(400, 3)).toFixed(3));
+  pruefe('Flächenhelligkeit: halbe Austrittspupille = ein Viertel so hell',
+    Math.abs(S.flaechenhelligkeit(2) / S.flaechenhelligkeit(4) - 0.25) < 1e-12);
+  pruefe('… über 7 mm nicht heller (Licht geht neben die Pupille)',
+    S.flaechenhelligkeit(10) === S.flaechenhelligkeit(7));
+
+  // Daten: Cassini-Teilung ≈ 0,72″ breit, Epsilon Lyrae enger als Albireo
+  var saturn = O.HIMMEL.objekte.find(function (o) { return o.id === 'saturn'; });
+  var bsProKm = saturn.durchmesserBs / (2 * saturn.aequatorKm);
+  var cassini = (saturn.ringeKm.cassini[1] - saturn.ringeKm.cassini[0]) * bsProKm;
+  pruefe('Cassini-Teilung bei 18″ Saturn: rund 0,7″', Math.abs(cassini - 0.72) < 0.02, cassini.toFixed(3) + '″');
+  pruefe('Epsilon Lyrae (2,3″) ist mit 100 mm gerade trennbar (Rayleigh 1,38″), mit Luft 1,5″ knapp',
+    S.sigmaBs(100, 1.5) * 2.3548 < 2.3, 'Halbwertsbreite ' + (S.sigmaBs(100, 1.5) * 2.3548).toFixed(2) + '″');
 })();
 
 console.log(fehler ? '\n' + fehler + ' Prüfung(en) fehlgeschlagen.' : '\nAlles grün.');

@@ -1,0 +1,333 @@
+/*
+  Beobachten (linke Spalte), Markierung am Himmel und der Blick durchs
+  Okular (Vollbild, schwarz).
+*/
+
+/* ---------- Beobachten ---------- */
+
+.beobachten {
+  padding: 12px 14px;
+}
+
+.objekte {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.objekt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 2px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.objekt:hover {
+  border-color: var(--gold);
+}
+
+.objekt[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: rgba(232, 189, 90, 0.14);
+}
+
+.objekt-name {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.objekt-art {
+  color: var(--text-leise);
+  font-size: 10px;
+  text-align: center;
+}
+
+.luft {
+  margin: 10px 0;
+}
+
+.luft-titel {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.luft-knoepfe {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.luft-knopf {
+  padding: 4px 2px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-leise);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.luft-knopf[aria-pressed="true"] {
+  border-color: var(--akzent);
+  color: var(--text);
+  background: rgba(124, 196, 255, 0.14);
+}
+
+.durchschauen {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--gold);
+  color: #1d1606;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.durchschauen kbd {
+  border-color: rgba(29, 22, 6, 0.4);
+  background: rgba(255, 255, 255, 0.35);
+  color: #1d1606;
+}
+
+.bau-hinweis.klein {
+  font-size: 11px;
+}
+
+/* Name am Himmel neben der Markierung */
+.himmel-schild {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: var(--leiste);
+  color: var(--gold);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.himmel-schild[hidden] {
+  display: none;
+}
+
+/* Während des Flugs ins Okular tritt die Bedienung zurück */
+.im-okular .seite,
+.im-okular .ansicht,
+.im-okular .licht,
+.im-okular .karte,
+.im-okular .schilder {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+/* ---------- Blick durchs Okular ---------- */
+
+.okular-blick {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 14px;
+  padding: 18px;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.okular-blick[hidden] {
+  display: none;
+}
+
+.okular-blick.an {
+  opacity: 1;
+}
+
+.ok-kopf {
+  grid-row: 1 / 3;
+  overflow-y: auto;
+  color: var(--text-leise);
+  font-size: 13px;
+}
+
+.ok-name {
+  margin: 0 0 4px;
+  color: var(--gold);
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.ok-art {
+  margin: 0 0 10px;
+}
+
+.ok-zahlen {
+  margin: 0 0 14px;
+  color: var(--text);
+  font-family: var(--schrift-mono);
+  font-size: 12px;
+}
+
+.ok-achte {
+  padding: 8px 10px;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  background: rgba(232, 189, 90, 0.08);
+}
+
+.ok-achte strong {
+  color: var(--gold);
+}
+
+.ok-achte p {
+  margin: 2px 0 0;
+  color: var(--text);
+}
+
+.ok-feld {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.okular-blick.bild .ok-feld {
+  opacity: 1;
+  transform: none;
+}
+
+.ok-leinwand {
+  border-radius: 50%;
+}
+
+.ok-feld.untereinander {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ok-lupe {
+  margin: 0;
+  text-align: center;
+}
+
+.ok-lupe canvas {
+  display: block;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #000;
+}
+
+.ok-lupe figcaption {
+  margin-top: 6px;
+  color: var(--gold);
+  font-size: 12px;
+  cursor: help;
+}
+
+.ok-unten {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 22px;
+}
+
+.ok-reihe-titel {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-leise);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ok-knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.ok-knopf {
+  padding: 4px 8px;
+  border: 1px solid #2a3442;
+  border-radius: 6px;
+  background: #0c121c;
+  color: var(--text-leise);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ok-knopf:hover {
+  color: var(--text);
+}
+
+.ok-knopf[aria-pressed="true"] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.ok-zurueck {
+  margin-left: auto;
+  padding: 8px 16px;
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  background: #0c121c;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ok-ehrlich {
+  flex-basis: 100%;
+  margin: 0;
+  color: #6c7a8c;
+  font-size: 11px;
+}
+
+/* ---------- Schmale Fenster ---------- */
+
+@media (max-width: 760px) {
+  .okular-blick {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .ok-kopf {
+    grid-row: auto;
+  }
+
+  .ok-achte {
+    display: none;
+  }
+
+  .ok-feld {
+    min-height: 480px;
+  }
+
+  .ok-zurueck {
+    margin-left: 0;
+  }
+}

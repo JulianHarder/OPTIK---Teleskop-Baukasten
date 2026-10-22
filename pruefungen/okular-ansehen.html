@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Prüfung: Okularbilder nebeneinander</title>
+  <style>
+    body { margin: 0; padding: 10px; background: #0a1020; color: #cdd8e6; font: 12px system-ui, sans-serif; }
+    .raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    figure { margin: 0; }
+    canvas { width: 100%; display: block; }
+    figcaption { margin-top: 3px; }
+  </style>
+</head>
+<body>
+  <!--
+    Zeigt den Okular-Blick für mehrere Teleskope und Objekte nebeneinander.
+    Öffnen per Doppelklick oder mit pruefungen/ansicht.sh (für Screenshots).
+    Hash wählt den Satz: #saturn, #epsilon, #m13, #alle (Vorgabe)
+  -->
+  <div class="raster" id="raster"></div>
+
+  <script src="../js/kern/Vektor.js"></script>
+  <script src="../js/kern/Format.js"></script>
+  <script src="../js/kern/Zufall.js"></script>
+  <script src="../js/physik/Optik.js"></script>
+  <script src="../js/physik/Sehen.js"></script>
+  <script src="../js/daten/himmel.js"></script>
+  <script src="../js/okular/Objekte.js"></script>
+  <script src="../js/okular/Okularblick.js"></script>
+  <script>
+    (function (O) {
+      function objekt(id) { return O.HIMMEL.objekte.find(function (o) { return o.id === id; }); }
+      var saetze = {
+        saturn: [
+          ['saturn', 100, 900, 6, 0.8, 'lupe'], ['saturn', 200, 1200, 6, 0.8, 'lupe'], ['saturn', 300, 1500, 6, 0.8, 'lupe'], ['saturn', 200, 1200, 6, 3, 'lupe']
+        ],
+        epsilon: [
+          ['epsilonlyrae', 100, 900, 25, 0.8, 'lupe'], ['epsilonlyrae', 100, 900, 6, 0.8, 'lupe'], ['epsilonlyrae', 200, 1200, 6, 0.8, 'lupe'], ['epsilonlyrae', 200, 1200, 6, 3, 'lupe']
+        ],
+        m13: [
+          ['m13', 100, 900, 15, 1.5], ['m13', 200, 1200, 15, 1.5], ['m13', 300, 1500, 15, 1.5], ['m13', 400, 1800, 15, 1.5]
+        ],
+        alle: [
+          ['saturn', 200, 1200, 25, 1.5, 'lupe'], ['saturn', 200, 1200, 6, 0.8, 'lupe'], ['jupiter', 200, 1200, 10, 1.5, 'lupe'], ['mond', 200, 1200, 25, 1.5],
+          ['mond', 200, 1200, 8, 1.5, 'lupe'], ['albireo', 200, 1200, 25, 1.5, 'lupe'], ['epsilonlyrae', 200, 1200, 6, 0.8, 'lupe'], ['m13', 200, 1200, 15, 1.5]
+        ]
+      };
+      // #messung: Kontrast der Cassini-Teilung und Trennung von ε Lyrae als Zahlen
+      if (location.hash === '#messung') {
+        var pre = document.createElement('pre');
+        pre.id = 'meldungen';
+        var saturn = objekt('saturn');
+        var k = saturn.durchmesserBs / 2 / saturn.aequatorKm;
+        function hellBei(e, rKm) {
+          var x = Math.round(e.n / 2 + rKm * k / e.bsProPx);
+          var y = Math.round(e.n / 2);
+          var summe = 0;
+          for (var d = -1; d <= 1; d++) summe += e.kanaele[1][(y + d) * e.n + x];
+          return summe / 3;
+        }
+        [[100, 900], [200, 1200], [300, 1500]].forEach(function (t) {
+          [0.8, 1.5, 3].forEach(function (luft) {
+            var c = document.createElement('canvas');
+            c.width = c.height = 420;
+            var e = O.Okularblick.rendere(c, { objekt: saturn, D: t[0], f: t[1], okularMm: 6, luftBs: luft }, true);
+            var cassini = hellBei(e, (saturn.ringeKm.cassini[0] + saturn.ringeKm.cassini[1]) / 2);
+            var ringe = (hellBei(e, 112000) + hellBei(e, 128000)) / 2;
+            pre.textContent += 'Saturn ' + t[0] + ' mm, Luft ' + luft + '″, ' + Math.round(e.vergroesserung) +
+              '×: Cassini-Kontrast ' + Math.round((1 - cassini / ringe) * 100) + ' %\n';
+          });
+        });
+        document.body.appendChild(pre);
+        return;
+      }
+      var satz = saetze[location.hash.slice(1)] || saetze.alle;
+      var raster = document.getElementById('raster');
+      O.pruefErgebnisse = [];
+      satz.forEach(function (s) {
+        var fig = document.createElement('figure');
+        var c = document.createElement('canvas');
+        c.width = c.height = 420;
+        fig.appendChild(c);
+        var e = O.Okularblick.rendere(c, { objekt: objekt(s[0]), D: s[1], f: s[2], okularMm: s[3], luftBs: s[4], fokusWinkel: Math.PI / 4 }, s[5] === 'lupe');
+        O.pruefErgebnisse.push(e);
+        var cap = document.createElement('figcaption');
+        cap.textContent = s[0] + ' · ' + s[1] + '/' + s[2] + ' · ' + s[3] + ' mm · ' + Math.round(e.vergroesserung) +
+          '× · Luft ' + s[4] + '″ · ' + (s[5] ? 'Lupe ' + (e.ausschnittGrad * 60).toFixed(1) + '′' : 'Feld ' + e.feldGrad.toFixed(2) + '°') + ' · Sterne ' + e.sterneSichtbar;
+        fig.appendChild(cap);
+        raster.appendChild(fig);
+      });
+    })(globalThis.OPTIK);
+  </script>
+</body>
+</html>

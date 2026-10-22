@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/leisten.css">
   <link rel="stylesheet" href="css/karten.css">
   <link rel="stylesheet" href="css/seite.css">
+  <link rel="stylesheet" href="css/okular.css">
 </head>
 <body>
 
@@ -25,6 +26,7 @@
       <div class="teleskop-zeile" id="teleskop-zeile"></div>
       <button type="button" class="bauen-knopf" id="bauen-knopf" aria-expanded="false"></button>
     </header>
+    <section class="beobachten leiste" id="beobachten" aria-label="Beobachten"></section>
     <section class="bauen leiste" id="bauen" aria-label="Selbst bauen"></section>
     <section class="datenblatt leiste" id="datenblatt" aria-label="Datenblatt"></section>
     <details class="fuss leiste" id="fuss">
@@ -43,6 +45,8 @@
 
   <nav class="ansicht leiste" id="ansicht" aria-label="Ansicht"></nav>
 
+  <section class="okular-blick" id="okular-blick" aria-label="Blick durchs Okular" hidden></section>
+
 
   <!--
     Klassische Skripte in fester Reihenfolge – keine ES-Module, weil
@@ -58,6 +62,7 @@
   <script src="js/daten/texte.js"></script>
   <script src="js/daten/teile.js"></script>
   <script src="js/daten/bauarten.js"></script>
+  <script src="js/daten/himmel.js"></script>
 
   <!-- Kern -->
   <script src="js/kern/Vektor.js"></script>
@@ -73,6 +78,7 @@
   <script src="js/physik/Flaeche.js"></script>
   <script src="js/physik/Optik.js"></script>
   <script src="js/physik/Kennzahlen.js"></script>
+  <script src="js/physik/Sehen.js"></script>
 
   <!-- Szene -->
   <script src="js/szene/Material.js"></script>
@@ -93,6 +99,10 @@
   <script src="js/licht/Strahlenbild.js"></script>
   <script src="js/licht/Lichtpulse.js"></script>
 
+  <!-- Okular-Blick -->
+  <script src="js/okular/Objekte.js"></script>
+  <script src="js/okular/Okularblick.js"></script>
+
   <!-- Oberfläche -->
   <script src="js/ui/Oberflaeche.js"></script>
   <script src="js/ui/Ansicht.js"></script>
@@ -100,6 +110,8 @@
   <script src="js/ui/Licht.js"></script>
   <script src="js/ui/Konfigurator.js"></script>
   <script src="js/ui/Datenblatt.js"></script>
+  <script src="js/ui/Beobachten.js"></script>
+  <script src="js/ui/Okularansicht.js"></script>
 
   <!-- Einstieg -->
   <script src="js/main.js"></script>

@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (22.10.2026)
 
-**Fertig: Etappen 1 bis 4.**
+**Fertig: Etappen 1 bis 5.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -58,8 +58,18 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    im Browser gemerkt (`kern/Speicher.js`, `optik.stand.v1`). Auf dem
    Handy sind Bauen und Datenblatt hinter dem Knopf „Bauen“.
 
-Als Nächstes: **Etappe 5** – Ausrichten und Durchschauen (Objekt wählen,
-Teleskop schwenkt hin, Flug ins Okular, Okular-Blick).
+5. **Ausrichten und Durchschauen** – Leiste „Beobachten“ (6 Objekte aus
+   `js/daten/himmel.js`, Werte nachgesehen mit Quelle; Luft ruhig/normal/
+   unruhig). Objekt wählen → Teleskop schwenkt hin, Ring am Himmel, Schild
+   „zielt auf …“ vor der Öffnung. `O` / „Durchschauen“: Flug ins Okular,
+   Okular-Blick mit ganzem Feld **und Lupe** (`js/okular/`), Okular, Luft
+   und Objekt im Okular wechselbar, `Esc` zurück. Physik in
+   `physik/Sehen.js` (Unschärfe aus Beugung + Luft, Flächenhelligkeit,
+   Grenzgröße). Prüfseite `pruefungen/okular-ansehen.html` (#alle,
+   #saturn, #epsilon, #m13, #messung).
+
+Als Nächstes: **Etappe 6** – Linsenfernrohre (Refraktor und Galilei,
+Brechung und Glas, Farbfehler, Achromat).
 
 ### Wo vom Plan abgewichen wurde
 
@@ -101,6 +111,25 @@ Teleskop schwenkt hin, Flug ins Okular, Okular-Blick).
   passt seine Grenzen der Öffnung an. Kennzahlen-Ampel warnt unter f/4,5.
 - **Okular wechseln baut nicht neu**, nur Licht und Zahlen – das Modell
   hängt nicht von der Okularbrennweite ab.
+- **Die Lupe im Okular-Blick ist dazugekommen.** Ein Bildschirm hat ~750
+  Pixel übers Feld, das Auge trennt ~3 100 (1′ bei 52°). Ohne Lupe wäre
+  Saturn bei 200-fach ein 20-Pixel-Fleck ohne Cassini-Teilung. Die Lupe
+  zeigt die Mitte mit 1 Pixel = 1 Augenpunkt; das Hauptbild zeigt, wie
+  klein das Objekt im Feld wirkt.
+- **Helligkeit wie empfunden, nicht linear:** Flächen mit der Wurzel der
+  Flächenhelligkeit (Stevens-Gesetz), Sterne nach Abstand zur Grenzgröße.
+  Der Mond ist bewusst viel zu dunkel (sonst nur weiß).
+- **Unschärfe als Gaußglocke** statt Beugungsbild per FFT – reicht zum
+  Vergleichen (Cassini-Kontrast: 100/200/300 mm bei ruhiger Luft
+  28/52/67 %, bei unruhiger Luft alle ≈ 0–5 %). Das FFT-Beugungslabor
+  steht auf der Ideenliste.
+- **Kriterium „60 mm sieht keine Cassini-Teilung“** nicht prüfbar – der
+  Konfigurator beginnt bei 100 mm. Geprüft: 100 mm schwach, 200 mm klar.
+- **Keine Kamerafahrt beim Zielen.** Ein Ziel 30° über dem Horizont passt
+  geometrisch nicht mit dem Teleskop in einen 40°-Blick. Stattdessen das
+  Schild „zielt auf …“ vor der Tubusöffnung.
+- **Himmelsrichtungen der Objekte sind ausgedacht** (nur, damit das
+  Teleskop sichtbar schwenkt) – die Leiste sagt das.
 - Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
   (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
 
@@ -171,6 +200,11 @@ Teleskop schwenkt hin, Flug ins Okular, Okular-Blick).
   `/home/julian/Programmieren/.claude/launch.json`), nicht für die Szene.
 
 ## Fallstricke
+- **Animation startet Animation:** `buehne.schritt` läuft über eine Kopie
+  der Liste – eine fertige Animation darf eine neue anlegen (Schwenken →
+  Flug ins Okular). Früher ging die neue dabei verloren.
+- **Okular-Blick und `requestAnimationFrame`:** für den kurzen Takt vor
+  dem Rechnen Timer benutzen; im kopflosen Chrome kommen kaum Bilder.
 - **`material.clone()` erbt `userData.geteilt`.** Wer eine Kopie für ein
   einzelnes Teleskop anlegt, muss `userData` neu setzen – sonst wird die
   Kopie beim Umbau nie freigegeben (`Dobson.entsorge`).

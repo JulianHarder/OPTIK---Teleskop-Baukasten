@@ -179,10 +179,21 @@
       };
       O.Dobson.richte(ergebnis, zustand.hoeheGrad, zustand.azimutGrad);
 
-      // Wie hoch liegt das Okular über dem Boden? (für das Datenblatt)
-      wurzel.updateMatrixWorld(true);
-      ergebnis.okularHoeheMm = teile.okular.localToWorld(new THREE.Vector3(0, 50, 0)).y;
+      ergebnis.okularHoeheMm = O.Dobson.okularHoehe(ergebnis);
       return ergebnis;
+    },
+
+    // Wie hoch liegt das Okular über dem Boden? (für das Datenblatt)
+    okularHoehe: function (t) {
+      t.wurzel.updateMatrixWorld(true);
+      return t.teile.okular.localToWorld(new THREE.Vector3(0, 50, 0)).y;
+    },
+
+    // Blickrichtung (Welt) für Höhe und Azimut – gleiche Drehung wie das Teleskop
+    richtung: function (hoeheGrad, azimutGrad) {
+      var h = hoeheGrad * Math.PI / 180;
+      var a = azimutGrad * Math.PI / 180;
+      return new THREE.Vector3(-Math.cos(h) * Math.sin(a), Math.sin(h), -Math.cos(h) * Math.cos(a));
     },
 
     // Teleskop auf Höhe (über dem Horizont) und Azimut drehen
