@@ -22,6 +22,7 @@
       ['Mausrad', 'zoomen'],
       ['Rechts ziehen', 'verschieben'],
       ['Klick', 'Teil erklären'],
+      ['L', 'Sternlicht'],
       ['F', 'ganzes Teleskop'],
       ['P', 'Bildrate']
     ],
@@ -33,6 +34,19 @@
       { id: 'zerlegt', name: 'Zerlegt' },
       { id: 'roentgen', name: 'Röntgen' }
     ],
+
+    licht: {
+      knopf: 'Licht',
+      titel: 'Sternlicht',
+      versatz: 'Stern neben der Mitte',
+      feld: 'Dieses Okular zeigt {feld}° Himmel – so breit wie {mond} Vollmonde.',
+      mitte: 'Der Stern steht im Bild. Sein ganzes Licht, das der Spiegel ' +
+        'einfängt, kommt im Okular an.',
+      rand: 'Der Stern steht am Bildrand: nur {anteil} % seines Lichts kommen ' +
+        'an, der Rest verfehlt den Fangspiegel. Der Rand wirkt dunkler.',
+      daneben: 'Der Stern ist nicht im Bild – sein Licht landet neben der ' +
+        'Öffnung des Okulars. Genau dafür hat das Teleskop den Sucher.'
+    },
 
     karte: {
       woraus: 'Woraus:',

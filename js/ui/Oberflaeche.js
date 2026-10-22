@@ -50,7 +50,7 @@
     },
 
     markiereAnsicht: function (nav, id) {
-      nav.querySelectorAll('.ansicht-knopf').forEach(function (k) {
+      nav.querySelectorAll('.ansicht-knopf[data-ansicht]').forEach(function (k) {
         k.setAttribute('aria-pressed', k.dataset.ansicht === id ? 'true' : 'false');
       });
     },

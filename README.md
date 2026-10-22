@@ -3,13 +3,13 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Das Teleskop in seine Teile zerlegt, mit Infokarte zum Fangspiegel](screenshots/etappe-2.png)
+![Aufgeschnittenes Teleskop mit dem Sternlicht im Tubus](screenshots/etappe-3.png)
 
-> **Im Aufbau.** Fertig sind Etappe 1 und 2 von 8: ein Dobson-Teleskop
-> 200/1200, das man von allen Seiten ansehen, aufschneiden und zerlegen
-> kann – mit einer Erklärung zu jedem Teil. Was noch kommt – Licht im Tubus,
-> selbst bauen, durchs Okular schauen, berühmte Teleskope – steht in
-> [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> **Im Aufbau.** Fertig sind Etappe 1 bis 3 von 8: ein Dobson-Teleskop
+> 200/1200 zum Ansehen, Aufschneiden und Zerlegen, mit einer Erklärung zu
+> jedem Teil – und dem Licht eines Sterns, das man durch den Tubus bis ins
+> Okular laufen sieht. Was noch kommt – selbst bauen, durchs Okular
+> schauen, berühmte Teleskope – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -27,10 +27,17 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | `1` `2` `3` `4` | ganz / aufgeschnitten / zerlegt / Röntgen |
 | Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |
 | `Esc` | Infokarte schließen |
+| `L` | Sternlicht an/aus; Regler: Stern neben die Mitte schieben |
 | `F` | ganzes Teleskop zeigen |
 | `P` | Bildrate ein/aus (steht still bei 0, wenn sich nichts bewegt) |
 
 ## Was daran stimmt
+
+Das Licht ist nicht aufgemalt: Jeder Strahl wird durch Parabolspiegel,
+Fangspiegel, Feldblende und Okular verfolgt. Alle treffen sich auf
+10⁻¹² mm genau im Brennpunkt, der Fangspiegel schattet 6,3 % der Fläche ab,
+und am Bildrand wird es dunkler, weil dort Licht den Fangspiegel verfehlt –
+wie bei echten Newton-Teleskopen.
 
 Das Modell ist vereinfacht, aber die Maße kommen aus der Optik: Der
 Hauptspiegel ist eine echte Parabel (bei 200/1200 am Rand 2,08 mm tief), der

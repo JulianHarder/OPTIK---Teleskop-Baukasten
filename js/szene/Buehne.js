@@ -52,6 +52,7 @@
     this.laeuft = false;     // Schleife aktiv
     this.festhalten = false; // Maus gedrückt
     this.animationen = [];   // laufende Übergänge (siehe animiere)
+    this.dauer = {};         // Dauerläufer, z. B. Lichtpulse (siehe dauerlauf)
     this.nachBild = [];      // Aufrufe nach jedem Bild (z. B. Beschriftungen)
     this.zaehler = { bilder: 0, seit: performance.now(), anzeige: null };
 
@@ -103,9 +104,10 @@
     // update() meldet true, solange die Kamera noch nachgleitet
     var bewegt = this.steuerung.update();
     var animiert = this.schritt(zeit);
-    if (bewegt || animiert || this.bedarf) this.zeichne();
+    var dauernd = this.dauerSchritt(zeit);
+    if (bewegt || animiert || dauernd || this.bedarf) this.zeichne();
 
-    if ((bewegt || animiert || this.festhalten) && !document.hidden) {
+    if ((bewegt || animiert || dauernd || this.festhalten) && !document.hidden) {
       requestAnimationFrame(this.bild.bind(this));
     } else {
       this.laeuft = false;
@@ -135,6 +137,28 @@
     this.animationen = this.animationen.filter(function (a) { return a.name !== name; });
     this.animationen.push({ name: name, dauer: dauerMs, fn: fn, start: null });
     this.zeichneBald();
+  };
+
+  // Etwas, das in jedem Bild weiterläuft, solange es angemeldet ist
+  // (fn(zeit)); fn = null meldet es ab. Nur für Dinge, die man wirklich
+  // ständig sehen soll – solange ein Dauerläufer da ist, steht die
+  // Schleife nie still.
+  Buehne.prototype.dauerlauf = function (name, fn) {
+    if (fn) this.dauer[name] = fn;
+    else delete this.dauer[name];
+    this.zeichneBald();
+  };
+
+  Buehne.prototype.dauerSchritt = function (zeit) {
+    var namen = Object.keys(this.dauer);
+    zeit = zeit || performance.now();
+    for (var i = 0; i < namen.length; i++) this.dauer[namen[i]](zeit);
+    return namen.length > 0;
+  };
+
+  // Laufende Animation abbrechen (wer sofort ans Ziel springt, braucht sie nicht mehr)
+  Buehne.prototype.stoppe = function (name) {
+    this.animationen = this.animationen.filter(function (a) { return a.name !== name; });
   };
 
   // Einen Schritt aller Animationen; true, solange noch eine läuft

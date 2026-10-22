@@ -201,7 +201,18 @@
 
 /* ---------- Schmale Fenster ---------- */
 
+/* Mit Sternlicht-Leiste unten rechts bleibt die Karte darüber */
+.licht-an .karte {
+  max-height: calc(100% - 2 * var(--abstand) - 260px);
+}
+
 @media (max-width: 600px) {
+  .licht-an .karte {
+    top: var(--abstand);
+    bottom: auto;
+    max-height: 40%;
+  }
+
   .karte {
     top: auto;
     bottom: 76px;

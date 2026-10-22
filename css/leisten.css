@@ -50,6 +50,84 @@
   outline-offset: 1px;
 }
 
+.ansicht-trenner {
+  width: 1px;
+  margin: 6px 4px;
+  background: var(--leiste-rand);
+}
+
+.licht-knopf[aria-pressed="true"] {
+  color: #1d1606;
+  background: var(--gold);
+}
+
+.licht-knopf[aria-pressed="true"] kbd {
+  border-color: rgba(29, 22, 6, 0.4);
+  background: rgba(255, 255, 255, 0.35);
+  color: #1d1606;
+}
+
+/* ---------- Sternlicht (unten rechts) ---------- */
+
+.licht {
+  right: var(--abstand);
+  bottom: var(--abstand);
+  width: 300px;
+  padding: 12px 14px;
+}
+
+.licht[hidden] {
+  display: none;
+}
+
+.licht-titel {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.licht-regler {
+  display: block;
+}
+
+.licht-regler-kopf {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.licht-wert {
+  font-family: var(--schrift-mono);
+}
+
+.licht-regler input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--gold);
+}
+
+.licht-feld {
+  margin: 8px 0;
+  color: var(--text-leise);
+  font-size: 12px;
+}
+
+.licht-status {
+  margin: 0;
+  padding: 6px 9px;
+  border-left: 3px solid var(--rand);
+  border-radius: 0 6px 6px 0;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+}
+
+.licht-status.gut { border-left-color: var(--gut); }
+.licht-status.warnung { border-left-color: var(--warnung); }
+.licht-status.schlecht { border-left-color: var(--schlecht); }
+
 /* Bedienhinweise: unten links, damit der Schalter die Mitte hat */
 .fuss {
   bottom: var(--abstand);
@@ -67,7 +145,33 @@
   }
 }
 
+/* Schalter und Sternlicht-Leiste passen nicht mehr nebeneinander */
+@media (max-width: 1340px) {
+  .licht {
+    bottom: 76px;
+  }
+
+  .licht-an .karte {
+    max-height: calc(100% - 2 * var(--abstand) - 330px);
+  }
+}
+
 @media (max-width: 600px) {
+  .licht {
+    left: var(--abstand);
+    width: auto;
+    bottom: 80px;
+    padding: 10px 12px;
+  }
+
+  .licht-feld {
+    display: none;
+  }
+
+  .ansicht-trenner {
+    display: none;
+  }
+
   .ansicht {
     left: var(--abstand);
     right: var(--abstand);

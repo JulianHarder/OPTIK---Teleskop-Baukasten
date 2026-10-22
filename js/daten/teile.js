@@ -128,7 +128,8 @@
       werte: function (m, z) {
         return [
           ['Brennweite', mm(z.okularMm)],
-          ['Vergrößerung', O.Format.zahl(m.f / z.okularMm, 0) + '-fach']
+          ['Vergrößerung', O.Format.zahl(m.f / z.okularMm, 0) + '-fach'],
+          ['Zeigt vom Himmel', O.Format.zahl(O.Optik.wahresFeldGrad(m, z.okularMm), 2) + '°']
         ];
       }
     },

@@ -58,7 +58,10 @@
     O.Oberflaeche.markiereAnsicht(nav, id);
   });
 
+  var licht = new O.Licht(buehne, teleskop, ansicht, document.getElementById('licht'), nav);
+
   // zum Nachsehen in der Konsole und für pruefungen/blicke.js
+  O.licht = licht;
   O.teleskop = teleskop;
   O.buehne = buehne;
   O.ansicht = ansicht;
@@ -95,6 +98,9 @@
     switch (e.key.toLowerCase()) {
       case 'f':
         ganzesTeleskop();
+        break;
+      case 'l':
+        licht.umschalten();
         break;
       case 'p':
         bildrate.hidden = !bildrate.hidden;

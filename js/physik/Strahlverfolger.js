@@ -17,10 +17,13 @@
   var AUSLAUF_MM = 1e4;   // falls ein Strahl quer zur Achse läuft
 
   // Verfolgt einen Strahl durch alle Elemente.
-  // grenzen = { zMin, zMax }: bis dahin wird der letzte Abschnitt verlängert.
-  // Ergebnis: { punkte: [...], ende: letzter Strahl, geschluckt: bool }
+  // grenzen = { zMin, zMax }: bis dahin wird der letzte Abschnitt verlängert,
+  //   oder { auslaufMm }: so weit geht es nach dem letzten Treffer weiter.
+  // Ergebnis: { punkte: [...], ende: letzter Strahl, geschluckt: bool,
+  //             getroffen: [Namen der getroffenen Elemente] }
   function verfolge(strahl, elemente, grenzen) {
     var punkte = [strahl.p];
+    var getroffen = [];
 
     for (var stoss = 0; stoss < MAX_STOESSE; stoss++) {
       var bestT = Infinity;
@@ -38,17 +41,19 @@
 
       var q = V.auf(strahl.p, strahl.d, bestT);
       punkte.push(q);
+      getroffen.push(bestEl.name);
       var neu = bestEl.wirke(strahl, q);
-      if (!neu) return { punkte: punkte, ende: strahl, geschluckt: true };
+      if (!neu) return { punkte: punkte, ende: strahl, geschluckt: true, getroffen: getroffen };
       strahl = neu;
     }
 
     punkte.push(auslauf(strahl, grenzen));
-    return { punkte: punkte, ende: strahl, geschluckt: false };
+    return { punkte: punkte, ende: strahl, geschluckt: false, getroffen: getroffen };
   }
 
-  // Letzter Abschnitt: bis zum Rand der Bank verlängern.
+  // Letzter Abschnitt: feste Länge oder bis zum Rand der Bank verlängern.
   function auslauf(strahl, grenzen) {
+    if (grenzen.auslaufMm !== undefined) return V.auf(strahl.p, strahl.d, grenzen.auslaufMm);
     var dz = strahl.d.z;
     var t = AUSLAUF_MM;
     if (dz > 1e-12) t = (grenzen.zMax - strahl.p.z) / dz;

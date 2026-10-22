@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (22.10.2026)
 
-**Fertig: Etappen 1 und 2.**
+**Fertig: Etappen 1 bis 3.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -37,8 +37,18 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Darüberfahren, Klick → **Infokarte** mit Wozu, Woraus, Zahlen zum
    aktuellen Teleskop und einem Fakt (`js/daten/teile.js`). `Esc` schließt.
 
-Als Nächstes: **Etappe 3** – Licht im Teleskop (Kegelschnittflächen,
-Spiegel im Strahlverfolger, Strahlen, Lichtpulse, Lichtkegel).
+3. **Licht im Teleskop** – Strahlverfolger mit Kegelschnitt-Spiegeln
+   (Parabel, Kugel, Hyperbel, Ebene), gedrehten Elementen (`Lage`,
+   `imRahmen`) und Feldblende (`physik/Flaeche.js`); das ganze Newton-System
+   in `Optik.elementeNewton`. Taste `L` / Knopf „Licht“: Sternlicht als
+   Linien, halbdurchsichtiger Lichtkegel, Glühen im Brennpunkt und
+   wandernde Lichtpulse (`js/licht/`); wechselt dazu auf „aufgeschnitten“,
+   beim Zerlegen aus. Leiste „Sternlicht“: Regler „Stern neben der Mitte“
+   (0–1,5°) mit Status *im Bild* / *am Rand (dunkler)* / *nicht im Bild* –
+   alles aus der Strahlverfolgung, nichts geschätzt.
+
+Als Nächstes: **Etappe 4** – Selbst bauen (Konfigurator für Öffnung,
+Brennweite, Okular; Modell und Licht bauen sich live um; Datenblatt).
 
 ### Wo vom Plan abgewichen wurde
 
@@ -56,6 +66,17 @@ Spiegel im Strahlverfolger, Strahlen, Lichtpulse, Lichtkegel).
   `Buehne.animiere()`, weil sie die Bildschleife am Laufen halten müssen.
 - **Ansicht.js liegt in `js/ui/`**, steuert aber auch Materialien und
   Positionen in der Szene; Dobson.js liefert dafür `zerlegeZiele()`.
+- **Der Fangspiegel vignettiert am Feldrand** (ab ~60 % des Feldradius
+  verfehlt Licht den Fangspiegel, am Rand kommen ~80 % an). Das ist echt
+  und gewollt – der Plan nahm volle Ausleuchtung an. Die Statusanzeige
+  sagt es („am Rand, dunkler“).
+- **Feldblende** als eigenes Element im Brennpunkt (52° scheinbares Feld);
+  sie entscheidet, ob der Stern im Bild ist – nicht die Okularlinse.
+- **Licht hält die Bildschleife am Laufen** (`buehne.dauerlauf`), solange
+  es sichtbar ist – die Pulse sollen sich bewegen. Aus beim Zerlegen,
+  beim Ausschalten und wenn der Tab im Hintergrund ist.
+- **Die Spinne ist kein optisches Element** – ihre 1-mm-Streben würden
+  kaum Strahlen treffen. Ihre Wirkung (Zacken) kommt im Okular-Blick.
 - Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
   (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
 
@@ -122,6 +143,16 @@ Spiegel im Strahlverfolger, Strahlen, Lichtpulse, Lichtkegel).
   `/home/julian/Programmieren/.claude/launch.json`), nicht für die Szene.
 
 ## Fallstricke
+- **Parabel ≠ atan(h/f):** Ein Parabolspiegel lenkt einen Strahl in Höhe h
+  um 2·atan(h/2f) ab. Prüfwerte mit der Kleinwinkel-Näherung liegen am
+  Rand um ~0,15 % daneben – das ist kein Rechenfehler.
+- **Kegelschnitt hat zwei Schalen:** Kugel und Hyperboloid schneidet ein
+  Strahl zweimal. Gültig ist nur das Stück am Scheitel, Bedingung
+  `(1 + k)·c·z < 1` (in `Flaeche.js`).
+- **Sofort-Wechsel muss laufende Übergänge abbrechen** (`buehne.stoppe`),
+  sonst zieht eine ältere Animation die Ansicht im nächsten Bild zurück.
+- **Markieren der Ansicht-Knöpfe** nur über `[data-ansicht]` – der
+  Licht-Knopf steht in derselben Leiste und hat seinen eigenen Zustand.
 - **Schnittebene und Mausstrahl:** Der Raycaster weiß nichts von
   `clippingPlanes` – er trifft auch weggeschnittene Flächen. `Ansicht.istSichtbar`
   filtert deshalb Treffer hinter der Ebene und fast durchsichtige Flächen.

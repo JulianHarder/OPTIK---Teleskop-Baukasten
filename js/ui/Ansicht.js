@@ -88,8 +88,12 @@
       if (t === 1) self.schilderZeigen();
     }
 
-    if (sofort) schritt(1);
-    else this.buehne.animiere('ansicht', DAUER_MS, schritt);
+    if (sofort) {
+      this.buehne.stoppe('ansicht');
+      schritt(1);
+    } else {
+      this.buehne.animiere('ansicht', DAUER_MS, schritt);
+    }
     this.kameraNachfuehren(sofort);
     O.Ereignisse.melde('ansicht-geaendert', modus);
   };
@@ -175,8 +179,12 @@
       steuerung.target.lerpVectors(vonZiel, nachZiel, t);
       k.position.lerpVectors(vonPos, nachPos, t);
     }
-    if (sofort) schritt(1);
-    else b.animiere('kamera', DAUER_MS, schritt);
+    if (sofort) {
+      b.stoppe('kamera');
+      schritt(1);
+    } else {
+      b.animiere('kamera', DAUER_MS, schritt);
+    }
   };
 
   // ---------- Schilder ----------
