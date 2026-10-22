@@ -169,6 +169,10 @@
       platte.userData.anker = new THREE.Vector3(radius * 0.7, FUESSE + BRETT, radius * 0.3);
 
       var ergebnis = {
+        bauart: 'dobson',
+        // geschnitten / durchsichtig werden nur Rohr und Spiegelzelle
+        randschicht: ['tubus', 'spiegelzelle'],
+        zerlegeZiele: function () { return O.Dobson.zerlegeZiele(ergebnis); },
         teile: teile,
         wurzel: wurzel,
         azimut: azimut,

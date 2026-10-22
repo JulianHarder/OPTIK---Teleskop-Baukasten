@@ -62,6 +62,7 @@
       abschattung: function (w) { return F.zahl(w * 100, 0) + ' %'; },
       maxVergroesserung: function (w) { return F.zahl(w, 0) + '-fach'; },
       tubuslaenge: function (w) { return F.zahl(w / 1000, 2) + ' m'; },
+      farbfehler: function (w) { return w < 0.05 ? 'keiner' : F.zahl(w, w < 10 ? 1 : 0) + '″'; },
       okularhoehe: function (w) { return F.zahl(w / 1000, 2) + ' m'; }
     };
 

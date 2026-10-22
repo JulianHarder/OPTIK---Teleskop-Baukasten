@@ -73,9 +73,10 @@
 
   // ---------- Sucherfernrohr ----------
 
-  function sucher(m, M) {
+  // zOrt: wo der Sucher auf dem Rohr sitzt (Vorgabe: kurz hinter der Öffnung)
+  function sucher(m, M, zOrt) {
     var dir = quer(m.fokusWinkel + 1.0);
-    var g = aufRohr(dir, m.rAussen, m.zVorne - 260);
+    var g = aufRohr(dir, m.rAussen, zOrt === undefined ? m.zVorne - 260 : zOrt);
     var y = 70;     // Höhe der Sucherachse über dem Tubus
 
     var fuss = T.netz(new THREE.BoxGeometry(32, 10, 110), M.kunststoff);

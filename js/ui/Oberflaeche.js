@@ -15,8 +15,10 @@
   function teleskopZeile(zustand) {
     var D = zustand.oeffnungMm;
     var f = zustand.brennweiteMm;
+    var bauart = O.TEXTE.bauarten[zustand.bauart];
+    if (zustand.bauart === 'refraktor') bauart += ' (' + O.TEXTE.objektive[zustand.objektiv] + ')';
     return O.TEXTE.teleskopZeile
-      .replace('{bauart}', O.TEXTE.bauarten[zustand.bauart])
+      .replace('{bauart}', bauart)
       .replace('{D}', D)
       .replace('{f}', f)
       .replace('{N}', O.Format.zahl(f / D, 1).replace(/,0$/, ''));

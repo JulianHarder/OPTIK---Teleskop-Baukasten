@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (22.10.2026)
 
-**Fertig: Etappen 1 bis 5.**
+**Fertig: Etappen 1 bis 6.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -68,8 +68,20 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Grenzgröße). Prüfseite `pruefungen/okular-ansehen.html` (#alle,
    #saturn, #epsilon, #m13, #messung).
 
-Als Nächstes: **Etappe 6** – Linsenfernrohre (Refraktor und Galilei,
-Brechung und Glas, Farbfehler, Achromat).
+6. **Linsenfernrohre** – Bauart-Wahl „Spiegel (Dobson) / Linse
+   (Refraktor)“, beim Refraktor Objektiv „Achromat / Eine Linse“, eigene
+   Vorlagen und Regelbereiche (`js/daten/bauarten.js`). Glas nach Sellmeier
+   (`physik/Glas.js`, BK7 und F2), brechende Flächen (`Flaeche.Brechend`,
+   Strahlen tragen ihre Wellenlänge), Refraktor-Optik mit Achromat aus der
+   Formel (`physik/Linsenoptik.js`). Modell: blaues Rohr, Taukappe, Linsen
+   in echter Form, Zahntrieb, Zenitspiegel, Rohrschellen, Montierungskopf,
+   Stativ (`modell/Refraktor.js`, `Stativ.js`). Licht in drei Farben,
+   **Brennpunkt-Lupe** oben rechts (30 mm, je Farbe die Randstrahlen).
+   Okular-Blick mit Farbhof und seitenverkehrtem Bild (Zenitspiegel).
+   Datenblatt-Zeile „Farbsaum“, Infokarten für die neuen Teile.
+
+Als Nächstes: **Etappe 7** – Berühmte Teleskope (dazu jetzt auch Galileis
+Fernrohr, das aus Etappe 6 hierher gewandert ist).
 
 ### Wo vom Plan abgewichen wurde
 
@@ -130,6 +142,19 @@ Brechung und Glas, Farbfehler, Achromat).
   Schild „zielt auf …“ vor der Tubusöffnung.
 - **Himmelsrichtungen der Objekte sind ausgedacht** (nur, damit das
   Teleskop sichtbar schwenkt) – die Leiste sagt das.
+- **Galileis Fernrohr wandert nach Etappe 7** (Plan: Etappe 6). Es braucht
+  ein Zerstreuungs-Okular und ein eigenes Modell; dort steht es neben den
+  anderen historischen Teleskopen.
+- **Brennpunkt-Lupe** ist dazugekommen: Die drei Farbkegel liegen nur
+  Millimeter auseinander und mischen sich im Hauptbild zu Weiß. Die Lupe
+  zeigt den Brennpunkt 30 mm breit, nur die äußersten Strahlen je Farbe
+  (Ebene 2) und die Feldblende – echter Maßstab, nichts übertrieben.
+- **Farbhof im Okular**: R- und B-Kanal halb scharf, halb als Hof mit
+  Durchmesser D·Δz/f² (Δz aus der Strahlverfolgung, ×0,8). Ganz unscharfe
+  Kanäle hätten Sternkerne grün und Planeten rosa gefärbt.
+- **Jedes Teleskop beschreibt sich selbst**: `bauart`, `randschicht`
+  (was geschnitten wird), `zerlegeZiele()`. Ansicht, Licht und main.js
+  fragen nur noch das Teleskop, nicht mehr `O.Dobson`.
 - Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
   (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
 
@@ -161,6 +186,13 @@ Brechung und Glas, Farbfehler, Achromat).
   Name ist der Schlüssel in `js/daten/teile.js`. Bauteil-Gruppen tragen in
   `userData.anker` den Punkt für ihr Schild (`Teile.anker()`).
   `teleskop.teile` (aus `Dobson.erzeuge`) listet alle Bauteil-Gruppen.
+- **Ein Teleskop-Objekt** (aus `Dobson.erzeuge` oder `Stativ.erzeuge`)
+  hat immer: `bauart, teile, wurzel, azimut, hoehe, tubus, masse,
+  okularHoeheMm, randschicht, zerlegeZiele()`; `teile.okular` mit +y als
+  Okularachse. Neue Bauarten müssen genau das liefern.
+- **Optik für beide Bauarten** über `O.Optik.masse(zustand)` und
+  `O.Optik.licht(m, zustand, feld)`. Licht-Ergebnis: `faecher` (Pfade mit
+  `farbe` oder null), `ringe: [{farbe, pfade}]`, `imBild`.
 - **Umbauen nur über `baueTeleskop()`** (main.js): altes Teleskop
   entsorgen, neues bauen, dann allen Abhängigen das neue geben
   (`auswahl.neuesTeleskop`, `new Ansicht`, `licht.neuesTeleskop`,
@@ -200,6 +232,13 @@ Brechung und Glas, Farbfehler, Achromat).
   `/home/julian/Programmieren/.claude/launch.json`), nicht für die Szene.
 
 ## Fallstricke
+- **Additive Farben werden weiß**: Rot, Gelb und Blau übereinander ergeben
+  Weiß. Farbunterschiede nur dort zeigen, wo sie sich trennen (Lupe).
+- **Strahlen tragen ihre Wellenlänge** (`strahl.lambda`). Wer ein neues
+  Element schreibt, muss sie im Ergebnis von `wirke` weitergeben
+  (`imRahmen` und der Strahlverfolger tun es, wenn sie fehlt).
+- **Linsenradien**: Optiker-Vorzeichen (R > 0 = Mittelpunkt in
+  Lichtrichtung, hier −z) → lokale Krümmung c = −1/R.
 - **Animation startet Animation:** `buehne.schritt` läuft über eine Kopie
   der Liste – eine fertige Animation darf eine neue anlegen (Schwenken →
   Flug ins Okular). Früher ging die neue dabei verloren.

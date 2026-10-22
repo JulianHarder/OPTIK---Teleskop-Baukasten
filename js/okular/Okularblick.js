@@ -49,7 +49,7 @@
   // Getrennte Faltung: erst Zeilen, dann Spalten (spart viel Rechenzeit)
   function verwische(kanal, n, sigma) {
     if (sigma < 0.3) return kanal;
-    var k = kern(Math.min(sigma, SIGMA_MAX_PX));
+    var k = kern(Math.min(sigma, SIGMA_MAX_PX * 3));
     var r = (k.length - 1) / 2;
     var hilf = new Float32Array(n * n);
     var x, y, j, s, q;
@@ -76,6 +76,22 @@
     return kanal;
   }
 
+  // Farbfehler (Refraktor): Rot und Blau haben ihren Brennpunkt vor bzw.
+  // hinter dem gelben, auf den scharf gestellt ist. Im Okular werden sie
+  // zu Scheibchen mit Durchmesser D·Δz/f² (Δz an den Linien C und F).
+  // Die Bildschirmkanäle R und B enthalten aber auch Licht nahe am Gelb,
+  // und für tiefes Rot und Blau ist das Auge wenig empfindlich: Nur ein
+  // Teil (HOF_ANTEIL) wird zum Farbhof, der Rest bleibt scharf. So
+  // bleibt ein Sternkern weiß, nur der Rand wird violett.
+  var FARBKANAL_ANTEIL = 0.8;
+  var HOF_ANTEIL = 0.5;
+
+  function farbUnschaerfeBs(m) {
+    if (!m.farbFokus) return [0, 0, 0];
+    var faktor = FARBKANAL_ANTEIL * m.D / (m.f * m.f) * 206264.8 / 4;    // Scheibe → σ
+    return [Math.abs(m.farbFokus.C) * faktor, 0, Math.abs(m.farbFokus.F) * faktor];
+  }
+
   // ---------- Sterne ----------
 
   // Wie hell ein Stern dem Auge erscheint: knapp über der Grenzgröße
@@ -88,7 +104,9 @@
     return -Math.log(1 - Math.min(0.985, v));     // vor der Sättigung in Schritt 6
   }
 
-  function stempel(kanaele, n, x, y, sigma, staerke, farbe) {
+  // Ein Stern als Gaußfleck in einem Farbkanal
+  function stempelKanal(kanal, n, x, y, sigma, staerke) {
+    if (!staerke) return;
     var r = Math.ceil(sigma * 3.5);
     var x0 = Math.max(0, Math.floor(x - r));
     var x1 = Math.min(n - 1, Math.ceil(x + r));
@@ -99,11 +117,7 @@
       for (var px = x0; px <= x1; px++) {
         var dx = px - x;
         var dy = py - y;
-        var w = staerke * Math.exp(-(dx * dx + dy * dy) / zwei);
-        var i = py * n + px;
-        kanaele[0][i] += w * farbe[0];
-        kanaele[1][i] += w * farbe[1];
-        kanaele[2][i] += w * farbe[2];
+        kanal[py * n + px] += staerke * Math.exp(-(dx * dx + dy * dy) / zwei);
       }
     }
   }
@@ -131,19 +145,25 @@
 
   /*
     canvas: Ziel (quadratisch, N × N Gerätepixel)
-    p = { objekt, D, f, okularMm, luftBs, fokusWinkel }
+    p = { objekt, D, f, okularMm, luftBs, bauart, objektiv }
     lupe: true = nur die Bildmitte, so fein wie das Auge sieht
     Ergebnis: Kennzahlen des Bilds (für die Anzeige und Prüfungen)
   */
   function rendere(canvas, p, lupe) {
     var n = canvas.width;
-    var m = O.Optik.masseNewton({ oeffnungMm: p.D, brennweiteMm: p.f });
+    var m = O.Optik.masse({ oeffnungMm: p.D, brennweiteMm: p.f, bauart: p.bauart, objektiv: p.objektiv });
+    var refraktor = m.bauart === 'refraktor';
     var ganzesFeldBs = O.Optik.wahresFeldGrad(m, p.okularMm) * 3600;
     var feldBs = lupe ? ganzesFeldBs * n / AUGE_PUNKTE_IM_FELD : ganzesFeldBs;
     var bsProPx = feldBs / n;
     var V = p.f / p.okularMm;
     var ap = p.D / V;
-    var sigmaPx = O.Sehen.sigmaBs(p.D, p.luftBs) / bsProPx;
+    var sigmaBs = O.Sehen.sigmaBs(p.D, p.luftBs);
+    var farbe = farbUnschaerfeBs(m);
+    var sigmaPx = farbe.map(function (s) { return Math.sqrt(sigmaBs * sigmaBs + s * s) / bsProPx; });
+    // Bildlage: Newton dreht um 180°, Linse + Zenitspiegel spiegelt seitenverkehrt
+    var sx = -1;
+    var sy = refraktor ? 1 : -1;
     var grenz = O.Sehen.grenzgroesse(p.D);
     // Empfundene Helligkeit wächst nur mit der Wurzel der Leuchtdichte
     // (Stevens-Gesetz) – und das Auge passt sich an. Halbe Austritts-
@@ -157,8 +177,7 @@
     // Die Lupe zeigt die interessanteste Stelle (bei Epsilon Lyrae ein Paar)
     var mitte = lupe ? O.Objekte.lupenMitte(p.objekt) : { x: 0, y: 0 };
     c.translate(n / 2, n / 2);
-    c.rotate(Math.PI);                         // Newton: Bild steht kopf
-    c.scale(1 / bsProPx, 1 / bsProPx);
+    c.scale(sx / bsProPx, sy / bsProPx);
     c.translate(-mitte.x, -mitte.y);
     O.Objekte.ausgedehnt(c, p.objekt, grenz);
     var roh = c.getImageData(0, 0, n, n).data;
@@ -171,8 +190,15 @@
       kanaele[2][i] = zuLinear[roh[i * 4 + 2]] * a;
     }
 
-    // 3. Unschärfe
-    kanaele.forEach(function (k) { verwische(k, n, sigmaPx); });
+    // 3. Unschärfe; beim Farbfehler ein scharfer Teil und ein Farbhof
+    var sigmaScharf = sigmaBs / bsProPx;
+    kanaele = kanaele.map(function (k, f) {
+      if (sigmaPx[f] - sigmaScharf < 0.3) return verwische(k, n, sigmaScharf);
+      var hof = verwische(new Float32Array(k), n, sigmaPx[f]);
+      var scharf = verwische(k, n, sigmaScharf);
+      for (var i = 0; i < n * n; i++) scharf[i] = scharf[i] * (1 - HOF_ANTEIL) + hof[i] * HOF_ANTEIL;
+      return scharf;
+    });
 
     // 4. Flächenhelligkeit und Himmel
     var gewinn = flaeche * BELICHTUNG * (O.Objekte.hell[p.objekt.id] || 1);
@@ -186,19 +212,30 @@
 
     // 5. Sterne
     var sichtbar = 0;
-    var zackenWinkel = (p.fokusWinkel || 0) + Math.PI;
+    var zackenWinkel = m.fokusWinkel + Math.PI;
     O.Objekte.sterne(p.objekt).forEach(function (st) {
       var w = sternWirkung(st.mag, grenz);
       if (!w) return;
       sichtbar++;
-      var x = n / 2 - (st.x - mitte.x) / bsProPx;     // um 180° gedreht
-      var y = n / 2 - (st.y - mitte.y) / bsProPx;
+      var x = n / 2 + sx * (st.x - mitte.x) / bsProPx;
+      var y = n / 2 + sy * (st.y - mitte.y) / bsProPx;
       var helligkeit = grenz - st.mag;
-      var sigma = Math.max(0.65, Math.min(SIGMA_MAX_PX, sigmaPx)) * (1 + 0.06 * Math.max(0, helligkeit - 5));
-      stempel(kanaele, n, x, y, sigma, w, st.farbe);
-      // nur sehr helle Sterne zeigen die Zacken deutlich
-      if (helligkeit > 8.5) {
-        zacken(kanaele, n, x, y, sigma * 3 * (helligkeit - 7.5), w * 0.14, st.farbe, zackenWinkel);
+      var wachsen = 1 + 0.06 * Math.max(0, helligkeit - 5);
+      var sigma = sigmaPx.map(function (s) {
+        return Math.max(0.65, Math.min(SIGMA_MAX_PX * 3, s)) * wachsen;
+      });
+      // Farbfehler: ein Teil bleibt im scharfen Kern, der Rest wird zum Hof
+      // (gleiche Lichtmenge auf mehr Fläche, also entsprechend dunkler)
+      for (var f = 0; f < 3; f++) {
+        var hofAnteil = sigma[f] > sigma[1] * 1.2 ? HOF_ANTEIL : 0;
+        stempelKanal(kanaele[f], n, x, y, sigma[1], w * (1 - hofAnteil) * st.farbe[f]);
+        if (hofAnteil) {
+          stempelKanal(kanaele[f], n, x, y, sigma[f], w * hofAnteil * Math.pow(sigma[1] / sigma[f], 2) * st.farbe[f]);
+        }
+      }
+      // nur sehr helle Sterne zeigen die Zacken der Spinne (nur Newton)
+      if (!refraktor && helligkeit > 8.5) {
+        zacken(kanaele, n, x, y, sigma[1] * 3 * (helligkeit - 7.5), w * 0.14, st.farbe, zackenWinkel);
       }
     });
 
@@ -234,7 +271,8 @@
       feldGrad: ganzesFeldBs / 3600,
       ausschnittGrad: feldBs / 3600,
       bsProPx: bsProPx,
-      unschaerfeBs: O.Sehen.sigmaBs(p.D, p.luftBs) * 2.3548,
+      unschaerfeBs: sigmaBs * 2.3548,
+      farbsaumBs: farbe.map(function (s) { return s * 4; }),
       grenzgroesse: grenz,
       sterneSichtbar: sichtbar,
       kanaele: kanaele,

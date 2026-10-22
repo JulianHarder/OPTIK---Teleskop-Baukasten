@@ -22,7 +22,12 @@
   <script src="../js/kern/Vektor.js"></script>
   <script src="../js/kern/Format.js"></script>
   <script src="../js/kern/Zufall.js"></script>
+  <script src="../js/physik/Glas.js"></script>
+  <script src="../js/physik/Flaeche.js"></script>
+  <script src="../js/physik/Paraxial.js"></script>
+  <script src="../js/physik/Strahlverfolger.js"></script>
   <script src="../js/physik/Optik.js"></script>
+  <script src="../js/physik/Linsenoptik.js"></script>
   <script src="../js/physik/Sehen.js"></script>
   <script src="../js/daten/himmel.js"></script>
   <script src="../js/okular/Objekte.js"></script>
@@ -39,6 +44,13 @@
         ],
         m13: [
           ['m13', 100, 900, 15, 1.5], ['m13', 200, 1200, 15, 1.5], ['m13', 300, 1500, 15, 1.5], ['m13', 400, 1800, 15, 1.5]
+        ],
+        // Spiegel, Achromat und Einzellinse gleicher Größe an Jupiter und Albireo
+        refraktor: [
+          ['jupiter', 100, 900, 8, 1.5, 'lupe', 'dobson'], ['jupiter', 100, 900, 8, 1.5, 'lupe', 'refraktor', 'achromat'],
+          ['jupiter', 100, 900, 8, 1.5, 'lupe', 'refraktor', 'einzel'], ['mond', 100, 900, 15, 1.5, 'lupe', 'refraktor', 'einzel'],
+          ['albireo', 80, 600, 15, 1.5, 'lupe', 'dobson'], ['albireo', 80, 600, 15, 1.5, 'lupe', 'refraktor', 'achromat'],
+          ['albireo', 80, 600, 15, 1.5, 'lupe', 'refraktor', 'einzel'], ['saturn', 120, 1000, 6, 0.8, 'lupe', 'refraktor', 'achromat']
         ],
         alle: [
           ['saturn', 200, 1200, 25, 1.5, 'lupe'], ['saturn', 200, 1200, 6, 0.8, 'lupe'], ['jupiter', 200, 1200, 10, 1.5, 'lupe'], ['mond', 200, 1200, 25, 1.5],
@@ -80,10 +92,11 @@
         var c = document.createElement('canvas');
         c.width = c.height = 420;
         fig.appendChild(c);
-        var e = O.Okularblick.rendere(c, { objekt: objekt(s[0]), D: s[1], f: s[2], okularMm: s[3], luftBs: s[4], fokusWinkel: Math.PI / 4 }, s[5] === 'lupe');
+        var e = O.Okularblick.rendere(c, { objekt: objekt(s[0]), D: s[1], f: s[2], okularMm: s[3], luftBs: s[4],
+          bauart: s[6] || 'dobson', objektiv: s[7] || 'achromat' }, s[5] === 'lupe');
         O.pruefErgebnisse.push(e);
         var cap = document.createElement('figcaption');
-        cap.textContent = s[0] + ' · ' + s[1] + '/' + s[2] + ' · ' + s[3] + ' mm · ' + Math.round(e.vergroesserung) +
+        cap.textContent = s[0] + ' · ' + (s[6] === 'refraktor' ? (s[7] === 'einzel' ? 'Einzellinse ' : 'Achromat ') : '') + s[1] + '/' + s[2] + ' · ' + s[3] + ' mm · ' + Math.round(e.vergroesserung) +
           '× · Luft ' + s[4] + '″ · ' + (s[5] ? 'Lupe ' + (e.ausschnittGrad * 60).toFixed(1) + '′' : 'Feld ' + e.feldGrad.toFixed(2) + '°') + ' · Sterne ' + e.sterneSichtbar;
         fig.appendChild(cap);
         raster.appendChild(fig);

@@ -144,7 +144,8 @@
       f: z.brennweiteMm,
       okularMm: z.okularMm,
       luftBs: this.beobachten.luftBs(),
-      fokusWinkel: this.teleskop ? this.teleskop.masse.fokusWinkel : Math.PI / 4
+      bauart: z.bauart,
+      objektiv: z.objektiv
     };
     var e = O.Okularblick.rendere(this.leinwand, p);
     O.Okularblick.rendere(this.lupe, p, true);

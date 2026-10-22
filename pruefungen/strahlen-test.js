@@ -15,8 +15,10 @@ var wurzel = pfad.join(__dirname, '..');
   'js/kern/Vektor.js',
   'js/physik/Paraxial.js',
   'js/physik/Strahlverfolger.js',
+  'js/physik/Glas.js',
   'js/physik/Flaeche.js',
   'js/physik/Optik.js',
+  'js/physik/Linsenoptik.js',
   'js/physik/Kennzahlen.js',
   'js/physik/Sehen.js',
   'js/daten/himmel.js',
@@ -329,6 +331,65 @@ console.log('\nSehen am Okular');
   pruefe('Cassini-Teilung bei 18″ Saturn: rund 0,7″', Math.abs(cassini - 0.72) < 0.02, cassini.toFixed(3) + '″');
   pruefe('Epsilon Lyrae (2,3″) ist mit 100 mm gerade trennbar (Rayleigh 1,38″), mit Luft 1,5″ knapp',
     S.sigmaBs(100, 1.5) * 2.3548 < 2.3, 'Halbwertsbreite ' + (S.sigmaBs(100, 1.5) * 2.3548).toFixed(2) + '″');
+})();
+
+console.log('\nGlas und Brechung');
+
+(function () {
+  var G = O.Glas;
+  pruefe('Sellmeier BK7 bei 587,6 nm: n = 1,5168', Math.abs(G.brechzahl('BK7', 587.56) - 1.5168) < 1e-4,
+    G.brechzahl('BK7', 587.56).toFixed(5));
+  pruefe('Sellmeier F2 bei 587,6 nm: n = 1,6200', Math.abs(G.brechzahl('F2', 587.56) - 1.62) < 1e-4,
+    G.brechzahl('F2', 587.56).toFixed(5));
+  pruefe('Abbe-Zahlen BK7 ≈ 64,2 und F2 ≈ 36,4',
+    Math.abs(G.abbe('BK7') - 64.17) < 0.2 && Math.abs(G.abbe('F2') - 36.37) < 0.2,
+    G.abbe('BK7').toFixed(2) + ' / ' + G.abbe('F2').toFixed(2));
+  pruefe('Blau wird stärker gebrochen als Rot', G.brechzahl('BK7', 486) > G.brechzahl('BK7', 656));
+
+  function platte(nPlus, nMinus) {
+    return O.Flaeche.imRahmen(new O.Lage(V.v(0, 0, 0), V.v(1, 0, 0), V.v(0, 1, 0), V.v(0, 0, 1)),
+      O.Flaeche.Brechend(0, 0, { r: 1000 }, nPlus, nMinus), 'flaeche');
+  }
+  var glas = G.funktion('BK7');
+  var luft = G.funktion(null);
+  // Snellius: Luft → Glas unter 30°
+  var e = O.Strahlverfolger.verfolge({ p: V.v(0, 0, 10), d: V.v(0, Math.sin(Math.PI / 6), -Math.cos(Math.PI / 6)) },
+    [platte(luft, glas)], { auslaufMm: 1 });
+  var sinNach = e.ende.d.y;
+  pruefe('Snellius: sin 30° = n · sin β', Math.abs(0.5 - G.brechzahl('BK7', 587.56) * sinNach) < 1e-12);
+  // Glas → Luft unter 45°: Grenzwinkel ist ≈ 41,2° → Totalreflexion
+  var t = O.Strahlverfolger.verfolge({ p: V.v(0, 0, 10), d: V.norm(V.v(0, 1, -1)) },
+    [platte(glas, luft)], { auslaufMm: 1 });
+  pruefe('Glas → Luft unter 45°: Totalreflexion (Grenzwinkel 41,2°)', t.ende.d.z > 0);
+})();
+
+console.log('\nLinsenfernrohr 80/600');
+
+(function () {
+  var LO = O.Linsenoptik;
+  var einzel = LO.masseRefraktor({ oeffnungMm: 80, brennweiteMm: 600, objektiv: 'einzel' });
+  var achro = LO.masseRefraktor({ oeffnungMm: 80, brennweiteMm: 600, objektiv: 'achromat' });
+  var dE = Math.abs(einzel.farbFokus.F - einzel.farbFokus.C);
+  var dA = Math.abs(achro.farbFokus.F - achro.farbFokus.C);
+  pruefe('Einzellinse: Blau und Rot liegen ≈ f / V auseinander (9,4 mm)', Math.abs(dE - 600 / O.Glas.abbe('BK7')) < 0.3,
+    dE.toFixed(2) + ' mm');
+  pruefe('Blauer Brennpunkt liegt näher am Objektiv', einzel.farbFokus.F > 0 && einzel.farbFokus.C < 0);
+  pruefe('Achromat: Rot und Blau fast im selben Punkt (< 0,3 mm)', dA < 0.3, dA.toFixed(3) + ' mm');
+  var sekundaer = Math.abs((achro.farbFokus.F + achro.farbFokus.C) / 2);
+  pruefe('Achromat: Gelb liegt etwas daneben – sekundäres Spektrum (≈ f / 2000)',
+    sekundaer > 0.1 && sekundaer < 0.6, sekundaer.toFixed(3) + ' mm, f / 2000 = 0,30 mm');
+
+  ['einzel', 'achromat'].forEach(function (art) {
+    var z = { oeffnungMm: 80, brennweiteMm: 600, okularMm: 25, objektiv: art };
+    var m = LO.masseRefraktor(z);
+    var l = LO.lichtRefraktor(m, z, 0);
+    pruefe(art + ': Stern in der Mitte – alles Licht im Okular', l.imBild === 1);
+    var aussen = LO.lichtRefraktor(m, z, O.Optik.wahresFeldGrad(m, 25) / 2 * 1.05);
+    pruefe(art + ': knapp außerhalb des Felds – nichts', aussen.imBild === 0);
+  });
+  pruefe('Farbsaum Einzellinse viel größer als Achromat',
+    LO.farbfehler(einzel).saumBs > 10 * LO.farbfehler(achro).saumBs,
+    LO.farbfehler(einzel).saumBs.toFixed(0) + '″ gegen ' + LO.farbfehler(achro).saumBs.toFixed(1) + '″');
 })();
 
 console.log(fehler ? '\n' + fehler + ' Prüfung(en) fehlgeschlagen.' : '\nAlles grün.');

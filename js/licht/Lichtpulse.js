@@ -18,7 +18,7 @@
     var p = pfad.punkte.map(function (q) { return new THREE.Vector3(q.x, q.y, q.z); });
     var bis = [0];
     for (var i = 1; i < p.length; i++) bis.push(bis[i - 1] + p[i].distanceTo(p[i - 1]));
-    return { punkte: p, bis: bis, laenge: bis[bis.length - 1], geschluckt: pfad.geschluckt };
+    return { punkte: p, bis: bis, laenge: bis[bis.length - 1], geschluckt: pfad.geschluckt, farbe: pfad.farbe };
   }
 
   // Ort nach Weg s; dazu die Helligkeit (am Anfang und freien Ende verblassen)
@@ -71,8 +71,10 @@
       var L = e.st.laenge;
       var s = ((weg + e.versatz * L) % L + L) % L;
       var h = ortBei(e.st, s, hilf);
+      var c = e.st.farbe;
       pos.setXYZ(i, hilf.x, hilf.y, hilf.z);
-      farbe.setXYZ(i, f.r * h, f.g * h, f.b * h);
+      if (c) farbe.setXYZ(i, c[0] * h, c[1] * h, c[2] * h);
+      else farbe.setXYZ(i, f.r * h, f.g * h, f.b * h);
     });
     pos.needsUpdate = true;
     farbe.needsUpdate = true;

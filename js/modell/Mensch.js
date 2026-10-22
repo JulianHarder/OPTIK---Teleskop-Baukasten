@@ -66,7 +66,7 @@
     // Neben das Teleskop stellen, Blick zum Teleskop
     stelle: function (mensch, teleskop) {
       var huelle = O.Dobson.huelle(teleskop);
-      var abstand = Math.max(650, huelle.radius * 0.7 + 250);
+      var abstand = Math.max(900, huelle.radius * 0.7 + 250);
       mensch.position.copy(SEITE).multiplyScalar(abstand).addScaledVector(HINTEN, abstand * 0.35);
       mensch.rotation.y = Math.atan2(-mensch.position.x, -mensch.position.z);
     }

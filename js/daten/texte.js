@@ -6,7 +6,12 @@
 
   O.TEXTE = {
     bauarten: {
-      dobson: 'Dobson'
+      dobson: 'Dobson',
+      refraktor: 'Linsenfernrohr'
+    },
+    objektive: {
+      achromat: 'Achromat',
+      einzel: 'eine Linse'
     },
 
     // Untertitel unter dem Namen, {D} {f} {N} werden ersetzt
@@ -38,21 +43,29 @@
 
     licht: {
       knopf: 'Licht',
+      lupe: 'Brennpunkt aus der Nähe · {mm} mm',
       titel: 'Sternlicht',
       versatz: 'Stern neben der Mitte',
       feld: 'Dieses Okular zeigt {feld}° Himmel – so breit wie {mond} Vollmonde.',
-      mitte: 'Der Stern steht im Bild. Sein ganzes Licht, das der Spiegel ' +
+      mitte: 'Der Stern steht im Bild. Alles Licht, das das Teleskop ' +
         'einfängt, kommt im Okular an.',
       rand: 'Der Stern steht am Bildrand: nur {anteil} % seines Lichts kommen ' +
-        'an, der Rest verfehlt den Fangspiegel. Der Rand wirkt dunkler.',
+        'an, der Rest geht unterwegs verloren. Der Rand wirkt dunkler.',
       daneben: 'Der Stern ist nicht im Bild – sein Licht landet neben der ' +
         'Öffnung des Okulars. Genau dafür hat das Teleskop den Sucher.'
     },
 
     bauen: {
       titel: 'Selbst bauen',
+      bauart: 'Bauart',
+      bauartSpiegel: 'Spiegel (Dobson)',
+      bauartLinse: 'Linse (Refraktor)',
+      objektiv: 'Objektiv',
+      objektivAchromat: 'Achromat (2 Linsen)',
+      objektivEinzel: 'Eine Linse',
       vorlagen: 'Vorlagen',
       oeffnung: 'Öffnung (Spiegel)',
+      oeffnungLinse: 'Öffnung (Linse)',
       brennweite: 'Brennweite',
       okular: 'Okular',
       zoll: '{zoll} Zoll',
@@ -103,6 +116,10 @@
         { id: 'tubuslaenge', name: 'Tubuslänge',
           erklaerung: 'Etwa so lang wie die Brennweite – das Licht läuft einmal ' +
             'hinunter zum Spiegel und fast ganz wieder hinauf.' },
+        { id: 'farbfehler', name: 'Farbsaum',
+          erklaerung: 'Linsen brechen Blau stärker als Rot – die Farben haben ' +
+            'verschiedene Brennpunkte. Ein Stern bekommt dann einen bunten Rand ' +
+            'dieser Größe. Spiegel haben das nicht.' },
         { id: 'okularhoehe', name: 'Okular über dem Boden',
           erklaerung: 'Bei der jetzigen Neigung. Liegt es höher als deine ' +
             'Augen, brauchst du einen Hocker oder eine Leiter.' }
@@ -115,7 +132,9 @@
         kurz: 'Sehr kurz – braucht gute Okulare und genaues Justieren.',
         luft: 'Feiner, als die Luft meist erlaubt (Luftunruhe meist um 1,5″).',
         grossesLoch: 'Großer Fangspiegel – Planeten zeigen etwas weniger Kontrast.',
-        leiter: 'Höher als deine Augen – du brauchst eine Leiter.'
+        leiter: 'Höher als deine Augen – du brauchst eine Leiter.',
+        farbeLeicht: 'Leichter Farbsaum an hellen Objekten wie Mond und Jupiter.',
+        farbeStark: 'Starke Farbsäume – jedes helle Objekt hat einen bunten Rand.'
       }
     },
 

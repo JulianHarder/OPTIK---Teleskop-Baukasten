@@ -12,7 +12,8 @@
   'use strict';
 
   O.zustand = {
-    bauart: 'dobson',
+    bauart: 'dobson',      // 'dobson' (Spiegel) oder 'refraktor' (Linse)
+    objektiv: 'achromat',  // beim Refraktor: 'achromat' oder 'einzel'
     oeffnungMm: 200,      // Durchmesser des Hauptspiegels
     brennweiteMm: 1200,   // Brennweite des Hauptspiegels
     okularMm: 25,         // Brennweite des Okulars

@@ -76,7 +76,7 @@
       buehne.szene.remove(teleskop.wurzel);
       O.Dobson.entsorge(teleskop);
     }
-    teleskop = O.Dobson.erzeuge(O.zustand);
+    teleskop = (O.zustand.bauart === 'refraktor' ? O.Stativ : O.Dobson).erzeuge(O.zustand);
     buehne.szene.add(teleskop.wurzel);
 
     beschriftung.leeren();

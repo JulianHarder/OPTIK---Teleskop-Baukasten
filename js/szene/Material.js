@@ -122,6 +122,20 @@
       innen: new THREE.MeshStandardMaterial({
         color: 0x1b1f26, roughness: 1, metalness: 0, side: THREE.BackSide
       }),
+      // dunkelblau lackiert – klassische Farbe von Linsenfernrohren
+      lackBlau: new THREE.MeshPhysicalMaterial({
+        color: 0x1d3a66, roughness: 0.35, metalness: 0.1,
+        clearcoat: 0.7, clearcoatRoughness: 0.2
+      }),
+      // Linsen: Kronglas leicht bläulich, Flintglas (mit Blei) leicht gelblich
+      kronglas: new THREE.MeshPhysicalMaterial({
+        color: 0xcfeaff, roughness: 0.04, metalness: 0, transparent: true, opacity: 0.38,
+        envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false
+      }),
+      flintglas: new THREE.MeshPhysicalMaterial({
+        color: 0xf1ecd2, roughness: 0.04, metalness: 0, transparent: true, opacity: 0.45,
+        envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false
+      }),
       kunststoff: new THREE.MeshStandardMaterial({ color: 0x18191c, roughness: 0.55, metalness: 0 }),
       eloxiert: new THREE.MeshStandardMaterial({ color: 0x25272b, roughness: 0.4, metalness: 0.6 }),
       gummi: new THREE.MeshStandardMaterial({ color: 0x101113, roughness: 0.9, metalness: 0 }),

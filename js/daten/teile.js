@@ -176,6 +176,109 @@
         'ein Tisch mit vier Beinen schon.'
     },
 
+    // ---------- Linsenfernrohr ----------
+
+    taukappe: {
+      name: 'Taukappe',
+      wozu: 'Das Rohrstück vor der Linse. Es hält Streulicht ab und vor ' +
+        'allem den Tau: Nachts kühlt die Linse ab und würde sonst beschlagen ' +
+        'wie eine Autoscheibe.',
+      woraus: 'Aluminium, innen mattschwarz, zum Mitnehmen oft abnehmbar.',
+      fakt: 'Spiegelteleskope beschlagen viel seltener – ihr Spiegel liegt ' +
+        'unten im Rohr, geschützt wie von einer sehr langen Taukappe.'
+    },
+
+    objektiv: {
+      name: 'Objektiv',
+      wozu: 'Statt eines Spiegels sammelt hier eine Linse das Licht und ' +
+        'bündelt es im Brennpunkt. Das Rohr ist dadurch geschlossen, und ' +
+        'nichts steht im Lichtweg – kein Fangspiegel, keine Spinne.',
+      woraus: 'Eine oder zwei Linsen in einer Fassung aus Metall.',
+      fakt: 'Linsen brechen Blau stärker als Rot. Deshalb hat ein Objektiv ' +
+        'aus nur einer Linse bunte Ränder. Die Lösung, den Achromat aus zwei ' +
+        'Glassorten, ließ sich John Dollond 1758 patentieren.',
+      werte: function (m) {
+        var f = O.Linsenoptik.farbfehler(m);
+        return [
+          ['Durchmesser (Öffnung)', mm(m.D)],
+          ['Brennweite', mm(m.f)],
+          ['Rot ↔ Blau im Brennpunkt', O.Format.mm(f.abstandMm, 2)]
+        ];
+      }
+    },
+
+    kronlinse: {
+      name: 'Sammellinse (Kronglas)',
+      wozu: 'Die dicke, nach außen gewölbte Linse. Sie bündelt das Licht – ' +
+        'und zerlegt es dabei leicht in Farben, wie ein Prisma.',
+      woraus: 'Kronglas (BK7): klar, bricht das Licht mäßig und zerstreut die ' +
+        'Farben wenig.',
+      fakt: 'Ihre Wölbung ist kaum zu sehen: Bei einem 80-mm-Objektiv ist die ' +
+        'Mitte nur wenige Millimeter dicker als der Rand.',
+      werte: function (m) {
+        var l = m.objektivFlaechen.linsen[0];
+        return [['Radius vorne', mm(Math.abs(l.R1))], ['Radius hinten', mm(Math.abs(l.R2))], ['Dicke', mm(l.t, 1)]];
+      }
+    },
+
+    flintlinse: {
+      name: 'Zerstreuungslinse (Flintglas)',
+      wozu: 'Die dünne zweite Linse direkt dahinter, nach innen gewölbt. Sie ' +
+        'nimmt etwas Brechkraft zurück, aber viel mehr von der Farbzerlegung ' +
+        '– danach treffen sich Rot und Blau im selben Punkt.',
+      woraus: 'Flintglas (F2), mit Blei: bricht stärker und zerstreut die ' +
+        'Farben fast doppelt so stark wie Kronglas.',
+      fakt: 'Die beiden Linsen sind miteinander verkittet. Zusammen heißen sie ' +
+        'Achromat – „ohne Farbe“. Ganz ohne geht es trotzdem nicht: Ein ' +
+        'schwacher violetter Saum bleibt (das sekundäre Spektrum).',
+      werte: function (m) {
+        var l = m.objektivFlaechen.linsen[1];
+        return [['Radius vorne', mm(Math.abs(l.R1))], ['Radius hinten', mm(Math.abs(l.R2))], ['Dicke', mm(l.t, 1)]];
+      }
+    },
+
+    zenitspiegel: {
+      name: 'Zenitspiegel',
+      wozu: 'Ein Spiegel unter 45° vor dem Okular. Er lenkt das Licht nach ' +
+        'oben, damit du nicht unter das Fernrohr kriechen musst, wenn es steil ' +
+        'nach oben zeigt.',
+      woraus: 'Ein flacher Spiegel oder ein Prisma in einem Gehäuse.',
+      fakt: 'Durch den Spiegel steht das Bild zwar aufrecht, ist aber ' +
+        'seitenverkehrt – wie in einem Badezimmerspiegel. Beim Newton steht es ' +
+        'dagegen auf dem Kopf.'
+    },
+
+    rohrschellen: {
+      name: 'Rohrschellen',
+      wozu: 'Zwei Ringe halten das Rohr. Unten verbindet sie eine Schiene, ' +
+        'die man in die Montierung einklemmt.',
+      woraus: 'Aluminium, innen mit Filz, damit der Lack keine Kratzer bekommt.',
+      fakt: 'Die Schiene heißt Prismenschiene – nach ihrem Querschnitt. Sie ' +
+        'ist bei vielen Herstellern gleich, deshalb passen fremde Teleskope ' +
+        'auf dieselbe Montierung.'
+    },
+
+    montierung: {
+      name: 'Montierung',
+      wozu: 'Der Kopf, an dem das Rohr hängt. Er dreht sich nach links und ' +
+        'rechts und kippt das Rohr nach oben und unten – wie die Rockerbox ' +
+        'beim Dobson.',
+      woraus: 'Aluminiumguss, mit Klemmschrauben für beide Achsen.',
+      fakt: 'Das Rohr sitzt seitlich neben dem Stativ. So stößt es nicht an ' +
+        'die Beine, wenn man genau nach oben schaut.'
+    },
+
+    stativ: {
+      name: 'Stativ',
+      wozu: 'Drei Beine bringen das Fernrohr auf Augenhöhe und stehen auch ' +
+        'auf unebenem Boden fest.',
+      woraus: 'Aluminiumrohre zum Ausziehen, dazwischen eine Ablage für ' +
+        'Okulare.',
+      fakt: 'Ein Fernrohr wackelt bei hoher Vergrößerung bei jeder Berührung. ' +
+        'Je schwerer und steifer das Stativ, desto schneller kommt das Bild ' +
+        'wieder zur Ruhe.'
+    },
+
     mensch: {
       name: 'Mensch zum Vergleich',
       wozu: 'Steht nur da, damit man sieht, wie groß das Teleskop wirklich ' +

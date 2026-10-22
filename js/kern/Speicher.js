@@ -27,9 +27,12 @@
       }
       if (!roh || typeof roh !== 'object') return null;
 
-      var B = O.BAUARTEN.dobson;
       var z = {};
+      if (roh.bauart === 'dobson' || roh.bauart === 'refraktor') z.bauart = roh.bauart;
+      if (roh.objektiv === 'achromat' || roh.objektiv === 'einzel') z.objektiv = roh.objektiv;
+      var B = O.BAUARTEN[z.bauart || 'dobson'];
       if (zahlIn(roh.oeffnungMm, B.oeffnung.min, B.oeffnung.max)) z.oeffnungMm = roh.oeffnungMm;
+      else if (z.bauart) { z.oeffnungMm = B.vorlagen[0].oeffnungMm; z.brennweiteMm = B.vorlagen[0].brennweiteMm; }
       if (zahlIn(roh.brennweiteMm, 100, B.brennweiteMax)) z.brennweiteMm = roh.brennweiteMm;
       if (B.okulare.indexOf(roh.okularMm) >= 0) z.okularMm = roh.okularMm;
       if (typeof roh.lichtAn === 'boolean') z.lichtAn = roh.lichtAn;
@@ -41,6 +44,8 @@
     sichere: function (zustand, ansicht) {
       try {
         localStorage.setItem(SCHLUESSEL, JSON.stringify({
+          bauart: zustand.bauart,
+          objektiv: zustand.objektiv,
           oeffnungMm: zustand.oeffnungMm,
           brennweiteMm: zustand.brennweiteMm,
           okularMm: zustand.okularMm,

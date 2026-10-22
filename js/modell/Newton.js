@@ -25,12 +25,13 @@
     g.add(T.netz(T.ringZ(m.rInnen - 3, m.rAussen + 3, m.zVorne - 28, m.zVorne, 96), M.kunststoff, 'tubus'));
     // blauer Zierstreifen und Beschriftung
     g.add(T.netz(T.ringZ(m.rAussen, m.rAussen + 0.6, m.zVorne - 70, m.zVorne - 58, 96), M.akzent, 'tubus'));
-    g.add(beschriftung(m));
+    g.add(beschriftung(m, m.zVorne - 110 - 180, '#1b2a44', 'N'));
     return T.benenne(g, 'tubus');
   }
 
-  // Schriftzug längs des Tubus, als Textur auf einem dünnen Mantel
-  function beschriftung(m) {
+  // Schriftzug längs des Tubus, als Textur auf einem dünnen Mantel.
+  // zMitte = Mitte des Schriftzugs auf der Achse, kuerzel: N (Newton), R (Refraktor)
+  function beschriftung(m, zMitte, farbe, kuerzel) {
     var c = document.createElement('canvas');
     c.width = 1024;
     c.height = 512;
@@ -46,11 +47,11 @@
     ctx.rotate(Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#1b2a44';
+    ctx.fillStyle = farbe;
     ctx.font = '700 64px system-ui, sans-serif';
     ctx.fillText(O.TEXTE.tubusSchrift.split('').join(' '), 0, -26);
     ctx.font = '500 34px system-ui, sans-serif';
-    ctx.fillText(O.TEXTE.tubusZusatz.replace('{D}', D).replace('{f}', f), 0, 34);
+    ctx.fillText(O.TEXTE.tubusZusatz.replace('N', kuerzel).replace('{D}', D).replace('{f}', f), 0, 34);
 
     var t = new THREE.CanvasTexture(c);
     t.encoding = THREE.sRGBEncoding;
@@ -61,7 +62,7 @@
     var mantel = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
       map: t, transparent: true, roughness: 0.4, depthWrite: false
     }));
-    mantel.position.z = m.zVorne - 110 - hoehe / 2;
+    mantel.position.z = zMitte;
     mantel.userData.teil = 'tubus';
     return mantel;
   }
@@ -190,6 +191,7 @@
   }
 
   O.Newton = {
+    beschriftung: beschriftung,
     // x-Abstand der Höhenräder von der Achse (die Rockerbox richtet sich danach)
     lagerX: function (m) { return m.rAussen + 62; },
     lagerRadius: function (m) { return m.rAussen * 0.92; },

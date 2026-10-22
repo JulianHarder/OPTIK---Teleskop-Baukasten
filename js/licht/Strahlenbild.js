@@ -3,7 +3,7 @@
   halbdurchsichtiger Lichtkegel aus dem Strahlenring und ein Glühen im
   Brennpunkt.
 
-  Alles kommt aus dem Strahlverfolger (physik/Optik.lichtNewton) – hier
+  Alles kommt aus dem Strahlverfolger (physik/Optik.licht) – hier
   wird nichts gerechnet, nur gezeichnet. Die Gruppe hängt im Tubus und
   liegt deshalb im selben Koordinatensystem wie die Physik.
 
@@ -24,16 +24,22 @@
     return 1;
   }
 
+  // Farbe eines Pfads: eigene (Refraktor: rot, gelb, blau) oder Sternlicht
+  function farbeVon(pfad) {
+    return pfad.farbe ? { r: pfad.farbe[0], g: pfad.farbe[1], b: pfad.farbe[2] } : FARBE;
+  }
+
   function linien(pfade, staerke) {
     var pos = [];
     var farbe = [];
     pfade.forEach(function (pfad) {
+      var f = farbeVon(pfad);
       for (var i = 0; i < pfad.punkte.length - 1; i++) {
         [i, i + 1].forEach(function (j) {
           var p = pfad.punkte[j];
           var h = helligkeit(pfad, j) * staerke * (i === 0 ? 0.6 : 1);
           pos.push(p.x, p.y, p.z);
-          farbe.push(FARBE.r * h, FARBE.g * h, FARBE.b * h);
+          farbe.push(f.r * h, f.g * h, f.b * h);
         });
       }
     });
@@ -48,14 +54,15 @@
 
   // Lichtkegel: Flächen zwischen benachbarten Strahlen des Rings, Abschnitt
   // für Abschnitt – aber nur, wo beide Strahlen denselben Weg genommen haben
-  function kegel(ring) {
+  function kegel(ring, deckkraft) {
     var pos = [];
     var farbe = [];
     function ecke(pfad, j, staerke) {
       var p = pfad.punkte[j];
       var h = helligkeit(pfad, j) * staerke;
+      var f = farbeVon(pfad);
       pos.push(p.x, p.y, p.z);
-      farbe.push(FARBE.r * h, FARBE.g * h, FARBE.b * h);
+      farbe.push(f.r * h, f.g * h, f.b * h);
     }
     for (var i = 0; i < ring.length; i++) {
       var a = ring[i];
@@ -73,7 +80,7 @@
     g.setAttribute('color', new THREE.Float32BufferAttribute(farbe, 3));
     return new THREE.Mesh(g, new THREE.MeshBasicMaterial({
       vertexColors: true, blending: THREE.AdditiveBlending, transparent: true,
-      opacity: 0.075, depthWrite: false, side: THREE.DoubleSide, toneMapped: false
+      opacity: deckkraft, depthWrite: false, side: THREE.DoubleSide, toneMapped: false
     }));
   }
 
@@ -120,13 +127,20 @@
     FARBE: FARBE,
     fleck: fleck,
 
-    // licht = Ergebnis von Optik.lichtNewton → THREE.Group
+    // licht = Ergebnis von Optik.licht → THREE.Group
     erzeuge: function (licht) {
       var g = new THREE.Group();
-      g.add(kegel(licht.ring));
-      g.add(linien(licht.faecher, 0.85));
-      g.add(linien(licht.ring, 0.18));
-      var bf = brennfleck(licht.faecher.concat(licht.ring));
+      // Mehrere Farben (Refraktor): jeder Kegel zarter, damit es zusammen
+      // nicht heller wird als ein Kegel beim Spiegel
+      var deck = 0.075 / Math.sqrt(licht.ringe.length);
+      var alleRinge = [];
+      licht.ringe.forEach(function (r) {
+        g.add(kegel(r.pfade, deck));
+        g.add(linien(r.pfade, 0.18));
+        alleRinge = alleRinge.concat(r.pfade);
+      });
+      g.add(linien(licht.faecher, licht.ringe.length > 1 ? 0.6 : 0.85));
+      var bf = brennfleck(licht.faecher.concat(alleRinge));
       if (bf) g.add(bf);
       g.traverse(function (o) { o.renderOrder = Math.max(o.renderOrder, 4); });
       return g;

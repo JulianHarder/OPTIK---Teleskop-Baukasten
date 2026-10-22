@@ -14,14 +14,14 @@
   Ein Wechsel blendet alle drei gleichzeitig vom Ist- zum Zielwert über.
   So geht auch ein Wechsel mitten im Übergang glatt.
 
-  Geschnitten und durchsichtig werden nur Tubus und Spiegelzelle – die
-  Optik im Inneren soll ja gerade sichtbar werden.
+  Geschnitten und durchsichtig wird nur die Hülle (teleskop.randschicht:
+  beim Dobson Tubus und Spiegelzelle, beim Refraktor Rohr, Taukappe,
+  Auszug und Zenitspiegel) – die Optik im Inneren soll ja sichtbar werden.
 */
 (function (O) {
   'use strict';
 
   var DAUER_MS = 1100;
-  var RANDSCHICHT = ['tubus', 'spiegelzelle'];   // was geschnitten / durchsichtig wird
   var ZIELE = {
     ganz: { schnitt: 0, zerlegt: 0, roentgen: 0 },
     aufgeschnitten: { schnitt: 1, zerlegt: 0, roentgen: 0 },
@@ -40,7 +40,7 @@
     this.ebene = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1e9);   // schneidet nichts
     this.schnittRichtung = new THREE.Vector3(1, 0, 0);               // im Tubus
     this.haeute = [];
-    this.ziele = O.Dobson.zerlegeZiele(teleskop);
+    this.ziele = teleskop.zerlegeZiele();
 
     this.ziele.forEach(function (z) {
       z.basis = z.objekt.position.clone();
@@ -54,7 +54,8 @@
     var kopien = {};
     var self = this;
     this.t.wurzel.traverse(function (n) {
-      if (!n.isMesh || RANDSCHICHT.indexOf(n.userData.teil) < 0) return;
+      // was geschnitten / durchsichtig wird, sagt das Teleskop selbst
+      if (!n.isMesh || self.t.randschicht.indexOf(n.userData.teil) < 0) return;
       var alt = n.material;
       if (!kopien[alt.uuid]) {
         var k = alt.clone();

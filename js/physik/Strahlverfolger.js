@@ -43,6 +43,7 @@
       punkte.push(q);
       getroffen.push(bestEl.name);
       var neu = bestEl.wirke(strahl, q);
+      if (neu && neu.lambda === undefined) neu.lambda = strahl.lambda;   // Farbe bleibt
       if (!neu) return { punkte: punkte, ende: strahl, geschluckt: true, getroffen: getroffen };
       strahl = neu;
     }

@@ -47,6 +47,7 @@
     var laenge = zVorne - zHinten;
 
     return {
+      bauart: 'dobson',
       D: D,
       f: f,
       rInnen: rInnen,
@@ -168,6 +169,8 @@
 
     var faecher = start.faecher.map(verfolge);
     var ring = start.ring.map(verfolge);
+    // Spiegel kennen keine Farbfehler: ein Strahl steht für alle Farben
+    faecher.concat(ring).forEach(function (p) { p.farbe = null; });
 
     // Wie viel vom Licht, das der Hauptspiegel einfängt, kommt durchs Okular?
     var gefangen = 0;
@@ -178,7 +181,12 @@
       if (p.getroffen.indexOf('okular') >= 0) durch++;
     });
 
-    return { faecher: faecher, ring: ring, imBild: gefangen ? durch / gefangen : 0 };
+    return {
+      faecher: faecher,
+      ring: ring,
+      ringe: [{ farbe: null, pfade: ring }],
+      imBild: gefangen ? durch / gefangen : 0
+    };
   }
 
   // Wahres Gesichtsfeld in Grad: Feldblende geteilt durch Brennweite
@@ -186,7 +194,20 @@
     return 2 * Math.atan(feldblendeMm(okularMm) / 2 / m.f) * 180 / Math.PI;
   }
 
+  // Für beide Bauarten: Maße und Licht. zustand.bauart entscheidet.
+  function masse(zustand) {
+    return zustand.bauart === 'refraktor' ? O.Linsenoptik.masseRefraktor(zustand) : masseNewton(zustand);
+  }
+
+  function licht(m, zustand, feldGrad) {
+    return m.bauart === 'refraktor'
+      ? O.Linsenoptik.lichtRefraktor(m, zustand, feldGrad)
+      : lichtNewton(m, zustand, feldGrad);
+  }
+
   O.Optik = {
+    masse: masse,
+    licht: licht,
     FANGSPIEGEL_MM: FANGSPIEGEL_MM,
     SCHEINBARES_FELD_GRAD: SCHEINBARES_FELD_GRAD,
     masseNewton: masseNewton,

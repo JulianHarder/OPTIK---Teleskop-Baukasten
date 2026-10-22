@@ -3,15 +3,15 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Blick durchs Okular auf Saturn: das ganze Feld und die Lupe](screenshots/etappe-5.png)
+![Ein Linsenfernrohr mit nur einer Linse: Rot und Blau haben verschiedene Brennpunkte](screenshots/etappe-6.png)
 
-> **Im Aufbau.** Fertig sind Etappe 1 bis 5 von 8: ein Dobson-Teleskop zum
-> Ansehen, Aufschneiden, Zerlegen und Selbstbauen, mit dem Licht eines
-> Sterns, das man bis ins Okular laufen sieht – und man kann hindurch-
-> schauen: auf Saturn, Jupiter, den Mond, Doppelsterne und einen
-> Kugelsternhaufen, so wie genau dieses Teleskop sie zeigen würde. Was noch
-> kommt – Linsenfernrohre, berühmte Teleskope – steht in
-> [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> **Im Aufbau.** Fertig sind Etappe 1 bis 6 von 8: ein Spiegelteleskop
+> (Dobson) und ein Linsenfernrohr zum Ansehen, Aufschneiden, Zerlegen und
+> Selbstbauen, mit dem Licht eines Sterns, das man bis ins Okular laufen
+> sieht – und zum Hindurchschauen, so wie genau dieses Teleskop den
+> Himmel zeigen würde. Beim Linsenfernrohr sieht man, warum eine einzelne
+> Linse bunte Ränder macht und wie zwei Glassorten das beheben. Was noch
+> kommt – berühmte Teleskope – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -44,6 +44,12 @@ Fangspiegel, Feldblende und Okular verfolgt. Alle treffen sich auf
 10⁻¹² mm genau im Brennpunkt, der Fangspiegel schattet 6,3 % der Fläche ab,
 und am Bildrand wird es dunkler, weil dort Licht den Fangspiegel verfehlt –
 wie bei echten Newton-Teleskopen.
+
+Beim Linsenfernrohr wird jeder Strahl in drei Farben durch echtes Glas
+gerechnet (Sellmeier-Formel, Kron- und Flintglas): Bei einer einzelnen
+Linse liegen der rote und der blaue Brennpunkt 9,3 mm auseinander (die
+Faustregel f/V sagt 9,4 mm), beim Achromat, aus der Formel berechnet, nur
+0,15 mm. Im Okular wird daraus ein violetter Saum.
 
 Der Blick durchs Okular rechnet mit echten Winkelgrößen (Saturn 18″, die
 Cassini-Teilung 0,7″), mit der Unschärfe aus Beugung und Luftunruhe, der

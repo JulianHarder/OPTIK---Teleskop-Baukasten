@@ -56,8 +56,20 @@
         wert: abschattung,
         ampel: abschattung > 0.35 ? ['warnung', 'grossesLoch'] : [null, null]
       },
-      maxVergroesserung: { wert: 2 * D, ampel: [null, null], faustformel: true }
+      maxVergroesserung: { wert: 2 * D, ampel: [null, null], faustformel: true },
+      farbfehler: farbfehler(m, D)
     };
+  }
+
+  // Farbsaum (Refraktor) im Verhältnis zum Beugungsscheibchen: kleiner
+  // als das Scheibchen fällt er nicht auf, ein Vielfaches davon schon.
+  // Spiegel kennen keinen Farbfehler.
+  function farbfehler(m, D) {
+    if (!m.farbFokus || !O.Linsenoptik) return { wert: 0, ampel: ['gut', null] };
+    var saum = O.Linsenoptik.farbfehler(m).saumBs;
+    var verhaeltnis = saum / (1.029 * GRUEN_MM / D * BS_PRO_RAD);
+    var ampel = verhaeltnis < 3 ? ['gut', null] : verhaeltnis < 30 ? ['warnung', 'farbeLeicht'] : ['schlecht', 'farbeStark'];
+    return { wert: saum, ampel: ampel };
   }
 
   O.Kennzahlen = {
