@@ -32,6 +32,7 @@
     r.shadowMap.enabled = true;
     r.shadowMap.type = THREE.PCFSoftShadowMap;
     r.autoClear = false;
+    r.localClippingEnabled = true;   // für die Ansicht „aufgeschnitten“
     behaelter.appendChild(r.domElement);
 
     this.szene = new THREE.Scene();
@@ -50,6 +51,8 @@
     this.bedarf = true;      // ein Bild ist bestellt
     this.laeuft = false;     // Schleife aktiv
     this.festhalten = false; // Maus gedrückt
+    this.animationen = [];   // laufende Übergänge (siehe animiere)
+    this.nachBild = [];      // Aufrufe nach jedem Bild (z. B. Beschriftungen)
     this.zaehler = { bilder: 0, seit: performance.now(), anzeige: null };
 
     var self = this;
@@ -96,12 +99,13 @@
     requestAnimationFrame(this.bild.bind(this));
   };
 
-  Buehne.prototype.bild = function () {
+  Buehne.prototype.bild = function (zeit) {
     // update() meldet true, solange die Kamera noch nachgleitet
     var bewegt = this.steuerung.update();
-    if (bewegt || this.bedarf) this.zeichne();
+    var animiert = this.schritt(zeit);
+    if (bewegt || animiert || this.bedarf) this.zeichne();
 
-    if ((bewegt || this.festhalten) && !document.hidden) {
+    if ((bewegt || animiert || this.festhalten) && !document.hidden) {
       requestAnimationFrame(this.bild.bind(this));
     } else {
       this.laeuft = false;
@@ -118,7 +122,32 @@
       r.clearDepth();
     }
     r.render(this.szene, this.kamera);
+    for (var i = 0; i < this.nachBild.length; i++) this.nachBild[i]();
     this.zaehle();
+  };
+
+  // ---------- Übergänge ----------
+
+  // Ruft fn(t) mit t von 0 bis 1 über dauerMs auf, sanft beschleunigt und
+  // gebremst. Eine neue Animation mit demselben Namen ersetzt die alte –
+  // so kann man mitten in einem Übergang umentscheiden.
+  Buehne.prototype.animiere = function (name, dauerMs, fn) {
+    this.animationen = this.animationen.filter(function (a) { return a.name !== name; });
+    this.animationen.push({ name: name, dauer: dauerMs, fn: fn, start: null });
+    this.zeichneBald();
+  };
+
+  // Einen Schritt aller Animationen; true, solange noch eine läuft
+  Buehne.prototype.schritt = function (zeit) {
+    if (!this.animationen.length) return false;
+    zeit = zeit || performance.now();
+    this.animationen = this.animationen.filter(function (a) {
+      if (a.start === null) a.start = zeit;
+      var t = Math.min(1, (zeit - a.start) / a.dauer);
+      a.fn(t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      return t < 1;
+    });
+    return true;
   };
 
   // ---------- Bildrate (Taste P, nur zum Prüfen) ----------
@@ -148,10 +177,20 @@
 
   // ---------- Kamera ----------
 
+  // Wie weit muss die Kamera weg, damit eine Kugel mit diesem Radius ganz
+  // ins Bild passt? Maßgeblich ist der engere Blickwinkel – im Hochformat
+  // (Handy) ist das der waagerechte.
+  Buehne.prototype.abstandFuer = function (radius) {
+    var k = this.kamera;
+    var senkrecht = k.fov * Math.PI / 180;
+    var waagerecht = 2 * Math.atan(Math.tan(senkrecht / 2) * k.aspect);
+    return radius / Math.sin(Math.min(senkrecht, waagerecht) / 2);
+  };
+
   // Kamera so setzen, dass ein Bereich (Mittelpunkt, Radius) ganz zu sehen ist
   Buehne.prototype.blickAuf = function (mitte, radius, richtung) {
     var k = this.kamera;
-    var abstand = radius / Math.sin((k.fov * Math.PI / 180) / 2) * 1.05;
+    var abstand = this.abstandFuer(radius) * 1.05;
     var dir = richtung.clone().normalize();
     k.position.copy(mitte).addScaledVector(dir, abstand);
     this.steuerung.target.copy(mitte);

@@ -22,6 +22,26 @@
     b.steuerung.update();
   }
 
+  // Text für pruefungen/ansicht.sh mit Ausgabe .txt
+  O.melde = function () {
+    var pre = document.getElementById('meldungen');
+    if (!pre) {
+      pre = document.createElement('pre');
+      pre.id = 'meldungen';
+      pre.hidden = true;
+      document.body.appendChild(pre);
+    }
+    pre.textContent += Array.prototype.join.call(arguments, ' ') + '\n';
+  };
+
+  // Welches Teil trifft ein Klick auf den Ankerpunkt eines Bauteils?
+  O.klickAuf = function (schluessel) {
+    var objekt = O.teleskop.teile[schluessel];
+    var p = objekt.localToWorld(objekt.userData.anker.clone()).project(O.buehne.kamera);
+    var c = O.buehne.renderer.domElement;
+    return O.auswahl.teilBei((p.x + 1) / 2 * c.clientWidth, (1 - p.y) / 2 * c.clientHeight);
+  };
+
   O.pruefBlick = function (name) {
     var m = O.teleskop.masse;
     var vorne = tubusPunkt(m.zVorne);

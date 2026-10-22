@@ -1,0 +1,85 @@
+/*
+  Ansicht-Schalter (unten Mitte) und Bedienhinweise (unten links).
+*/
+
+.ansicht {
+  bottom: var(--abstand);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+}
+
+.ansicht[hidden] {
+  display: none;
+}
+
+.ansicht-knopf {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: calc(var(--radius) - 4px);
+  background: none;
+  color: var(--text-leise);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.ansicht-knopf:hover {
+  color: var(--text);
+  background: rgba(124, 196, 255, 0.08);
+}
+
+.ansicht-knopf[aria-pressed="true"] {
+  color: var(--text);
+  background: rgba(124, 196, 255, 0.18);
+}
+
+.ansicht-knopf kbd {
+  min-width: 1.5em;
+  opacity: 0.8;
+}
+
+.ansicht-knopf:focus-visible {
+  outline: 2px solid var(--akzent);
+  outline-offset: 1px;
+}
+
+/* Bedienhinweise: unten links, damit der Schalter die Mitte hat */
+.fuss {
+  bottom: var(--abstand);
+  left: var(--abstand);
+  transform: none;
+  max-width: 240px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+@media (max-width: 1100px) {
+  .fuss {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .ansicht {
+    left: var(--abstand);
+    right: var(--abstand);
+    transform: none;
+    justify-content: space-between;
+  }
+
+  .ansicht-knopf {
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+}

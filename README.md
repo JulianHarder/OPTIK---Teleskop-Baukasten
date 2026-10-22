@@ -3,12 +3,13 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Ein Dobson-Teleskop 200/1200 auf einer Wiese bei Nacht](screenshots/etappe-1.png)
+![Das Teleskop in seine Teile zerlegt, mit Infokarte zum Fangspiegel](screenshots/etappe-2.png)
 
-> **Im Aufbau.** Fertig ist Etappe 1 von 8: ein Dobson-Teleskop 200/1200,
-> das man von allen Seiten ansehen kann. Was noch kommt – Aufschrauben,
-> Licht im Tubus, selbst bauen, durchs Okular schauen, berühmte Teleskope –
-> steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> **Im Aufbau.** Fertig sind Etappe 1 und 2 von 8: ein Dobson-Teleskop
+> 200/1200, das man von allen Seiten ansehen, aufschneiden und zerlegen
+> kann – mit einer Erklärung zu jedem Teil. Was noch kommt – Licht im Tubus,
+> selbst bauen, durchs Okular schauen, berühmte Teleskope – steht in
+> [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -23,6 +24,9 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | Ziehen | um das Teleskop herum drehen |
 | Mausrad, zwei Finger kneifen | zoomen |
 | rechte Maustaste ziehen | verschieben |
+| `1` `2` `3` `4` | ganz / aufgeschnitten / zerlegt / Röntgen |
+| Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |
+| `Esc` | Infokarte schließen |
 | `F` | ganzes Teleskop zeigen |
 | `P` | Bildrate ein/aus (steht still bei 0, wenn sich nichts bewegt) |
 

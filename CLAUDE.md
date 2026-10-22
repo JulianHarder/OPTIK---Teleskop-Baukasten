@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (22.10.2026)
 
-**Fertig: Etappe 1** – Ein Teleskop unter Sternen.
+**Fertig: Etappen 1 und 2.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -27,9 +27,18 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Okular, Sucher 8×50, Höhenräder, Rockerbox aus Sperrholz mit
    Teflonlagern, Okularablage, Bodenplatte. Drehen, Zoomen, Verschieben;
    `F` setzt die Kamera zurück, `P` zeigt die Bildrate.
+2. **Aufschrauben** – vier Ansichten (`1`–`4` oder Schalter unten):
+   *ganz*, *aufgeschnitten* (Schnittebene durch die Tubusachse, auf der
+   Seite zur Kamera), *zerlegt* (elf Bauteile fahren auseinander, die Kamera
+   geht so weit zurück, dass alles ins Bild passt), *Röntgen* (Tubus und
+   Spiegelzelle fast durchsichtig). Übergänge gleiten (1,1 s) und lassen
+   sich mittendrin umkehren. Schilder an den Bauteilen (zerlegt: alle,
+   aufgeschnitten/Röntgen: die innen liegenden), Hervorheben beim
+   Darüberfahren, Klick → **Infokarte** mit Wozu, Woraus, Zahlen zum
+   aktuellen Teleskop und einem Fakt (`js/daten/teile.js`). `Esc` schließt.
 
-Als Nächstes: **Etappe 2** – Aufschrauben (ganz / aufgeschnitten / zerlegt /
-Röntgen, Infokarten).
+Als Nächstes: **Etappe 3** – Licht im Teleskop (Kegelschnittflächen,
+Spiegel im Strahlverfolger, Strahlen, Lichtpulse, Lichtkegel).
 
 ### Wo vom Plan abgewichen wurde
 
@@ -41,6 +50,14 @@ Röntgen, Infokarten).
   Screenshots aus festen Blickwinkeln (siehe „Prüfen“).
 - Die Maße (`physik/Optik.js`) stehen schon jetzt in der Physik, nicht erst
   in Etappe 3 – das Modell soll von Anfang an optisch stimmen.
+- **`js/modell/Anbauteile.js`** (Okularauszug, Sucher, Höhenräder) ist aus
+  `Newton.js` abgetrennt, als die über 350 Zeilen kam.
+- **`js/szene/Animation.js` gibt es nicht** – die Übergänge stecken in
+  `Buehne.animiere()`, weil sie die Bildschleife am Laufen halten müssen.
+- **Ansicht.js liegt in `js/ui/`**, steuert aber auch Materialien und
+  Positionen in der Szene; Dobson.js liefert dafür `zerlegeZiele()`.
+- Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
+  (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
 
 ## Stack
 - Vanilla JavaScript, **Three.js r128** (UMD, `lib/three.min.js` +
@@ -66,8 +83,13 @@ Röntgen, Infokarten).
   Brennpunkt, Tubuslänge).
 - **Zeichnen nur bei Bedarf** (`buehne.zeichneBald()`); die Schleife steht
   still, wenn sich nichts bewegt. Kein Dauerlauf, keine Animation ohne Grund.
-- Jedes Netz trägt in `userData.teil` den Namen seines Bauteils (für
-  Etappe 2: Infokarten, Zerlegen).
+- Jedes Netz trägt in `userData.teil` den Namen seines Bauteils; dieser
+  Name ist der Schlüssel in `js/daten/teile.js`. Bauteil-Gruppen tragen in
+  `userData.anker` den Punkt für ihr Schild (`Teile.anker()`).
+  `teleskop.teile` (aus `Dobson.erzeuge`) listet alle Bauteil-Gruppen.
+- **Geteilte Materialien nie direkt ändern.** Tubus und Spiegelzelle haben
+  eigene Kopien (für Schnitt und Röntgen, `Ansicht.eigeneMaterialien`),
+  Hervorheben tauscht vorübergehend gegen Leucht-Kopien (`Auswahl.js`).
 - **Physik-Dateien kennen kein DOM und kein THREE** (`js/kern/` außer
   `Zufall.js` darf beides nicht brauchen, `js/physik/`) – sonst bricht
   `pruefungen/strahlen-test.js`.
@@ -86,12 +108,26 @@ Röntgen, Infokarten).
   `pruefungen/ansicht.sh ausgabe.png [breite höhe] ['OPTIK.pruefBlick("vorne")']`
   Blickwinkel: `vorne`, `okular`, `box`, `hinten` (`pruefungen/blicke.js`).
   Etappen-Screenshot: `pruefungen/ansicht.sh screenshots/etappe-N.png`
+- **Ohne Bild prüfen:** endet die Ausgabe auf `.txt`, liefert
+  `ansicht.sh` alles, was mit `OPTIK.melde(...)` gemeldet wird.
+  `OPTIK.klickAuf('hauptspiegel')` sagt, welches Teil ein Klick auf dessen
+  Schild-Punkt treffen würde (prüft Schnitt und Röntgen).
+- **Animationen nicht mit der Uhr prüfen:** Im kopflosen Chrome mit
+  `--virtual-time-budget` kommen nur ~2 `requestAnimationFrame` und dann
+  keine mehr. Übergänge stattdessen von Hand vorantreiben:
+  `OPTIK.buehne.schritt(zeit)` in einer Schleife mit selbst gezählter Zeit.
 - **Das Browser-Pane der Desktop-App hat kein WebGL** – dort erscheint nur
   die Fehlermeldung. Gut zum Prüfen genau dieser Meldung und des Layouts
   schmaler Fenster (Server `optik`, Port 8782,
   `/home/julian/Programmieren/.claude/launch.json`), nicht für die Szene.
 
 ## Fallstricke
+- **Schnittebene und Mausstrahl:** Der Raycaster weiß nichts von
+  `clippingPlanes` – er trifft auch weggeschnittene Flächen. `Ansicht.istSichtbar`
+  filtert deshalb Treffer hinter der Ebene und fast durchsichtige Flächen.
+- **Hochformat:** Kameraabstand mit `buehne.abstandFuer(radius)` rechnen,
+  nicht nur mit dem senkrechten Blickwinkel – sonst ragt auf dem Handy das
+  Teleskop links und rechts aus dem Bild.
 - **Farbraum:** `MeshBasicMaterial`-Farben werden bei der Ausgabe nach sRGB
   umgerechnet, `ShaderMaterial` und Nebel nicht. Wer eine Basic-Farbe an
   Nebel oder Himmelsverlauf anpassen will, muss sie vorher mit

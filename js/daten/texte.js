@@ -21,9 +21,23 @@
       ['Ziehen', 'drehen'],
       ['Mausrad', 'zoomen'],
       ['Rechts ziehen', 'verschieben'],
+      ['Klick', 'Teil erklären'],
       ['F', 'ganzes Teleskop'],
       ['P', 'Bildrate']
     ],
+
+    // Ansicht-Schalter unten; Taste = Ziffer davor
+    ansichten: [
+      { id: 'ganz', name: 'Ganz' },
+      { id: 'aufgeschnitten', name: 'Aufgeschnitten' },
+      { id: 'zerlegt', name: 'Zerlegt' },
+      { id: 'roentgen', name: 'Röntgen' }
+    ],
+
+    karte: {
+      woraus: 'Woraus:',
+      fakt: 'Schon gewusst?'
+    },
 
     // Beschriftung auf dem Tubus
     tubusSchrift: 'OPTIK',

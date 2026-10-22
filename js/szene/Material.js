@@ -117,9 +117,10 @@
         color: 0xe9edf1, roughness: 0.38, metalness: 0,
         clearcoat: 0.6, clearcoatRoughness: 0.25
       }),
-      // Innenseite: mattschwarz gegen Streulicht
+      // Innenseite: mattschwarz gegen Streulicht – ein Hauch heller als
+      // ganz schwarz, damit man im aufgeschnittenen Tubus die Rundung sieht
       innen: new THREE.MeshStandardMaterial({
-        color: 0x060708, roughness: 1, metalness: 0, side: THREE.BackSide
+        color: 0x1b1f26, roughness: 1, metalness: 0, side: THREE.BackSide
       }),
       kunststoff: new THREE.MeshStandardMaterial({ color: 0x18191c, roughness: 0.55, metalness: 0 }),
       eloxiert: new THREE.MeshStandardMaterial({ color: 0x25272b, roughness: 0.4, metalness: 0.6 }),

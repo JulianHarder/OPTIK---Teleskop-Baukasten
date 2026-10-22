@@ -35,6 +35,26 @@
       });
     },
 
+    // Ansicht-Schalter: ein Knopf je Ansicht, Ziffer als Taste
+    baueAnsicht: function (nav, beiWahl) {
+      O.TEXTE.ansichten.forEach(function (a, i) {
+        var k = el('button', 'ansicht-knopf');
+        k.type = 'button';
+        k.dataset.ansicht = a.id;
+        k.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+        k.appendChild(el('kbd', null, String(i + 1)));
+        k.appendChild(document.createTextNode(' ' + a.name));
+        k.addEventListener('click', function () { beiWahl(a.id); });
+        nav.appendChild(k);
+      });
+    },
+
+    markiereAnsicht: function (nav, id) {
+      nav.querySelectorAll('.ansicht-knopf').forEach(function (k) {
+        k.setAttribute('aria-pressed', k.dataset.ansicht === id ? 'true' : 'false');
+      });
+    },
+
     fehler: function (text) {
       var box = el('div', 'fehler', text);
       document.getElementById('buehne').appendChild(box);

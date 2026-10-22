@@ -8,6 +8,8 @@
 
   <link rel="stylesheet" href="css/variablen.css">
   <link rel="stylesheet" href="css/grundlage.css">
+  <link rel="stylesheet" href="css/leisten.css">
+  <link rel="stylesheet" href="css/karten.css">
 </head>
 <body>
 
@@ -21,7 +23,14 @@
     <div class="teleskop-zeile" id="teleskop-zeile"></div>
   </header>
 
+  <div class="schilder" id="schilder"></div>
+  <div class="hinweis" id="hinweis" hidden></div>
+
   <div class="bildrate leiste" id="bildrate" hidden></div>
+
+  <aside class="karte leiste" id="karte" aria-live="polite" hidden></aside>
+
+  <nav class="ansicht leiste" id="ansicht" aria-label="Ansicht"></nav>
 
   <footer class="fuss leiste" id="fuss"></footer>
 
@@ -37,6 +46,7 @@
 
   <!-- Daten -->
   <script src="js/daten/texte.js"></script>
+  <script src="js/daten/teile.js"></script>
 
   <!-- Kern -->
   <script src="js/kern/Vektor.js"></script>
@@ -53,14 +63,19 @@
   <script src="js/szene/Himmel.js"></script>
   <script src="js/szene/Umgebung.js"></script>
   <script src="js/szene/Buehne.js"></script>
+  <script src="js/szene/Auswahl.js"></script>
+  <script src="js/szene/Beschriftung.js"></script>
 
   <!-- Modelle -->
   <script src="js/modell/Teile.js"></script>
+  <script src="js/modell/Anbauteile.js"></script>
   <script src="js/modell/Newton.js"></script>
   <script src="js/modell/Dobson.js"></script>
 
   <!-- Oberfläche -->
   <script src="js/ui/Oberflaeche.js"></script>
+  <script src="js/ui/Ansicht.js"></script>
+  <script src="js/ui/Infokarte.js"></script>
 
   <!-- Einstieg -->
   <script src="js/main.js"></script>

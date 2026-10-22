@@ -13,6 +13,22 @@
   'use strict';
 
   var Y = new THREE.Vector3(0, 1, 0);
+  var Z = new THREE.Vector3(0, 0, 1);
+
+  // Einheitsvektor quer zur Achse unter dem Winkel w (von +x nach +y)
+  function quer(w) {
+    return new THREE.Vector3(Math.cos(w), Math.sin(w), 0);
+  }
+
+  // Gruppe, deren y-Achse nach außen (dir) und deren z-Achse entlang des
+  // Tubus zeigt – für alles, was außen auf dem Rohr sitzt.
+  function aufRohr(dir, radius, z) {
+    var g = new THREE.Group();
+    var x = new THREE.Vector3().crossVectors(dir, Z);
+    g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, dir, Z));
+    g.position.copy(dir).multiplyScalar(radius).setZ(z);
+    return g;
+  }
 
   // Netz mit Schatten und Bauteil-Namen
   function netz(geo, mat, teil) {
@@ -79,6 +95,18 @@
     return objekt;
   }
 
+  // Ankerpunkt eines Bauteils für seine Beschriftung: Mitte seiner eigenen
+  // Netze (ohne Unterteile, die einen anderen Namen tragen), im
+  // Koordinatensystem des Bauteils.
+  function anker(objekt) {
+    var box = new THREE.Box3();
+    objekt.updateMatrixWorld(true);
+    objekt.traverse(function (o) {
+      if (o.isMesh && o.userData.teil === objekt.userData.teil) box.expandByObject(o);
+    });
+    return objekt.worldToLocal(box.getCenter(new THREE.Vector3()));
+  }
+
   // Okular: Steckhülse (31,75 mm), gummierter Griff, Augenmuschel, Linse.
   // Achse entlang y, die Anlage (Schulter) liegt bei y = 0.
   function okular(M) {
@@ -117,6 +145,9 @@
     ringZ: ringZ,
     raendel: raendel,
     richte: richte,
+    quer: quer,
+    aufRohr: aufRohr,
+    anker: anker,
     okular: okular
   };
 })(globalThis.OPTIK = globalThis.OPTIK || {});

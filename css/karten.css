@@ -1,0 +1,213 @@
+/*
+  Infokarte (rechts), Schilder an den Bauteilen, Namensschild am Zeiger.
+*/
+
+/* ---------- Infokarte ---------- */
+
+.karte {
+  top: var(--abstand);
+  right: var(--abstand);
+  width: 330px;
+  max-height: calc(100% - 2 * var(--abstand) - 70px);
+  overflow-y: auto;
+  padding: 14px 16px 16px;
+  animation: karte-rein 0.2s ease-out;
+}
+
+.karte[hidden] {
+  display: none;
+}
+
+@keyframes karte-rein {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.karte-kopf {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.karte-name {
+  flex: 1;
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--gold);
+}
+
+.karte-zu {
+  width: 28px;
+  height: 28px;
+  margin: -4px -6px 0 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-leise);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.karte-zu:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.karte p {
+  margin: 0 0 10px;
+}
+
+.karte-wozu {
+  font-size: 14px;
+}
+
+.karte-woraus {
+  color: var(--text-leise);
+  font-size: 13px;
+}
+
+.karte-woraus strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.karte-werte {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 12px;
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(124, 196, 255, 0.07);
+  font-size: 13px;
+}
+
+.karte-werte dt {
+  color: var(--text-leise);
+}
+
+.karte-werte dd {
+  margin: 0;
+  text-align: right;
+  font-family: var(--schrift-mono);
+}
+
+.karte-fakt {
+  padding: 8px 10px;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  background: rgba(214, 167, 64, 0.08);
+  font-size: 13px;
+}
+
+.karte-fakt strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.karte-fakt p {
+  margin: 0;
+}
+
+/* ---------- Schilder an den Bauteilen ---------- */
+
+.schilder {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.schild {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transition: opacity 0.35s;
+}
+
+.schild.an {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Punkt sitzt genau auf dem Ankerpunkt */
+.schild.links {
+  flex-direction: row-reverse;
+}
+
+.schild-punkt {
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  background: rgba(14, 21, 34, 0.8);
+  box-shadow: 0 0 0 3px rgba(14, 21, 34, 0.35);
+}
+
+.schild.links .schild-punkt {
+  margin-left: 0;
+  margin-right: -4.5px;
+}
+
+.schild-text {
+  padding: 2px 8px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 999px;
+  background: var(--leiste);
+}
+
+.schild:hover .schild-text {
+  border-color: var(--gold);
+}
+
+/* ---------- Namensschild am Zeiger ---------- */
+
+.hinweis {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  padding: 3px 9px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  background: var(--leiste);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.hinweis[hidden] {
+  display: none;
+}
+
+/* ---------- Schmale Fenster ---------- */
+
+@media (max-width: 600px) {
+  .karte {
+    top: auto;
+    bottom: 76px;
+    left: var(--abstand);
+    right: var(--abstand);
+    width: auto;
+    max-height: 50%;
+  }
+}

@@ -2,6 +2,9 @@
   Die Dobson-Montierung: eine Holzkiste (Rockerbox), in der der Tubus auf
   zwei Höhenrädern liegt, auf einer runden Bodenplatte drehbar.
 
+  Ergebnis von erzeuge(): die Gruppen unten plus teile = { Name: Bauteil-
+  Gruppe } für Zerlegen, Beschriftung und Infokarten.
+
   Aufbau der Gruppen (von außen nach innen):
     wurzel      steht auf der Wiese, Bodenplatte
     azimut      dreht sich um die senkrechte Achse (Rockerbox)
@@ -146,9 +149,11 @@
       // Bodenplatte etwas größer als die Ecken der Kiste
       var rRad = O.Newton.lagerRadius(m);
       var radius = Math.hypot(O.Newton.lagerX(m) + BRETT + 12, rRad + 85) + 15;
-      wurzel.add(bodenplatte(m, M, radius));
+      var platte = bodenplatte(m, M, radius);
+      var kiste = rockerbox(m, H, M);
+      wurzel.add(platte);
       wurzel.add(azimut);
-      azimut.add(rockerbox(m, H, M));
+      azimut.add(kiste);
       azimut.add(hoehe);
       hoehe.position.y = drehpunktY;
       hoehe.add(tubus);
@@ -157,7 +162,14 @@
       tubus.rotation.y = Math.PI;
       tubus.position.z = m.zBalance;
 
+      // alle Bauteile mit Ankerpunkt für ihre Beschriftung
+      wurzel.updateMatrixWorld(true);
+      var teile = Object.assign({}, tubus.userData.teile, { rockerbox: kiste, bodenplatte: platte });
+      kiste.userData.anker = T.anker(kiste);
+      platte.userData.anker = new THREE.Vector3(radius * 0.7, FUESSE + BRETT, radius * 0.3);
+
       var ergebnis = {
+        teile: teile,
         wurzel: wurzel,
         azimut: azimut,
         hoehe: hoehe,
@@ -173,6 +185,28 @@
     richte: function (t, hoeheGrad, azimutGrad) {
       t.hoehe.rotation.x = hoeheGrad * Math.PI / 180;
       t.azimut.rotation.y = azimutGrad * Math.PI / 180;
+    },
+
+    // Wohin fährt jedes Teil in der Ansicht „zerlegt“? Versatz im
+    // Koordinatensystem seiner Elterngruppe (für Tubusteile: z = Achse).
+    // Reihenfolge wie beim echten Auseinanderbauen: Tubus aus der Kiste
+    // heben, Räder ab, Spiegel hinten heraus, Fangspiegel vorne heraus.
+    zerlegeZiele: function (t) {
+      var m = t.masse;
+      var teile = t.teile;
+      function z(dz) { return new THREE.Vector3(0, 0, dz); }
+      return [
+        { objekt: t.hoehe, versatz: new THREE.Vector3(0, 420, 0) },
+        { objekt: teile.hoehenradLinks, versatz: new THREE.Vector3(-200, 0, 0) },
+        { objekt: teile.hoehenradRechts, versatz: new THREE.Vector3(200, 0, 0) },
+        { objekt: teile.spiegelzelle, versatz: z(-540) },
+        { objekt: teile.hauptspiegel, versatz: z(-270) },
+        { objekt: teile.fangspiegel, versatz: z(420) },
+        { objekt: teile.spinne, versatz: z(170) },
+        { objekt: teile.okularauszug, versatz: T.quer(m.fokusWinkel).multiplyScalar(170) },
+        { objekt: teile.okular, versatz: new THREE.Vector3(0, 130, 0) },
+        { objekt: teile.sucher, versatz: T.quer(m.fokusWinkel + 1.0).multiplyScalar(200) }
+      ];
     },
 
     // Kugel, die das ganze Teleskop umschließt (für die Kamera)
