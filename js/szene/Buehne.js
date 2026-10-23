@@ -141,6 +141,10 @@
     var bewegt = this.steuerung.update();
     this.ueberDemBoden();
     var animiert = this.schritt(zeit);
+    // Eine Kamerafahrt hat Position und Ziel gerade neu gesetzt – die
+    // Blickrichtung jetzt nachziehen, sonst zeigt jedes Bild noch die des
+    // vorigen (das ruckelt)
+    if (animiert) this.steuerung.update();
     var dauernd = this.dauerSchritt(zeit);
     if (bewegt || animiert || dauernd || this.bedarf) this.zeichne();
 
@@ -171,9 +175,45 @@
   // gebremst. Eine neue Animation mit demselben Namen ersetzt die alte –
   // so kann man mitten in einem Übergang umentscheiden.
   Buehne.prototype.animiere = function (name, dauerMs, fn) {
+    if (name === 'kamera') this.ohneSchwung();
     this.animationen = this.animationen.filter(function (a) { return a.name !== name; });
     this.animationen.push({ name: name, dauer: dauerMs, fn: fn, start: null });
     this.zeichneBald();
+  };
+
+  // Den Nachschwung nach dem Drehen (Dämpfung von OrbitControls) beenden,
+  // ohne dass die Kamera springt – sonst schiebt er eine Kamerafahrt in
+  // jedem Bild ein Stück in die andere Richtung
+  Buehne.prototype.ohneSchwung = function () {
+    var s = this.steuerung;
+    var pos = this.kamera.position.clone();
+    var ziel = s.target.clone();
+    s.enableDamping = false;
+    s.update();                 // verbraucht den Rest des Schwungs …
+    s.enableDamping = true;
+    this.kamera.position.copy(pos);
+    s.target.copy(ziel);
+    s.update();                 // … und alles steht wieder, wo es war
+  };
+
+  // Schritt-Funktion für eine Kamerafahrt (für animiere): Das Ziel gleitet
+  // geradeaus, die Kamera auf einem Bogen um das Ziel – Winkel und Abstand
+  // wachsen gleichmäßig. Gerade Linien schnitten quer durch den Kreis ums
+  // Teleskop: erst näher, dann wieder weg, die Blickrichtung drehte in der
+  // Mitte ruckartig.
+  Buehne.prototype.bogen = function (vonPos, vonZiel, nachPos, nachZiel) {
+    var k = this.kamera;
+    var s = this.steuerung;
+    var a = new THREE.Spherical().setFromVector3(vonPos.clone().sub(vonZiel));
+    var z = new THREE.Spherical().setFromVector3(nachPos.clone().sub(nachZiel));
+    var dTheta = z.theta - a.theta;
+    dTheta -= 2 * Math.PI * Math.round(dTheta / (2 * Math.PI));   // kürzerer Weg
+    var kugel = new THREE.Spherical();
+    return function (t) {
+      s.target.lerpVectors(vonZiel, nachZiel, t);
+      kugel.set(a.radius + (z.radius - a.radius) * t, a.phi + (z.phi - a.phi) * t, a.theta + dTheta * t);
+      k.position.setFromSpherical(kugel).add(s.target);
+    };
   };
 
   // Etwas, das in jedem Bild weiterläuft, solange es angemeldet ist

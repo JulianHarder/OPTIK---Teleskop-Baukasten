@@ -23,9 +23,8 @@
   buehne.himmel = O.Himmel.erzeuge();
   O.Umgebung.erzeuge(buehne.szene, buehne.renderer);
 
-  // Gemerktes Teleskop vom letzten Besuch
-  var gemerkt = O.Speicher.lade();
-  if (gemerkt) Object.assign(O.zustand, gemerkt.zustand);
+  // Beim Öffnen immer derselbe Anfang (Julian): der Klassiker 200/1200,
+  // ganz, ohne Licht – nichts vom letzten Besuch (O.zustand, Zustand.js)
 
   var mensch = O.Mensch.erzeuge();
   buehne.szene.add(mensch);
@@ -103,10 +102,7 @@
     var vonPos = k.position.clone();
     var nachPos = kugel.center.clone().addScaledVector(richtung, abstand);
     if (buehne.bodenDa() && nachPos.y < 40) nachPos.y = 40;
-    buehne.animiere('kamera', 700, function (t) {
-      s.target.lerpVectors(vonZiel, kugel.center, t);
-      k.position.lerpVectors(vonPos, nachPos, t);
-    });
+    buehne.animiere('kamera', 700, buehne.bogen(vonPos, vonZiel, nachPos, kugel.center));
   }
 
   O.Ereignisse.an('ansicht-geaendert', function () { fokus = null; });
@@ -127,13 +123,13 @@
   O.Oberflaeche.baueAnsicht(nav, function (id) { ansicht.setze(id); });
   O.Ereignisse.an('ansicht-geaendert', function (id) {
     O.Oberflaeche.markiereAnsicht(nav, id);
-    merken();
   });
 
   // ---------- Teleskop bauen ----------
 
-  function baueTeleskop() {
-    var modus = ansicht ? ansicht.modus : (gemerkt && gemerkt.ansicht) || 'ganz';
+  // modus: in dieser Ansicht anfangen (sonst bleibt die bisherige)
+  function baueTeleskop(modus) {
+    modus = modus || (ansicht ? ansicht.modus : 'ganz');
 
     if (teleskop) {
       buehne.szene.remove(teleskop.wurzel);
@@ -191,12 +187,7 @@
     if (beruehmtLeiste) beruehmtLeiste.zeige();
     O.Oberflaeche.zeigeTeleskop();
     if (karte.teil) karte.zeige(karte.teil, teleskop, O.zustand);
-    merken();
     buehne.zeichneBald();
-  }
-
-  function merken() {
-    O.Speicher.sichere(O.zustand, ansicht ? ansicht.modus : 'ganz');
   }
 
   // Während man zieht, kommen viele Änderungen kurz hintereinander –
@@ -220,11 +211,16 @@
   // ---------- Berühmte Teleskope ----------
 
   beruehmtLeiste = new O.BeruehmtLeiste(document.getElementById('beruehmt'), function (id) {
+    // Jedes Teleskop öffnet wie die Seite: ganz, ohne Licht, aus der
+    // Ausgangsstellung
     if (okularansicht.offen) okularansicht.schliesse();
     waehle(null);
+    if (O.zustand.lichtAn) licht.setze(false);
     O.zustand.beruehmt = id;
-    baueTeleskop();
-    kameraNachziehen(true);
+    baueTeleskop('ganz');
+    var z = startBlick();
+    buehne.animiere('kamera', 700, buehne.bogen(buehne.kamera.position.clone(),
+      buehne.steuerung.target.clone(), z.pos, z.ziel));
   }, function () {
     // Hubbles Spiegel von 1990 an/aus: neu bauen, dann rechnen Licht und
     // Kamerabild mit dem anderen Spiegel
@@ -258,15 +254,14 @@
 
   beobachten = new O.Beobachten(buehne, document.getElementById('beobachten'), nav, {
     geschwenkt: nachAenderung,
-    luftGeaendert: merken,
     durchschauen: durchschauen
   });
   beobachten.neuesTeleskop(teleskop, ansicht);
 
   okularansicht = new O.Okularansicht(buehne, document.getElementById('okular-blick'), beobachten, {
     okular: wechsleOkular,
-    luft: function () { beobachten.auffrischen(); merken(); },
-    objekt: function (id) { beobachten.waehle(id); merken(); }
+    luft: function () { beobachten.auffrischen(); },
+    objekt: function (id) { beobachten.waehle(id); }
   });
   okularansicht.neuesTeleskop(teleskop);
 
@@ -319,14 +314,10 @@
     var vonZiel = s.target.clone();
     var vonPos = k.position.clone();
     var nachPos = z.mitte.clone().addScaledVector(richtung, buehne.abstandFuer(z.radius) * 1.05);
-    buehne.animiere('kamera', 700, function (t) {
-      s.target.lerpVectors(vonZiel, z.mitte, t);
-      k.position.lerpVectors(vonPos, nachPos, t);
-    });
+    buehne.animiere('kamera', 700, buehne.bogen(vonPos, vonZiel, nachPos, z.mitte));
   }
 
   ganzesTeleskop();
-  if (O.zustand.lichtAn) licht.setze(true);
 
   // ---------- Tasten ----------
 
@@ -358,7 +349,6 @@
         break;
       case 'l':
         licht.umschalten();
-        merken();
         break;
       case 'o':
         durchschauen();

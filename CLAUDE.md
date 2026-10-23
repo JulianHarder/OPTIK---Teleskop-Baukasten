@@ -54,8 +54,9 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    `physik/Kennzahlen.js`). Das Teleskop baut sich bei jeder Änderung neu
    (`baueTeleskop` in `main.js`, höchstens einmal pro Bild), das alte wird
    freigegeben; beim Loslassen zieht die Kamera nach. Ein Mensch (1,75 m)
-   steht zum Größenvergleich daneben und ist anklickbar. Das Teleskop wird
-   im Browser gemerkt (`kern/Speicher.js`, `optik.stand.v1`). Auf dem
+   steht zum Größenvergleich daneben und ist anklickbar. (Das Merken im
+   Browser, `kern/Speicher.js`, ist später auf Julians Wunsch wieder
+   entfallen – siehe „Fester Anfang“.) Auf dem
    Handy sind Bauen und Datenblatt hinter dem Knopf „Bauen“.
 
 5. **Ausrichten und Durchschauen** – Leiste „Beobachten“ (6 Objekte aus
@@ -101,8 +102,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Achromaten. Festes Okular, ein Satz zur Geschichte im Kopf; Flug ins
    Okular längs des Rohrs (`teleskop.auge()`). Bauen, Datenblatt, die
    Leiste „Beobachten“ und die Sternlicht-Leiste ruhen bei berühmten
-   Teleskopen; das Objekt wählt man im Okular. Gemerkt wird auch, welches
-   gewählt ist.
+   Teleskopen; das Objekt wählt man im Okular.
    Nach Julians Durchsicht (23.10.2026): **Brennpunkt-Lupe entfernt**
    („zu viel“), Hügelring reicht weit unter den Horizont (bei Yerkes
    klaffte eine Lücke zwischen Wiese und Hügeln).
@@ -308,6 +308,12 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   ist, sagt das getroffene Netz (`auswahl.getroffen`) – sonst wären beide
   Höhenräder ein Teil. Klick daneben (oder Karte schließen): zurück aufs
   ganze zerlegte Teleskop. Ein Ansichtswechsel löst den Fokus.
+- **Fester Anfang** (Julians Wunsch): Beim Laden immer der Klassiker
+  200/1200, Ansicht „ganz“, Licht aus – nichts wird gemerkt
+  (`kern/Speicher.js` gelöscht). Jedes Teleskop aus der Leiste öffnet
+  genauso: ganz, Licht aus, Kamera fährt in die Ausgangsstellung
+  (`baueTeleskop('ganz')`, `startBlick`). Das eigene Teleskop behält
+  innerhalb der Sitzung, was man eingestellt hat.
 - **„Ganz“ führt in die Ausgangsstellung zurück** (`ansicht.startBlick`
   aus main.js), egal wie gezoomt oder gedreht – wie „Zerlegt“ die Kamera
   passend setzt. Beim Umbau bleibt die Kamera, wo sie ist.
@@ -404,6 +410,18 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   (`imRahmen` und der Strahlverfolger tun es, wenn sie fehlt).
 - **Linsenradien**: Optiker-Vorzeichen (R > 0 = Mittelpunkt in
   Lichtrichtung, hier −z) → lokale Krümmung c = −1/R.
+- **Kamerafahrt ruckelt:** OrbitControls richtet die Kamera in `update()`
+  aus, die Fahrt setzt Position und Ziel erst danach – ohne zweites
+  `update()` nach `schritt()` zeigt jedes Bild die Blickrichtung des
+  vorigen (bis 2° daneben). Und der Nachschwung nach dem Drehen schiebt
+  dagegen: `animiere('kamera', …)` beendet ihn (`Buehne.ohneSchwung`).
+  Kamerafahrten („Ganz“, Zerlegen, Fokus, Nachziehen) laufen auf einem
+  Bogen ums Ziel (`Buehne.bogen`): Eine gerade Linie schnitt quer durch
+  den Kreis – gemessen kam die Kamera unterwegs 0,9 m näher und drehte in
+  der Mitte ruckartig. Nur der Flug ins Okular bleibt gerade.
+  Echte Bildzeiten messen: `pruefungen/ansicht.sh` taugt nicht (virtuelle
+  Zeit); Chrome mit `--remote-debugging-port` und GPU starten und über das
+  DevTools-Protokoll auslesen.
 - **Animation startet Animation:** `buehne.schritt` läuft über eine Kopie
   der Liste – eine fertige Animation darf eine neue anlegen (Schwenken →
   Flug ins Okular). Früher ging die neue dabei verloren.

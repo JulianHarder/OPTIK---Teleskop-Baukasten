@@ -184,10 +184,7 @@
     }
     if (nachPos.distanceTo(vonPos) < 1 && nachZiel.distanceTo(vonZiel) < 1) return;
 
-    function schritt(t) {
-      steuerung.target.lerpVectors(vonZiel, nachZiel, t);
-      k.position.lerpVectors(vonPos, nachPos, t);
-    }
+    var schritt = b.bogen(vonPos, vonZiel, nachPos, nachZiel);
     if (sofort) {
       b.stoppe('kamera');
       schritt(1);
