@@ -129,6 +129,16 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Webbs Schild-Lagen spreizen sich nach außen auf, ein Turm verbindet
    Raumfahrzeug und Instrumente, beim Zerlegen liegen die Teile deutlich
    auseinander, und der Mensch steht bei beiden außerhalb.
+   Danach (Julian: „so sieht doch kein echter Mensch aus“): **echte
+   Modelle statt Grundformen**. Auf der Erde ein Mensch aus MakeHuman
+   (CC0: Körper „junger Mann“, Haut, Jacke und Jeans, Schuhe, Haare,
+   Augen), Arme mit dem MakeHuman-Skelett aus der A-Haltung gesenkt; im
+   Weltall der Astronaut der NASA (gemeinfrei), Arme aus der T-Haltung
+   gesenkt. Beide fest eingebettet (`js/daten/modell-mensch.js`,
+   `modell-astronaut.js`, zusammen 1,1 MB), erzeugt einmalig mit
+   `pruefungen/werkzeuge/*-wandeln.py`. `Mensch.stelle` tauscht die Figur
+   je nach `teleskop.weltall`; die Weltall-Figur heißt `astronaut` und hat
+   ihre eigene Infokarte (`teile-weltall.js`).
 
 Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
 
@@ -274,6 +284,11 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   `globalThis.OPTIK` (Muster: `(function (O) { … })(globalThis.OPTIK = globalThis.OPTIK || {});`).
   Grund: per Doppelklick über `file://` blockieren Browser ES-Module. Neuere
   Three.js-Versionen gibt es nur noch als Module – deshalb bleibt es bei r128.
+- **Ausnahme Mensch und Astronaut:** Formen und kleine WebP-Texturen stehen
+  als Base64 in `js/daten/modell-*.js` (Texturen als `data:`-Adresse –
+  kein `fetch`, geht auch über `file://`). Julians Wunsch: Grundformen
+  sahen nicht nach Mensch aus. Neu erzeugen nur mit den Werkzeugen in
+  `pruefungen/werkzeuge/` (Quellen und Aufruf stehen dort im Kopf).
 - **Kein `fetch`**, keine Bilddateien: Texturen (Holz, Wiese, Schrift) werden
   auf Canvas gerechnet.
 - **Nichts aus dem Netz.**

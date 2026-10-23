@@ -86,6 +86,22 @@
         'Spielfilme füllen würden.'
     },
 
+    astronaut: {
+      name: 'Mensch im Raumanzug',
+      wozu: 'Schwebt nur da, damit man sieht, wie groß das Teleskop wirklich ' +
+        'ist: ein Mensch von 1,75 m – im All natürlich im Raumanzug.',
+      woraus: 'Ein Anzug für Außeneinsätze: weißer Stoff in vielen Lagen, ' +
+        'auf dem Rücken die Lebenserhaltung (Luft, Kühlung, Funk), vorne der ' +
+        'Bedienkasten, ein Helm mit goldenem Visier gegen das grelle ' +
+        'Sonnenlicht. Das Modell stammt von der NASA.',
+      fakt: 'Bei Hubble waren wirklich Astronauten: fünfmal zwischen 1993 und ' +
+        '2009, um zu reparieren und Neues einzubauen. Webb ist 1,5 Millionen km ' +
+        'entfernt – dorthin kommt niemand.',
+      werte: function () {
+        return [['Größe mit Helm', '1,90 m']];
+      }
+    },
+
     // ---------- Webb ----------
 
     webbSegmente: {

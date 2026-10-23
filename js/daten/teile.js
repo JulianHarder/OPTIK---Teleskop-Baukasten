@@ -283,7 +283,8 @@
       name: 'Mensch zum Vergleich',
       wozu: 'Steht nur da, damit man sieht, wie groß das Teleskop wirklich ' +
         'ist: 1,75 m.',
-      woraus: 'Ein paar Zylinder und eine Kugel.',
+      woraus: 'Ein Modell aus MakeHuman, einem freien Programm für ' +
+        'Menschen in 3D: Körper, Haut, Jacke, Jeans und Schuhe.',
       fakt: 'Bei Dobsons mit 40 cm Spiegel und mehr steht man zum Beobachten ' +
         'auf einer Leiter. Die größten Amateur-Dobsons haben über einen ' +
         'Meter Öffnung – dort ist die Leiter mehrere Meter hoch.',

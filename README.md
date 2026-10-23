@@ -76,7 +76,12 @@ node pruefungen/strahlen-test.js
 ## Bausteine
 
 - [three.js](https://threejs.org) r128 (MIT-Lizenz), lokal in `lib/`
-- alles andere selbst geschrieben, alle Texturen werden beim Start gerechnet
+- der Mensch zum Größenvergleich: [MakeHuman](http://www.makehumancommunity.org)
+  (Körper, Haut, Kleidung, Haare – CC0), eingebettet in `js/daten/modell-mensch.js`
+- der Astronaut: Modell „Astronaut“ aus den
+  [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) (ohne
+  Urheberrecht), eingebettet in `js/daten/modell-astronaut.js`
+- alles andere selbst geschrieben; alle übrigen Texturen werden beim Start gerechnet
 
 ---
 
