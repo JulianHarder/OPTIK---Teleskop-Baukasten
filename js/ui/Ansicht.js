@@ -195,7 +195,8 @@
     var modus = this.modus;
     this.beschriftung.zeige(function (s) {
       var info = O.TEILE[s.objekt.userData.teil] || {};
-      if (s.schluessel === 'hoehenradLinks') return false;     // ein Schild reicht
+      // ein Schild reicht (zweites Höhenrad, zweiter Solarflügel …)
+      if (s.schluessel === 'hoehenradLinks' || s.objekt.userData.keinSchild) return false;
       if (modus === 'zerlegt') return true;
       if (modus === 'aufgeschnitten' || modus === 'roentgen') return !!info.innen;
       return false;

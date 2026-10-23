@@ -30,7 +30,8 @@
     //       ziele() → [{objekt, versatz}], licht() → wie Optik.licht,
     //       lichtMassstab (Größe und Tempo der Lichtpulse), mensch? (Vector3),
     //       auge?() → { punkt, achse } (Welt): wo man ins Okular schaut, wenn
-    //       nicht von oben in teile.okular }
+    //       nicht von oben in teile.okular, okularOptik? (sonst aus
+    //       Historisch.okular), weltall?, sonne? (Vector3) }
     teleskop: function (o) {
       o.wurzel.updateMatrixWorld(true);
       Object.keys(o.teile).forEach(function (k) {
@@ -42,7 +43,9 @@
         beruehmt: o.id,
         licht: o.licht,
         lichtMassstab: o.lichtMassstab || 1,
-        okularOptik: O.Historisch.okular(o.id),
+        okularOptik: o.okularOptik !== undefined ? o.okularOptik : O.Historisch.okular(o.id),
+        weltall: o.weltall || null,       // 'erde' (Hubble) oder 'tief' (Webb): Weltraum statt Wiese
+        sonne: o.sonne || null,           // Richtung zur Sonne
         auge: o.auge || null,
         teile: o.teile,
         wurzel: o.wurzel,

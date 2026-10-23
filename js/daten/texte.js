@@ -148,9 +148,11 @@
       zurueck: 'Zurück',
       okular: 'Okular',
       lupe: 'Lupe: so fein sieht dein Auge',
+      lupeKamera: 'Lupe: so fein sieht Hubble',
       lupeLang: 'Ein Bildschirm hat zu wenig Bildpunkte für das, was das Auge im ' +
         'Okular erkennt. Die Lupe zeigt die Mitte so fein, wie dein Auge sie sieht.',
       zahlen: '{V}-fach · zeigt {feld}° · Austrittspupille {ap} mm',
+      kameraZahlen: 'Kamerabild · Ausschnitt {feld}′ · keine Luft',
       achte: 'Achte auf',
       ehrlich: 'Simulation: Sie vergleicht Teleskope richtig. So hell und so fein ' +
         'wie ein echtes Okular ist aber kein Bildschirm.'
@@ -162,7 +164,10 @@
       meinZusatz: 'selbst gebaut',
       teleskopZeile: '{name} · {jahr}',
       mehrLicht: 'Dein Teleskop ({D} mm) sammelt {x}-mal so viel Licht wie dieses.',
-      wenigerLicht: 'Es sammelt {x}-mal so viel Licht wie dein Teleskop ({D} mm).'
+      wenigerLicht: 'Es sammelt {x}-mal so viel Licht wie dein Teleskop ({D} mm).',
+      fehler1990: 'Spiegel wie 1990 (mit Fehler)',
+      fehler1990Text: 'Zeigt Licht und Kamerabild mit dem falsch geschliffenen ' +
+        'Spiegel. Heute gleichen Korrekturoptiken den Fehler aus.'
     },
 
     karte: {

@@ -2,10 +2,12 @@
   Leiste „Berühmte Teleskope“: oben in der linken Spalte eine Reihe
   Knöpfe – das eigene Teleskop und die berühmten. Ist ein berühmtes
   gewählt, steht darunter sein Steckbrief (js/daten/teleskope.js), und
-  Bauen, Datenblatt, Beobachten, Licht und Durchschauen treten zurück
-  (body.zeigt-beruehmt, css/beruehmt.css).
+  Bauen, Datenblatt und Beobachten treten zurück (body.zeigt-beruehmt,
+  css/beruehmt.css).
 
   beiWahl(id | null) – main.js baut dann das Teleskop neu.
+  beiSchalter() – ein Schalter im Steckbrief wurde umgelegt (Hubbles
+  Spiegel von 1990), das Teleskop muss neu gebaut werden.
 */
 (function (O) {
   'use strict';
@@ -19,10 +21,11 @@
     return e;
   }
 
-  function BeruehmtLeiste(leiste, beiWahl) {
+  function BeruehmtLeiste(leiste, beiWahl, beiSchalter) {
     T = O.TEXTE.beruehmt;
     this.leiste = leiste;
     this.beiWahl = beiWahl;
+    this.beiSchalter = beiSchalter;
     this.baue();
     this.zeige();
   }
@@ -81,12 +84,32 @@
     });
     s.appendChild(dl);
     s.appendChild(el('p', 'steckbrief-text', d.text));
+    if (id === 'hubble') s.appendChild(this.fehlerSchalter());
     s.appendChild(el('p', 'steckbrief-vergleich', vergleich(d)));
 
     var fakt = el('div', 'karte-fakt');
     fakt.appendChild(el('strong', null, O.TEXTE.karte.fakt));
     fakt.appendChild(el('p', null, d.fakt));
     s.appendChild(fakt);
+  };
+
+  // Hubble: Spiegel von 1990 ein- und ausschalten
+  BeruehmtLeiste.prototype.fehlerSchalter = function () {
+    var self = this;
+    var label = el('label', 'steckbrief-schalter');
+    var box = el('input');
+    box.type = 'checkbox';
+    box.checked = !!O.zustand.hubble1990;
+    box.addEventListener('change', function () {
+      O.zustand.hubble1990 = box.checked;
+      self.beiSchalter();
+    });
+    label.appendChild(box);
+    var text = el('span');
+    text.appendChild(el('strong', null, T.fehler1990));
+    text.appendChild(el('span', 'steckbrief-schalter-text', T.fehler1990Text));
+    label.appendChild(text);
+    return label;
   };
 
   // Lichtsammeln im Vergleich zum eigenen Teleskop – die Öffnung zählt

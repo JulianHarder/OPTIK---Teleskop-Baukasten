@@ -10,7 +10,7 @@
 
 .beruehmt-knoepfe {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 4px;
 }
 
@@ -97,6 +97,32 @@
   border-left: 3px solid var(--akzent);
   background: rgba(124, 196, 255, 0.08);
   font-size: 12px;
+}
+
+/* Schalter „Spiegel wie 1990“ bei Hubble */
+.steckbrief-schalter {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.steckbrief-schalter input {
+  accent-color: var(--schlecht);
+}
+
+.steckbrief-schalter-text {
+  display: block;
+  color: var(--text-leise);
+}
+
+/* Webb hat kein Okular */
+.ohne-okular .durchschauen-knopf {
+  display: none;
 }
 
 /* Der Fakt sieht aus wie in der Infokarte (css/karten.css) */

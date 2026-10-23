@@ -103,7 +103,9 @@
     return new THREE.Vector3(s * Math.cos(phi), u, s * Math.sin(phi));
   }
 
-  function sterne(z) {
+  // unten = false: der Himmel über dem Horizont (immer zu sehen);
+  // unten = true: der Rest der Kugel – nur im Weltall, sonst liegt dort die Wiese
+  function sterne(z, unten) {
     var pos = [];
     var farbe = [];
     var groesse = [];
@@ -117,7 +119,7 @@
     // Feldsterne: Helligkeit nach Potenzgesetz – wenige helle, viele schwache
     for (var i = 0; i < 4200; i++) {
       var d = richtung(z);
-      if (d.y < -0.08) continue;
+      if ((d.y < -0.08) !== !!unten) continue;
       var r = z();
       var hell = 0.18 + Math.pow(r, 9) * 1.6;
       var f = STERNFARBEN[Math.floor(z() * STERNFARBEN.length)];
@@ -135,7 +137,7 @@
         .addScaledVector(b, Math.sin(t))
         .addScaledVector(normale, breite)
         .normalize();
-      if (dir.y < -0.08) continue;
+      if ((dir.y < -0.08) !== !!unten) continue;
       var dichte = 1 - Math.abs(breite) / 0.24;
       stern(dir, 0.08 + z() * 0.22 * dichte, 1.6 + z() * 1.4, [0.85, 0.88, 1.0]);
     }
@@ -200,11 +202,17 @@
       var z = O.Zufall(2026);
       var szene = new THREE.Scene();
       var gruppe = new THREE.Group();
-      gruppe.add(verlauf());
+      var v = verlauf();
+      var h;
+      gruppe.add(v);
       gruppe.add(sterne(z));
-      gruppe.add(huegel(z));
+      gruppe.add(h = huegel(z));
+      // eigener Startwert: Die Sterne oben bleiben, wie sie immer waren
+      var u = sterne(O.Zufall(2027), true);
+      u.visible = false;
+      gruppe.add(u);
       szene.add(gruppe);
-      return { szene: szene, gruppe: gruppe };
+      return { szene: szene, gruppe: gruppe, verlauf: v, huegel: h, sterneUnten: u };
     }
   };
 })(globalThis.OPTIK = globalThis.OPTIK || {});

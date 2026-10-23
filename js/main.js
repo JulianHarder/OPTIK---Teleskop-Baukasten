@@ -100,6 +100,9 @@
     if (okularansicht) okularansicht.neuesTeleskop(teleskop);
 
     O.Mensch.stelle(mensch, teleskop);
+    document.body.classList.toggle('ohne-okular', !!(teleskop.beruehmt && !teleskop.okularOptik));
+    O.Umgebung.ort(teleskop.weltall ? 'weltall' : 'wiese', buehne.szene, buehne.himmel, buehne.steuerung,
+      { erde: teleskop.weltall === 'erde', sonne: teleskop.sonne });
     var huelle = O.Dobson.huelle(teleskop);
     O.Umgebung.schattenFuer(huelle);
     O.Umgebung.nebelFuer(buehne.szene, huelle);
@@ -155,6 +158,11 @@
     O.zustand.beruehmt = id;
     baueTeleskop();
     kameraNachziehen(true);
+  }, function () {
+    // Hubbles Spiegel von 1990 an/aus: neu bauen, dann rechnen Licht und
+    // Kamerabild mit dem anderen Spiegel
+    baueTeleskop();
+    if (okularansicht.offen) okularansicht.rendere();
   });
 
   // ---------- Konfigurator ----------
@@ -197,7 +205,8 @@
 
   // Erst zum Objekt schwenken (falls nötig), dann ins Okular fliegen
   function durchschauen() {
-    if (okularansicht.offen) return;
+    // Webb hat kein Okular (und sein Licht sieht das Auge nicht)
+    if (okularansicht.offen || (teleskop.beruehmt && !teleskop.okularOptik)) return;
     waehle(null);
     if (ansicht.modus === 'zerlegt') ansicht.setze('ganz', true);
     // Berühmte Teleskope schwenken nicht – sie zeigen, was gewählt ist

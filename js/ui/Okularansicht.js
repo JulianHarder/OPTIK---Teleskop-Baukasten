@@ -75,6 +75,7 @@
     this.lupe = el('canvas', 'ok-lupe-leinwand');
     lupe.appendChild(this.lupe);
     var lt = el('figcaption', null, T.lupe);
+    this.lupenText = lt;
     lt.title = T.lupeLang;
     lupe.appendChild(lt);
     feld.appendChild(lupe);
@@ -135,7 +136,10 @@
     var optik = t.okularOptik || null;
     var mitLupe = !optik || optik.scheinbarGrad >= LUPE_AB_GRAD;
     this.lupenRahmen.hidden = !mitLupe;
+    this.lupenText.textContent = optik && optik.kamera ? T.lupeKamera : T.lupe;
     this.okularReihe.parentElement.hidden = !!optik;
+    // Im All gibt es keine Luft, die flimmert
+    this.luftReihe.parentElement.hidden = !!(optik && optik.weltall);
     this.historisch.hidden = !t.beruehmt;
     this.historisch.textContent = t.beruehmt ? O.TELESKOPE[t.beruehmt].okular : '';
     var dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -155,7 +159,7 @@
     this.lupe.style.width = this.lupe.style.height = lupe + 'px';
     this.leinwand.parentElement.classList.toggle('untereinander', !nebeneinander);
 
-    var p = optik ? { objekt: o, luftBs: this.beobachten.luftBs(), optik: optik } : {
+    var p = optik ? { objekt: o, luftBs: optik.weltall ? 0 : this.beobachten.luftBs(), optik: optik } : {
       objekt: o,
       D: z.oeffnungMm,
       f: z.brennweiteMm,
@@ -170,10 +174,12 @@
     this.name.textContent = o.name;
     this.art.textContent = o.art + ' – ' + o.text;
     this.achte.textContent = o.achte;
-    this.zahlen.textContent = T.zahlen
-      .replace('{V}', O.Format.zahl(e.vergroesserung, 0))
-      .replace('{feld}', O.Format.zahl(e.feldGrad, 2))
-      .replace('{ap}', O.Format.zahl(e.austrittspupille, 1));
+    this.zahlen.textContent = optik && optik.kamera
+      ? T.kameraZahlen.replace('{feld}', O.Format.zahl(e.feldGrad * 60, 1))
+      : T.zahlen
+        .replace('{V}', O.Format.zahl(e.vergroesserung, 0))
+        .replace('{feld}', O.Format.zahl(e.feldGrad, 2))
+        .replace('{ap}', O.Format.zahl(e.austrittspupille, 1));
     markiere(this.okularReihe, z.okularMm);
     markiere(this.luftReihe, z.luftId);
     markiere(this.objektReihe, z.objektId);

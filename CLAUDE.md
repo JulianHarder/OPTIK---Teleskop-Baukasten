@@ -16,7 +16,7 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
 
 ## Stand (23.10.2026)
 
-**Fertig: Etappen 1 bis 6 und 7a.**
+**Fertig: Etappen 1 bis 7 (7a und 7b).**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -107,8 +107,30 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    („zu viel“), Hügelring reicht weit unter den Horizont (bei Yerkes
    klaffte eine Lücke zwischen Wiese und Hügeln).
 
-Als Nächstes: **Etappe 7b** – Hubble und Webb vor Weltraum-Hintergrund
-(statt Wiese), dann Etappe 8.
+7b. **Weltraumteleskope** – Hubble (`modell/Hubble.js`: Rohr mit
+   Lichtschutz und Klappe, Gerätering, Heck mit Instrumenten, Solarflügel,
+   Antennen) und Webb (`modell/Webb.js`: 18 Gold-Sechsecke auf der
+   Spiegelfläche, Fangspiegel auf drei Streben, Instrumente, Sonnenschild
+   aus fünf Lagen, Raumfahrzeug). Optik in `physik/Weltraumoptik.js`:
+   Hubble als Ritchey-Chrétien mit den echten Radien und Kegelkonstanten
+   (Brennpunkt 1,50 m hinter dem Spiegel), **Schalter „Spiegel wie 1990“**
+   im Steckbrief (k = −1,0144 statt −1,0023 → Brennfleck 200-mal größer;
+   im Kamerabild 85 % des Lichts im Hof). Hubble-„Durchschauen“ ist das
+   **Kamerabild** (Ausschnitt 2,7′, keine Luft, vier Beugungszacken), Webb
+   hat keins (Infrarot, Knopf weg). **Weltall statt Wiese**
+   (`Umgebung.ort`, `szene/Weltall.js`): kein Boden, Dunst und Hügel,
+   schwarzer Himmel mit Sternen rundum, Sonne als Fleck, hartes Licht,
+   eigene Spiegel-Umgebung, Kamera auch von unten; unter Hubble die Erde
+   (prozedurale Textur, Rand 22° unter der Waagerechten wie aus 540 km).
+   Nach Julians Durchsicht überarbeitet: runde Formen statt Kästen
+   (`Teile.kasten` mit gerundeten Kanten, `Teile.sechseck` mit Fase,
+   `Teile.schale` für Antennen; Hubbles Heck als ein Drehteil mit runden
+   Kanten, Folie mit Feldern und Nähten `Material.folienFelder`),
+   Webbs Schild-Lagen spreizen sich nach außen auf, ein Turm verbindet
+   Raumfahrzeug und Instrumente, beim Zerlegen liegen die Teile deutlich
+   auseinander, und der Mensch steht bei beiden außerhalb.
+
+Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
 
 ### Wo vom Plan abgewichen wurde
 
@@ -187,6 +209,12 @@ Als Nächstes: **Etappe 7b** – Hubble und Webb vor Weltraum-Hintergrund
   Hubble und Webb (Weltraum). So kann Julian früher prüfen.
 - **Berühmte Teleskope sind fest**: kein Umbau, kein Schwenken, festes
   Okular, Stern immer in der Mitte (keine Sternlicht-Leiste).
+- **Ortswechsel nur über `Umgebung.ort(name, …)`** (in `baueTeleskop`):
+  schaltet Boden, Nebel, Hügel, Himmelsfarbe, untere Sterne, Lichter,
+  Spiegel-Umgebung, Polwinkel der Kamera und Erde/Sonne (`Weltall.zeige`).
+  `nebelFuer` tut im Weltall nichts (kein Nebel).
+- **Optik-Felder `weltall`, `kamera`, `hof`** im Okular-Blick: keine
+  Luftunruhe und keine Luft-Reihe, Text „Kamerabild“, Spiegelfehler-Hof.
 - **Okular-Blick mit mitgebrachter Optik**: `Okularblick.rendere` nimmt
   statt Öffnung/Brennweite/Bauart auch `p.optik` (Form siehe
   `bildOptik` bzw. `Historisch.okular`). Annahmen, die auf der Seite
@@ -209,6 +237,31 @@ Als Nächstes: **Etappe 7b** – Hubble und Webb vor Weltraum-Hintergrund
   nach der Größe des Teleskops (`Umgebung.nebelFuer`) – sonst stünde das
   Yerkes-Rohr aus 40 m Abstand im Grau. Auch die Zoomgrenzen hängen jetzt
   am Teleskop (`maxDistance`, `minDistance` in `baueTeleskop`).
+- **Webb vereinfacht**: Licht nur bis zum ersten Brennpunkt hinter dem
+  Hauptspiegel (Tertiärspiegel fehlt). ANNAHMEN: Spiegelabstand 7,16 m,
+  Brennpunkt 0,8 m hinter dem Spiegel; Radius und Kegelkonstante des
+  Fangspiegels werden daraus gerechnet (k₂ per Intervallhalbierung, weil
+  der Hauptspiegel mit k = −0,9967 keine genaue Parabel ist). Der nötige
+  Fangspiegel (0,64 m) passt auf den echten (0,74 m) – stimmig.
+- **Webb wird aufgehellt**: In Wirklichkeit liegt das Teleskop immer im
+  Schatten des Schilds. Ohne kräftiges Aufhelllicht (`gegenLicht` 1,3 im
+  tiefen All) und ein nicht ganz metallisches Gold wäre der Spiegel schwarz.
+- **Hubbles Spiegelabstand 4 906,07 mm** (COMSOL) statt der 4 906,9 aus
+  der Übersicht – nur damit liegt der Brennpunkt wie echt 1,5 m hinter dem
+  Spiegel und der Fleck unter dem Beugungsscheibchen.
+- **Geschätzt** (steht in den Infokarten): Hubbles Rohrdurchmesser vorne,
+  Antennen, Solarflügel (Fläche ein Drittel kleiner als die alten
+  2,4 × 12,1 m); Webbs Rückwand, Raumfahrzeug, Solarflügel, Lagenabstand.
+- **Hubbles Kamera zielt auf die interessanteste Stelle** (`Objekte.lupenMitte`,
+  wie die Lupe): Ihr Feld (2,7′) ist kleiner als der Abstand der beiden
+  Paare von Epsilon Lyrae (3,5′) – mittig zielend wäre nichts zu sehen.
+  Die Lupe zeigt dort „so fein sieht Hubble“ (0,05″, `scheinbarGrad` 54).
+- **Mensch bei Hubble und Webb**: Standort so gewählt, dass er auch beim
+  Zerlegen außerhalb bleibt (Hubble unter dem Heck, Webb vor dem Schild).
+  Prüfen: Mittelpunkt des Menschen in keiner Bauteil-Hülle (`Box3`).
+- **Sterne unten** sind ein zweites Punktfeld mit eigenem Startwert
+  (`sterneUnten`, nur im Weltall) – so bleibt der gewohnte Himmel oben
+  unverändert.
 - **Yerkes' Gruppen**: `azimut` ist die Stundenachse (in einer um 42,6°
   geneigten Polachsen-Gruppe), `hoehe` die Deklinationsachse. Die Namen
   bleiben wie beim Dobson, damit Ansicht und Zerlegen sie finden.
@@ -249,7 +302,8 @@ Als Nächstes: **Etappe 7b** – Hubble und Webb vor Weltraum-Hintergrund
   (`modell/Beruehmt.js`), jedes Modell meldet sich mit
   `O.Beruehmt.melde(id, erzeuge)` an. Zusätzlich: `beruehmt` (id),
   `licht()` (Ergebnis wie `Optik.licht`), `lichtMassstab`, `okularOptik`,
-  `auge()` (optional, wo man längs des Rohrs hineinschaut), `mensch`
+  `auge()` (optional, wo man längs des Rohrs hineinschaut), `weltall`
+  (`'erde'` oder `'tief'`, sonst Wiese), `sonne` (Richtung), `mensch`
   (Standort, optional); `masse` braucht nur `D, zHinten, zVorne, rAussen,
   laenge`. Wer Beobachten, Durchschauen oder das Datenblatt anfasst, muss
   `teleskop.beruehmt` beachten.

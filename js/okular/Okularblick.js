@@ -198,7 +198,10 @@
     tmp.width = tmp.height = n;
     var c = tmp.getContext('2d');
     // Die Lupe zeigt die interessanteste Stelle (bei Epsilon Lyrae ein Paar)
-    var mitte = lupe ? O.Objekte.lupenMitte(p.objekt) : { x: 0, y: 0 };
+    // Hubbles Kamera zeigt nur 2,7′ – die beiden Paare von Epsilon Lyrae
+    // stehen 3,5′ auseinander und lägen beide außerhalb. Die Kamera zielt
+    // deshalb wie die Lupe auf die interessanteste Stelle (ein Paar).
+    var mitte = lupe || m.kamera ? O.Objekte.lupenMitte(p.objekt) : { x: 0, y: 0 };
     c.translate(n / 2, n / 2);
     c.scale(sx / bsProPx, sy / bsProPx);
     c.translate(-mitte.x, -mitte.y);
@@ -222,6 +225,17 @@
       for (var i = 0; i < n * n; i++) scharf[i] = scharf[i] * (1 - HOF_ANTEIL) + hof[i] * HOF_ANTEIL;
       return scharf;
     });
+
+    // 3b. Hubble 1990: nur ein Teil des Lichts im scharfen Kern, der Rest
+    // als weiter Hof (m.hof = { anteil, fwhmBs })
+    var hofPx = m.hof ? m.hof.fwhmBs / 2.3548 / bsProPx : 0;
+    if (m.hof) {
+      kanaele = kanaele.map(function (k) {
+        var hof = verwische(new Float32Array(k), n, hofPx);
+        for (var i = 0; i < n * n; i++) k[i] = k[i] * (1 - m.hof.anteil) + hof[i] * m.hof.anteil;
+        return k;
+      });
+    }
 
     // 4. Flächenhelligkeit und Himmel
     var gewinn = flaeche * BELICHTUNG * (O.Objekte.hell[p.objekt.id] || 1);
@@ -250,6 +264,13 @@
       // (gleiche Lichtmenge auf mehr Fläche, also entsprechend dunkler)
       for (var f = 0; f < 3; f++) {
         var hofAnteil = sigma[f] > sigma[1] * 1.2 ? HOF_ANTEIL : 0;
+        if (m.hof) {
+          // Spiegelfehler: Kern schwach, Hof breit (gleiche Lichtmenge)
+          var sHof = Math.max(sigma[1], hofPx);
+          stempelKanal(kanaele[f], n, x, y, sigma[1], w * (1 - m.hof.anteil) * st.farbe[f]);
+          stempelKanal(kanaele[f], n, x, y, sHof, w * m.hof.anteil * Math.pow(sigma[1] / sHof, 2) * st.farbe[f]);
+          continue;
+        }
         stempelKanal(kanaele[f], n, x, y, sigma[1], w * (1 - hofAnteil) * st.farbe[f]);
         if (hofAnteil) {
           stempelKanal(kanaele[f], n, x, y, sigma[f], w * hofAnteil * Math.pow(sigma[1] / sigma[f], 2) * st.farbe[f]);

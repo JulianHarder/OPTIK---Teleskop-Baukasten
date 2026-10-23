@@ -71,8 +71,10 @@
 
   // ---------- Rand einer Fläche ----------
 
-  // rand = { r } (Kreis) oder { a, b } (Ellipse, Halbachsen in x und y)
+  // rand = { r } (Kreis) oder { a, b } (Ellipse, Halbachsen in x und y),
+  // dazu optional loch: Radius eines Lochs in der Mitte (Hubble, Webb)
   function innerhalb(rand, x, y) {
+    if (rand.loch && x * x + y * y < rand.loch * rand.loch) return false;
     if (rand.r !== undefined) return x * x + y * y <= rand.r * rand.r;
     return (x * x) / (rand.a * rand.a) + (y * y) / (rand.b * rand.b) <= 1;
   }

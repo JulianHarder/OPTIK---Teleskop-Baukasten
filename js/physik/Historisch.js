@@ -160,6 +160,8 @@
   }
 
   function okular(id) {
+    if (id === 'hubble') return O.Weltraumoptik.okularHubble(false);
+    if (id === 'webb') return null;                 // kein Okular, und Infrarot
     if (id === 'galilei') {
       // Feld 15′ laut Museo Galileo; die Zerstreuungslinse lässt das Bild
       // aufrecht. Farbsaum aus der Strahlverfolgung durch die Einzellinse,

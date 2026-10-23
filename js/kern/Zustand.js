@@ -24,7 +24,8 @@
     objektId: 'saturn',   // was beobachtet wird (js/daten/himmel.js)
     luftId: 'normal',     // wie ruhig die Luft ist
     zielt: false,         // zeigt das Teleskop gerade auf das Objekt?
-    beruehmt: null        // statt des eigenen ein berühmtes Teleskop (js/daten/teleskope.js)
+    beruehmt: null,       // statt des eigenen ein berühmtes Teleskop (js/daten/teleskope.js)
+    hubble1990: false     // Hubble mit dem falsch geschliffenen Spiegel von 1990
   };
 
   O.Zustand = {

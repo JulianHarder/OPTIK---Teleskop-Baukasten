@@ -20,6 +20,7 @@ var wurzel = pfad.join(__dirname, '..');
   'js/physik/Optik.js',
   'js/physik/Linsenoptik.js',
   'js/physik/Historisch.js',
+  'js/physik/Weltraumoptik.js',
   'js/physik/Kennzahlen.js',
   'js/physik/Sehen.js',
   'js/daten/himmel.js',
@@ -431,6 +432,37 @@ console.log('\nBerühmte Teleskope');
   var ys2 = gelb(y).map(function (p) { return p.punkte[p.getroffen.indexOf('feldblende') + 1]; });
   var rand = Math.max.apply(null, ys2.map(function (q) { return Math.hypot(q.x, q.y); }));
   pruefe('Yerkes: gelber Brennfleck kleiner als 0,5 mm', rand < 0.5, (2 * rand).toFixed(3) + ' mm');
+})();
+
+console.log('\nWeltraumteleskope');
+
+(function () {
+  var W = O.Weltraumoptik;
+  function fleck(l) {
+    var r = 0;
+    var n = 0;
+    l.faecher.forEach(function (p) {
+      var i = p.getroffen.indexOf('feldblende');
+      if (i < 0 || p.getroffen[0] !== 'hauptspiegel') return;
+      var q = p.punkte[i + 1];
+      r = Math.max(r, Math.hypot(q.x, q.y));
+      n++;
+    });
+    return { d: 2 * r, n: n };
+  }
+  pruefe('Hubble: Brennpunkt 1,5 m hinter dem Hauptspiegel', Math.abs(W.HUBBLE.zFokus + 1500) < 10,
+    W.HUBBLE.zFokus.toFixed(1) + ' mm');
+  var heute = fleck(W.lichtHubble(9300, false));
+  var damals = fleck(W.lichtHubble(9300, true));
+  // 0,05″ bei f = 57,6 m sind 0,014 mm
+  pruefe('Hubble: Brennfleck kleiner als das Beugungsscheibchen (0,014 mm)', heute.d < 0.014 && heute.n === 10,
+    heute.d.toFixed(4) + ' mm');
+  pruefe('Hubble 1990: Spiegel 2 µm zu flach – Fleck über 50-mal größer', damals.d > 50 * heute.d,
+    damals.d.toFixed(2) + ' mm');
+  var webb = fleck(W.lichtWebb(7400));
+  pruefe('Webb: Haupt- und Fangspiegel bündeln auf < 0,01 mm', webb.d < 0.01 && webb.n === 10, webb.d.toFixed(4) + ' mm');
+  var noetig = W.WEBB.D * (W.WEBB.R1 / 2 - W.WEBB.abstand) / (W.WEBB.R1 / 2);
+  pruefe('Webb: der Lichtkegel passt auf den 0,74-m-Fangspiegel', noetig < W.WEBB.sekD, noetig.toFixed(0) + ' mm');
 })();
 
 console.log(fehler ? '\n' + fehler + ' Prüfung(en) fehlgeschlagen.' : '\nAlles grün.');

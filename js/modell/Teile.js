@@ -137,7 +137,64 @@
     return benenne(g, 'okular');
   }
 
+  // ---------- Runde Formen (Weltraumteleskope) ----------
+
+  // Quader mit abgerundeten Kanten (Radius r), Mitte im Ursprung
+  function kasten(b, h, t, r) {
+    r = Math.min(r, b / 2 - 1, h / 2 - 1, t / 2 - 1);
+    var s = new THREE.Shape();
+    var x = b / 2 - r;
+    var y = h / 2 - r;
+    s.moveTo(-x, -h / 2 + r);
+    s.lineTo(x, -h / 2 + r);
+    s.lineTo(x, h / 2 - r);
+    s.lineTo(-x, h / 2 - r);
+    s.lineTo(-x, -h / 2 + r);
+    var g = new THREE.ExtrudeGeometry(s, {
+      depth: t - 2 * r, bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelSegments: 4, curveSegments: 4
+    });
+    g.translate(0, 0, -(t - 2 * r) / 2);
+    g.computeVertexNormals();
+    return g;
+  }
+
+  // Sechseck mit gefasten Kanten (Spitzen bei ±y), Vorderseite bei z = 0
+  function sechseck(rUm, dicke, fase) {
+    var s = new THREE.Shape();
+    var r = rUm - fase * 1.2;
+    for (var k = 0; k <= 6; k++) {
+      var w = Math.PI / 2 + k * Math.PI / 3;
+      if (k === 0) s.moveTo(Math.cos(w) * r, Math.sin(w) * r);
+      else s.lineTo(Math.cos(w) * r, Math.sin(w) * r);
+    }
+    var g = new THREE.ExtrudeGeometry(s, {
+      depth: dicke - 2 * fase, bevelEnabled: true, bevelThickness: fase, bevelSize: fase, bevelSegments: 3
+    });
+    g.translate(0, 0, -dicke + fase);
+    return g;
+  }
+
+  // Parabolantenne: Schüssel (Radius r, Tiefe t), hohl nach +y, mit
+  // dünnem Rand und Rückseite; Scheitel bei y = 0
+  function schale(r, t, seg) {
+    var p = [];
+    var n = 12;
+    for (var i = 0; i <= n; i++) {                      // Rückseite, von innen nach außen
+      var q = r * i / n;
+      p.push([q, t * (q / r) * (q / r) - 12]);
+    }
+    p.push([r + 6, t]);
+    for (var j = n; j >= 0; j--) {                      // Innenseite zurück zur Mitte
+      var q2 = r * j / n;
+      p.push([q2, t * (q2 / r) * (q2 / r)]);
+    }
+    return drehteil(p, seg || 48, false);
+  }
+
   O.Teile = {
+    kasten: kasten,
+    sechseck: sechseck,
+    schale: schale,
     netz: netz,
     benenne: benenne,
     zylinderZ: zylinderZ,

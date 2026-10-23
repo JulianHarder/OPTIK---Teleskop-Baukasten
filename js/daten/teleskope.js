@@ -11,6 +11,14 @@
   - Newton: en.wikipedia.org/wiki/Newton%27s_reflector (Maße aus Newtons
     „Opticks“: Spiegel ca. 1,3 Zoll, Brennweite 6,25 Zoll, 35-fach);
     Rohrdurchmesser 2,25 Zoll vom zweiten Teleskop (1671) übernommen
+  - Hubble: en.wikipedia.org/wiki/Hubble_Space_Telescope (13,2 × 4,2 m,
+    11 110 kg, 2,4 m, f = 57,6 m, Start 24.4.1990, 94 min, Spiegel am Rand
+    2,2 µm zu flach), NASA (Spiegel 828 kg), Physics Today „Hubble's blurry
+    years“ (70 % in 0,1″ geplant), astrosociety.org (1990 nur ~15 %)
+  - Webb: en.wikipedia.org/wiki/James_Webb_Space_Telescope (6,5 m, 25,4 m²,
+    f = 131,4 m, f/20,2, Sonnenschild 21,197 × 14,162 m, 6 500 kg,
+    Start 25.12.2021, unter 50 K, 0,6–28,5 µm), jwst.nasa.gov/mirrors.html
+    (18 Segmente, 1,32 m, je ~20 kg, Beryllium mit Gold)
   - Yerkes: en.wikipedia.org/wiki/Yerkes_Observatory (102 cm, f = 19,3 m,
     225 kg), forgottenfutures.com/library/telescope/telescope.htm (Artikel
     von 1897: Rohr 4 ft 2 in Ø in der Mitte, 6 t, Kuppel 90 ft, Hebeboden
@@ -20,7 +28,7 @@
   'use strict';
 
   O.TELESKOPE = {
-    liste: ['galilei', 'newton', 'yerkes'],
+    liste: ['galilei', 'newton', 'yerkes', 'hubble', 'webb'],
 
     galilei: {
       name: 'Galileis Fernrohr',
@@ -104,6 +112,59 @@
         'halten, und eine noch größere biegt sich unter ihrem eigenen Gewicht ' +
         'durch. Spiegel kann man von hinten stützen – darum sind alle ' +
         'großen Teleskope danach Spiegelteleskope.'
+    },
+
+    hubble: {
+      name: 'Hubble-Weltraumteleskop',
+      kurz: 'Hubble',
+      jahr: '1990',
+      oeffnungMm: 2400,
+      zeile: 'Spiegelteleskop im All · 2,4 m Spiegel · f/24',
+      daten: [
+        ['Gestartet', '24. April 1990, mit der Raumfähre Discovery'],
+        ['Bahn', 'rund 500 km über der Erde, 94 Minuten pro Runde'],
+        ['Größe', '13,2 m lang, 4,2 m dick, 11 Tonnen'],
+        ['Hauptspiegel', '2,4 m, 828 kg, aus Glas'],
+        ['Brennweite', '57,6 m (f/24)'],
+        ['Bauart', 'Ritchey-Chrétien: zwei hyperbolische Spiegel'],
+        ['Besuche', 'fünfmal repariert und erneuert, 1993 bis 2009']
+      ],
+      text: 'Über der Luft flimmert nichts: Hubble sieht so scharf, wie sein ' +
+        'Spiegel es erlaubt. Doch die ersten Bilder 1990 waren verschwommen. ' +
+        'Der Spiegel war am Rand um 2,2 Tausendstel Millimeter zu flach ' +
+        'geschliffen – ein Prüfgerät war falsch zusammengebaut.',
+      okular: 'Hubble hat kein Okular – das ist das Bild seiner Kamera, ein ' +
+        'Ausschnitt von 2,7′. Ohne Luft darüber ist es so scharf, wie der ' +
+        'Spiegel erlaubt; die vier Zacken machen die Streben des Fangspiegels. ' +
+        'Schalte im Steckbrief den Spiegel von 1990 ein: Dann liegt nur noch ' +
+        'ein kleiner Teil des Lichts im scharfen Kern.',
+      fakt: 'Im Dezember 1993 setzten Astronauten Korrekturoptiken ein – eine ' +
+        'Brille für Hubble. Seitdem sind die Bilder gestochen scharf.'
+    },
+
+    webb: {
+      name: 'James-Webb-Weltraumteleskop',
+      kurz: 'Webb',
+      jahr: '2021',
+      oeffnungMm: 6500,
+      zeile: 'Spiegelteleskop im All · 6,5 m · Infrarot',
+      daten: [
+        ['Gestartet', '25. Dezember 2021'],
+        ['Ort', 'bei L2, 1,5 Millionen km von der Erde'],
+        ['Hauptspiegel', '6,5 m aus 18 Sechsecken, je 1,32 m'],
+        ['Spiegel aus', 'Beryllium, mit Gold beschichtet'],
+        ['Brennweite', '131,4 m (f/20)'],
+        ['Sonnenschild', '21,2 × 14,2 m, fünf Lagen'],
+        ['Kälte', 'unter 50 K (−223 °C)'],
+        ['Licht', 'Infrarot, 0,6 bis 28,5 µm']
+      ],
+      text: 'Webb sieht Wärmestrahlung (Infrarot). Das Licht der ersten ' +
+        'Galaxien ist auf dem langen Weg zu uns ins Infrarote gerutscht. ' +
+        'Damit das Teleskop nicht selbst strahlt, muss es eiskalt sein: Ein ' +
+        'Sonnenschild so groß wie ein Tennisplatz hält Sonne, Erde und Mond ab.',
+      fakt: 'Durchschauen geht bei Webb nicht: Es hat kein Okular, und sein ' +
+        'Licht kann das Auge gar nicht sehen. Die bunten Webb-Bilder sind ' +
+        'übersetzt – jede Infrarot-Farbe bekommt eine sichtbare.'
     }
   };
 })(globalThis.OPTIK = globalThis.OPTIK || {});

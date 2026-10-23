@@ -173,6 +173,16 @@
       holzAlt: new THREE.MeshStandardMaterial({ map: holz, color: 0x8a6448, roughness: 0.75, metalness: 0 }),
       // Gusseisen, dunkel lackiert (Säule und Montierung in Yerkes)
       eisen: new THREE.MeshStandardMaterial({ color: 0x2a3034, roughness: 0.6, metalness: 0.35 }),
+      // Weltraum: glänzende Isolierfolie (Hubble), Goldspiegel und
+      // Sonnenschild-Folie (Webb)
+      folie: new THREE.MeshStandardMaterial({ color: 0xd9dde3, roughness: 0.32, metalness: 0.85 }),
+      // nicht ganz metallisch: sonst spiegelt es nur den schwarzen Himmel
+      goldSpiegel: new THREE.MeshStandardMaterial({
+        color: 0xf2c25a, roughness: 0.22, metalness: 0.75, envMapIntensity: 1.6
+      }),
+      kapton: new THREE.MeshStandardMaterial({
+        color: 0xc9b6dc, roughness: 0.3, metalness: 0.75, side: THREE.DoubleSide
+      }),
       // Lack des Yerkes-Rohrs
       lackGrau: new THREE.MeshPhysicalMaterial({
         color: 0x56616b, roughness: 0.45, metalness: 0.2, clearcoat: 0.4, clearcoatRoughness: 0.3
@@ -183,7 +193,55 @@
     };
   }
 
+  // Solarzellen: dunkelblaue Felder mit hellen Rändern. Jedes Teleskop
+  // bekommt seine eigene Textur (wird beim Umbau freigegeben).
+  function solarzellen(wiederholen) {
+    var c = leinwand(256, 128);
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#c7ccd4';
+    ctx.fillRect(0, 0, 256, 128);
+    for (var x = 0; x < 16; x++) {
+      for (var y = 0; y < 8; y++) {
+        ctx.fillStyle = (x + y) % 3 ? '#16264d' : '#1b2d58';
+        ctx.fillRect(x * 16 + 1, y * 16 + 1, 14, 14);
+      }
+    }
+    var t = alsTextur(c);
+    t.repeat.set(wiederholen || 3, 1);
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.35, metalness: 0.4, side: THREE.DoubleSide });
+  }
+
+  // Isolierfolie mit Feldern: leicht verschieden helle Flicken mit Nähten,
+  // wie die Folie auf Hubble. u = rundherum, v = entlang.
+  function folienFelder(spalten, zeilen) {
+    var c = leinwand(512, 256);
+    var ctx = c.getContext('2d');
+    var z = O.Zufall(1990);
+    var bw = 512 / spalten;
+    var bh = 256 / zeilen;
+    for (var x = 0; x < spalten; x++) {
+      for (var y = 0; y < zeilen; y++) {
+        var h = 205 + Math.floor(z() * 30);
+        ctx.fillStyle = 'rgb(' + h + ',' + h + ',' + (h + 6) + ')';
+        ctx.fillRect(x * bw, y * bh, bw, bh);
+        // Knitter: ein paar weiche, hellere und dunklere Flecken
+        for (var k = 0; k < 6; k++) {
+          ctx.fillStyle = z() < 0.5 ? 'rgba(255,255,255,0.10)' : 'rgba(60,64,72,0.10)';
+          ctx.fillRect(x * bw + z() * bw, y * bh + z() * bh, 4 + z() * bw * 0.5, 2 + z() * 6);
+        }
+      }
+    }
+    ctx.strokeStyle = 'rgba(70, 75, 85, 0.65)';
+    ctx.lineWidth = 2;
+    for (var sx = 0; sx <= spalten; sx++) { ctx.beginPath(); ctx.moveTo(sx * bw, 0); ctx.lineTo(sx * bw, 256); ctx.stroke(); }
+    for (var sy = 0; sy <= zeilen; sy++) { ctx.beginPath(); ctx.moveTo(0, sy * bh); ctx.lineTo(512, sy * bh); ctx.stroke(); }
+    return new THREE.MeshStandardMaterial({ map: alsTextur(c), roughness: 0.4, metalness: 0.7 });
+  }
+
   O.Material = {
+    solarzellen: solarzellen,
+    folienFelder: folienFelder,
+
     // alle Materialien – beim ersten Aufruf angelegt
     alle: function () {
       if (!cache) {

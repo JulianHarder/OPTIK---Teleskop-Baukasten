@@ -3,17 +3,18 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Der Yerkes-Refraktor: 19 m Rohr auf einer 12 m hohen Säule, daneben ein Mensch](screenshots/etappe-7-yerkes.png)
+![Das James-Webb-Weltraumteleskop: 18 goldene Sechsecke über dem Sonnenschild](screenshots/etappe-7-webb.png)
 
-> **Im Aufbau.** Fertig sind Etappe 1 bis 6 von 8: ein Spiegelteleskop
+> **Im Aufbau.** Fertig sind Etappe 1 bis 7 von 8: ein Spiegelteleskop
 > (Dobson) und ein Linsenfernrohr zum Ansehen, Aufschneiden, Zerlegen und
 > Selbstbauen, mit dem Licht eines Sterns, das man bis ins Okular laufen
 > sieht – und zum Hindurchschauen, so wie genau dieses Teleskop den
 > Himmel zeigen würde. Beim Linsenfernrohr sieht man, warum eine einzelne
-> Linse bunte Ränder macht und wie zwei Glassorten das beheben. Dazu drei
+> Linse bunte Ränder macht und wie zwei Glassorten das beheben. Dazu fünf
 > berühmte Teleskope zum Aufschrauben: Galileis Fernrohr (1609/10), Newtons
-> erstes Spiegelteleskop (1668) und der Yerkes-Refraktor (1897). Was noch
-> kommt – Hubble und Webb – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> erstes Spiegelteleskop (1668), der Yerkes-Refraktor (1897) und im All
+> Hubble (1990, mit seinem berühmten Spiegelfehler zum Einschalten) und
+> Webb (2021). Was noch kommt, steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -33,7 +34,7 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | `Esc` | Infokarte schließen |
 | `L` | Sternlicht an/aus; Regler: Stern neben die Mitte schieben |
 | `O` / Durchschauen | durchs Okular schauen (vorher schwenkt das Teleskop zum Objekt), `Esc` zurück – auch durch Galileis, Newtons und das Yerkes-Teleskop |
-| Links: Berühmte Teleskope | Galilei, Newton, Yerkes – mit Steckbrief; „Meins“ zurück zum eigenen |
+| Links: Berühmte Teleskope | Galilei, Newton, Yerkes, Hubble, Webb – mit Steckbrief; „Meins“ zurück zum eigenen |
 | Links: Beobachten | Objekt und Luft wählen |
 | Links: Selbst bauen | Vorlagen, Öffnung, Brennweite, Okular – das Teleskop baut sich sofort um |
 | Links: Datenblatt | Zeile anklicken für die Erklärung |
