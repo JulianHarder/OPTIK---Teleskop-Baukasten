@@ -27,7 +27,7 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | Eingabe | Wirkung |
 | --- | --- |
 | Ziehen | um das Teleskop herum drehen |
-| Mausrad, zwei Finger kneifen | zoomen |
+| Mausrad, zwei Finger kneifen | zoomen (das Mausrad zoomt zur Maus hin) |
 | rechte Maustaste ziehen | verschieben |
 | `1` `2` `3` `4` | ganz / aufgeschnitten / zerlegt / Röntgen |
 | Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |

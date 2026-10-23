@@ -156,6 +156,8 @@
 
   // Beim Zerlegen wächst das Teleskop – die Kamera geht so weit zurück,
   // dass alles ins Bild passt (aber nie näher heran als gerade).
+  // „Ganz“ führt immer zurück in die Ausgangsstellung (startBlick, setzt
+  // main.js) – egal, wie weit man gezoomt oder gedreht hat.
   Ansicht.prototype.kameraNachfuehren = function (sofort) {
     var b = this.buehne;
     var k = b.kamera;
@@ -165,6 +167,7 @@
     this.wert.zerlegt = ZIELE[this.modus].zerlegt;
     this.anwenden();
     var huelle = O.Dobson.huelle(this.t);
+    var start = this.modus === 'ganz' && this.startBlick ? this.startBlick() : null;
     this.wert.zerlegt = merke;
     this.anwenden();
 
@@ -175,6 +178,10 @@
     var abstand = Math.max(vonPos.distanceTo(vonZiel), this.modus === 'zerlegt' ? noetig : 0);
     var nachZiel = this.modus === 'zerlegt' ? huelle.center : vonZiel;
     var nachPos = nachZiel.clone().addScaledVector(richtung, abstand);
+    if (start) {
+      nachZiel = start.ziel;
+      nachPos = start.pos;
+    }
     if (nachPos.distanceTo(vonPos) < 1 && nachZiel.distanceTo(vonZiel) < 1) return;
 
     function schritt(t) {

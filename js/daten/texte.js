@@ -24,7 +24,7 @@
 
     fuss: [
       ['Ziehen', 'drehen'],
-      ['Mausrad', 'zoomen'],
+      ['Mausrad', 'zur Maus hin zoomen'],
       ['Rechts ziehen', 'verschieben'],
       ['Klick', 'Teil erklären'],
       ['L', 'Sternlicht'],

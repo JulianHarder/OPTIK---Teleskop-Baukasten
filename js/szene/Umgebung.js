@@ -203,6 +203,8 @@
 
   O.Umgebung = {
     schattenFuer: schattenFuer,
+    // die Wiese, solange sie zu sehen ist (für den Zoom zur Maus)
+    boden: function () { return boden && boden.visible ? boden : null; },
     nebelFuer: nebelFuer,
     ort: ort,
 

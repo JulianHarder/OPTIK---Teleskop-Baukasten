@@ -59,6 +59,14 @@
     auswahl.waehle(teil);
   }
 
+  // Mausrad zoomt zu dem, was unter der Maus liegt (Buehne.zoomZurMaus)
+  buehne.zoomZiele = function () { return [teleskop.wurzel, mensch, O.Umgebung.boden()]; };
+  buehne.zoomMitte = function () {
+    return { drehpunkt: O.Dobson.huelle(teleskop).center, radius: blickZiel().radius };
+  };
+  buehne.bodenDa = function () { return !!O.Umgebung.boden(); };
+  buehne.zoomFilter = function (treffer) { return !ansicht || ansicht.istSichtbar(treffer); };
+
   var beschriftung = new O.Beschriftung(buehne, document.getElementById('schilder'));
   var datenblatt = new O.Datenblatt(document.getElementById('datenblatt'));
   var nav = document.getElementById('ansicht');
@@ -91,6 +99,7 @@
 
     auswahl.neuesTeleskop();
     ansicht = new O.Ansicht(buehne, teleskop, auswahl, beschriftung);
+    ansicht.startBlick = startBlick;
     ansicht.setze(modus, true, true);
 
     if (licht) licht.neuesTeleskop(teleskop, ansicht);
@@ -226,6 +235,13 @@
     var mitte = h.center.clone();
     mitte.y += h.radius * 0.12;     // Teleskop etwas unter die Bildmitte
     return { mitte: mitte, radius: h.radius * 0.97 };
+  }
+
+  // Ausgangsstellung: aus START_RICHTUNG, alles im Bild
+  function startBlick() {
+    var z = blickZiel();
+    var abstand = buehne.abstandFuer(z.radius) * 1.05;
+    return { ziel: z.mitte, pos: z.mitte.clone().addScaledVector(START_RICHTUNG.clone().normalize(), abstand) };
   }
 
   function ganzesTeleskop() {

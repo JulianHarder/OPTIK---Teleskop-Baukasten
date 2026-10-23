@@ -284,6 +284,24 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   `globalThis.OPTIK` (Muster: `(function (O) { … })(globalThis.OPTIK = globalThis.OPTIK || {});`).
   Grund: per Doppelklick über `file://` blockieren Browser ES-Module. Neuere
   Three.js-Versionen gibt es nur noch als Module – deshalb bleibt es bei r128.
+- **Mausrad zoomt zur Maus** (`Buehne.zoomZurMaus`, Julians Wunsch): Die
+  Kamera rückt längs des Strahls durch die Maus auf den getroffenen Punkt
+  zu (Teleskop, Mensch, Wiese – `buehne.zoomZiele` in main.js), sonst auf
+  die Ebene durch den Drehpunkt; 6 % pro Raste. Danach liegt der
+  Drehpunkt auf der Blickachse in der Tiefe der Teleskopmitte
+  (`zoomMitte`) – rückte er mit, drehte man sich um einen Punkt vor dem
+  Teleskop (Julian). Höchstens doppelt so weit weg, wie es fürs ganze
+  Bild braucht; Kamera nie unter 4 cm über der Wiese, Drehpunkt nie
+  darunter (`ueberDemBoden`, in jedem Bild). Drehen mit halbem Tempo
+  (`rotateSpeed` 0,5). Bis 5 cm an eine Fläche heran. Zählt nur
+  Sichtbares als Treffer (der Raycaster prüft `visible` nicht – das
+  ausgeschaltete Licht im Rohr bremste sonst wie eine Wand) und geht
+  auch über den Schildern. OrbitControls r128 kann nicht zur Maus zoomen;
+  sein Rad-Zoom bekommt das Ereignis nicht (Capture auf `window`),
+  Kneifen auf dem Handy bleibt bei OrbitControls.
+- **„Ganz“ führt in die Ausgangsstellung zurück** (`ansicht.startBlick`
+  aus main.js), egal wie gezoomt oder gedreht – wie „Zerlegt“ die Kamera
+  passend setzt. Beim Umbau bleibt die Kamera, wo sie ist.
 - **Ausnahme Mensch und Astronaut:** Formen und kleine WebP-Texturen stehen
   als Base64 in `js/daten/modell-*.js` (Texturen als `data:`-Adresse –
   kein `fetch`, geht auch über `file://`). Julians Wunsch: Grundformen

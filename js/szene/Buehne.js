@@ -13,6 +13,18 @@
 (function (O) {
   'use strict';
 
+  var BODEN_ABSTAND = 40;   // mm – so tief darf die Kamera über der Wiese
+  var NAH_MM = 50;          // so nah rückt der Zoom an eine Fläche heran
+
+  // Trifft der Mausstrahl etwas, das man sieht? Der Raycaster prüft
+  // Sichtbarkeit nicht – ausgeschaltetes Licht im Rohr oder die
+  // ausgeblendete Röntgen-Haut würden sonst wie eine Wand bremsen.
+  function sichtbar(o) {
+    if (!o.isMesh || (o.material && o.material.visible === false)) return false;
+    for (; o; o = o.parent) if (!o.visible) return false;
+    return true;
+  }
+
   function Buehne(behaelter) {
     this.behaelter = behaelter;
 
@@ -43,7 +55,11 @@
     s.enableDamping = true;
     s.dampingFactor = 0.08;
     s.screenSpacePanning = true;
+    s.rotateSpeed = 0.5;   // halb so schnell wie üblich – sonst zu hektisch
     s.minDistance = 150;
+    // Das Mausrad zoomt zur Maus, nicht zur Bildmitte (zoomZurMaus).
+    // OrbitControls r128 kann das nicht; sein eigener Rad-Zoom bekommt das
+    // Ereignis deshalb gar nicht erst – Kneifen mit zwei Fingern bleibt ihm.
     s.maxDistance = 9000;
     s.maxPolarAngle = Math.PI / 2 - 0.03;   // nicht unter die Wiese
     this.steuerung = s;
@@ -57,7 +73,20 @@
     this.nachBild = [];      // Aufrufe nach jedem Bild (z. B. Beschriftungen)
     this.zaehler = { bilder: 0, seit: performance.now(), anzeige: null };
 
+    this.zoomZiele = function () { return []; };   // setzt main.js
+    this.zoomFilter = function () { return true; };
+    this.zoomMitte = function () { return { drehpunkt: s.target.clone(), radius: 1000 }; };
+    this.bodenDa = function () { return false; };
+
     var self = this;
+    // Auch über den Schildern der Bauteile (die liegen über der Bühne)
+    window.addEventListener('wheel', function (e) {
+      var ueberSchild = e.target.closest && e.target.closest('.schilder');
+      if ((e.target !== r.domElement && !ueberSchild) || !s.enabled || !s.enableZoom) return;
+      e.preventDefault();
+      e.stopPropagation();
+      self.zoomZurMaus(e);
+    }, { capture: true, passive: false });
     s.addEventListener('start', function () { self.festhalten = true; self.starte(); });
     s.addEventListener('end', function () { self.festhalten = false; self.starte(); });
     s.addEventListener('change', function () { self.zeichneBald(); });
@@ -110,6 +139,7 @@
   Buehne.prototype.bild = function (zeit) {
     // update() meldet true, solange die Kamera noch nachgleitet
     var bewegt = this.steuerung.update();
+    this.ueberDemBoden();
     var animiert = this.schritt(zeit);
     var dauernd = this.dauerSchritt(zeit);
     if (bewegt || animiert || dauernd || this.bedarf) this.zeichne();
@@ -221,6 +251,71 @@
     var senkrecht = k.fov * Math.PI / 180;
     var waagerecht = 2 * Math.atan(Math.tan(senkrecht / 2) * k.aspect);
     return radius / Math.sin(Math.min(senkrecht, waagerecht) / 2);
+  };
+
+  // Mausrad: Die Kamera rückt auf den Punkt unter der Maus zu (oder von
+  // ihm weg) – entlang des Strahls durch die Maus, so bleibt er unter der
+  // Maus stehen, und die Blickrichtung ändert sich nicht. Der Punkt ist,
+  // was die Maus trifft (Teleskop, Mensch, Wiese), sonst die Ebene durch
+  // den Drehpunkt. Danach liegt der Drehpunkt wieder in der Tiefe des
+  // Teleskops (zoomMitte) – sonst dreht man sich um einen Punkt davor.
+  Buehne.prototype.zoomZurMaus = function (e) {
+    var s = this.steuerung;
+    var k = this.kamera;
+    var delta = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 800 : 1);
+    // eine Raste (100) ≈ 6 %
+    var f = Math.min(1.4, Math.max(0.7, Math.exp(delta * 0.0006)));
+
+    var rect = this.renderer.domElement.getBoundingClientRect();
+    var maus = new THREE.Vector2(
+      (e.clientX - rect.left) / rect.width * 2 - 1,
+      -(e.clientY - rect.top) / rect.height * 2 + 1);
+    var strahl = new THREE.Raycaster();
+    strahl.setFromCamera(maus, k);
+
+    var punkt = null;
+    var treffer = strahl.intersectObjects(this.zoomZiele().filter(Boolean), true);
+    for (var i = 0; i < treffer.length && !punkt; i++) {
+      if (sichtbar(treffer[i].object) && this.zoomFilter(treffer[i])) punkt = treffer[i].point;
+    }
+    var blick = s.target.clone().sub(k.position).normalize();
+    if (!punkt) {
+      punkt = new THREE.Vector3();
+      var ebene = new THREE.Plane().setFromNormalAndCoplanarPoint(blick, s.target);
+      if (!strahl.ray.intersectPlane(ebene, punkt)) punkt.copy(s.target);
+    }
+
+    var pos = k.position.clone().sub(punkt).multiplyScalar(f).add(punkt);
+    // nicht näher als 5 cm an den Punkt
+    if (pos.distanceTo(punkt) < NAH_MM) {
+      if (k.position.distanceTo(punkt) <= NAH_MM) return;
+      pos.sub(punkt).setLength(NAH_MM).add(punkt);
+    }
+    // nicht weiter weg als doppelt so weit, wie es braucht, damit alles ins Bild passt
+    var m = this.zoomMitte();
+    var grenze = this.abstandFuer(m.radius) * 2;
+    if (f > 1 && pos.distanceTo(m.drehpunkt) > grenze) {
+      if (k.position.distanceTo(m.drehpunkt) >= grenze) return;
+      pos.sub(m.drehpunkt).setLength(grenze).add(m.drehpunkt);
+    }
+    if (this.bodenDa() && pos.y < BODEN_ABSTAND) pos.y = BODEN_ABSTAND;
+    k.position.copy(pos);
+
+    // Drehpunkt auf der Blickachse, so tief wie die Mitte des Teleskops
+    var tiefe = m.drehpunkt.clone().sub(pos).dot(blick);
+    if (this.bodenDa() && blick.y < 0) tiefe = Math.min(tiefe, pos.y / -blick.y);
+    tiefe = Math.min(s.maxDistance, Math.max(s.minDistance, tiefe));
+    s.target.copy(pos).addScaledVector(blick, tiefe);
+    s.update();
+    this.zeichneBald();
+  };
+
+  // Kamera und Drehpunkt nie unter die Wiese (nach Drehen und Verschieben)
+  Buehne.prototype.ueberDemBoden = function () {
+    if (!this.bodenDa()) return;
+    var s = this.steuerung;
+    if (s.target.y < 0) s.target.y = 0;
+    if (this.kamera.position.y < BODEN_ABSTAND) this.kamera.position.y = BODEN_ABSTAND;
   };
 
   // Kamera so setzen, dass ein Bereich (Mittelpunkt, Radius) ganz zu sehen ist
