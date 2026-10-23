@@ -19,6 +19,7 @@ var wurzel = pfad.join(__dirname, '..');
   'js/physik/Flaeche.js',
   'js/physik/Optik.js',
   'js/physik/Linsenoptik.js',
+  'js/physik/Historisch.js',
   'js/physik/Kennzahlen.js',
   'js/physik/Sehen.js',
   'js/daten/himmel.js',
@@ -390,6 +391,46 @@ console.log('\nLinsenfernrohr 80/600');
   pruefe('Farbsaum Einzellinse viel größer als Achromat',
     LO.farbfehler(einzel).saumBs > 10 * LO.farbfehler(achro).saumBs,
     LO.farbfehler(einzel).saumBs.toFixed(0) + '″ gegen ' + LO.farbfehler(achro).saumBs.toFixed(1) + '″');
+})();
+
+console.log('\nBerühmte Teleskope');
+
+(function () {
+  var H = O.Historisch;
+  function gelb(l) { return l.faecher.filter(function (p) { return p.linie === 'd'; }); }
+  function durchs(pfade, name) { return pfade.filter(function (p) { return p.getroffen.indexOf(name) >= 0; }); }
+
+  // Galilei: nur die Mitte kommt durch die Blende, hinter dem Okular laufen
+  // die Strahlen wieder parallel (das Auge sieht ein Bild im Unendlichen)
+  var g = gelb(H.lichtGalilei(1000));
+  var durch = durchs(g, 'okular');
+  pruefe('Galilei: die Blende lässt nur die Mitte durch', durch.length === 5 && g.length === 13,
+    durch.length + ' von ' + g.length + ' Strahlen');
+  var schief = Math.max.apply(null, durch.map(function (p) { return Math.abs(p.ende.d.y); }));
+  pruefe('Galilei: hinter dem Okular wieder parallel (< 0,05°)', schief < Math.sin(0.05 * Math.PI / 180),
+    (Math.asin(schief) * 180 / Math.PI * 3600).toFixed(1) + '″');
+  var gal = H.galilei();
+  pruefe('Galilei: Linsen 932,5 mm auseinander (± 2 mm)', Math.abs(gal.zObjektiv - gal.zOkular - 932.5) < 2,
+    (gal.zObjektiv - gal.zOkular).toFixed(1) + ' mm');
+
+  // Newton: Kugelspiegel bündelt bei f/4,8 fast so gut wie eine Parabel
+  var n = H.lichtNewton(200);
+  var anBlende = n.faecher.filter(function (p) { return p.getroffen.indexOf('feldblende') >= 0; });
+  var ys = anBlende.map(function (p) { return p.punkte[p.getroffen.indexOf('feldblende') + 1].z; });
+  var breite = Math.max.apply(null, ys) - Math.min.apply(null, ys);
+  var amSpiegel = n.faecher.filter(function (p) { return p.getroffen[0] === 'hauptspiegel'; });
+  pruefe('Newton: jeder Strahl am Fangspiegel vorbei landet im Okular',
+    amSpiegel.length === 10 && durchs(amSpiegel, 'okular').length === amSpiegel.length,
+    durchs(amSpiegel, 'okular').length + ' von ' + amSpiegel.length + ', 3 im Schatten des Fangspiegels');
+  pruefe('Newton: Brennfleck kleiner als 0,1 mm (Kugel statt Parabel)', breite < 0.1, breite.toFixed(4) + ' mm');
+
+  // Yerkes: der gelbe Brennpunkt liegt im Okularende
+  var y = H.lichtYerkes(20000);
+  var yg = durchs(gelb(y), 'okular');
+  pruefe('Yerkes: alles gelbe Licht kommt durchs Okular', yg.length === 13, yg.length + ' von 13');
+  var ys2 = gelb(y).map(function (p) { return p.punkte[p.getroffen.indexOf('feldblende') + 1]; });
+  var rand = Math.max.apply(null, ys2.map(function (q) { return Math.hypot(q.x, q.y); }));
+  pruefe('Yerkes: gelber Brennfleck kleiner als 0,5 mm', rand < 0.5, (2 * rand).toFixed(3) + ' mm');
 })();
 
 console.log(fehler ? '\n' + fehler + ' Prüfung(en) fehlgeschlagen.' : '\nAlles grün.');

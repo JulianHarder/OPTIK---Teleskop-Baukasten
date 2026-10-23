@@ -5,7 +5,8 @@
   Das Teleskop wird bei jeder Änderung im Konfigurator komplett neu gebaut
   (baueTeleskop). Was daran hängt, bekommt das neue Teleskop übergeben;
   das alte wird freigegeben (Dobson.entsorge), damit der Grafikspeicher
-  nicht volläuft.
+  nicht volläuft. Genauso beim Wechsel zu einem berühmten Teleskop
+  (O.zustand.beruehmt) – das eigene bleibt im Zustand und kommt zurück.
 */
 (function (O) {
   'use strict';
@@ -30,6 +31,7 @@
   buehne.szene.add(mensch);
 
   var teleskop = null;
+  var beruehmtLeiste = null;
   var ansicht = null;
   var licht = null;
   var beobachten = null;
@@ -76,7 +78,8 @@
       buehne.szene.remove(teleskop.wurzel);
       O.Dobson.entsorge(teleskop);
     }
-    teleskop = (O.zustand.bauart === 'refraktor' ? O.Stativ : O.Dobson).erzeuge(O.zustand);
+    if (O.zustand.beruehmt) teleskop = O.Beruehmt.erzeuge(O.zustand.beruehmt);
+    else teleskop = (O.zustand.bauart === 'refraktor' ? O.Stativ : O.Dobson).erzeuge(O.zustand);
     buehne.szene.add(teleskop.wurzel);
 
     beschriftung.leeren();
@@ -97,7 +100,13 @@
     if (okularansicht) okularansicht.neuesTeleskop(teleskop);
 
     O.Mensch.stelle(mensch, teleskop);
-    O.Umgebung.schattenFuer(O.Dobson.huelle(teleskop));
+    var huelle = O.Dobson.huelle(teleskop);
+    O.Umgebung.schattenFuer(huelle);
+    O.Umgebung.nebelFuer(buehne.szene, huelle);
+    // Zoomgrenzen nach Größe: Newtons 16-cm-Rohr will man aus der Nähe
+    // sehen, Yerkes aus 40 m Abstand
+    buehne.steuerung.maxDistance = Math.max(9000, huelle.radius * 5);
+    buehne.steuerung.minDistance = Math.max(60, Math.min(150, huelle.radius * 0.15));
     nachAenderung();
 
     // zum Nachsehen in der Konsole und für pruefungen/blicke.js
@@ -108,7 +117,8 @@
 
   // Was nach jeder Änderung neu angezeigt wird
   function nachAenderung() {
-    datenblatt.zeige(teleskop, O.zustand);
+    if (!teleskop.beruehmt) datenblatt.zeige(teleskop, O.zustand);
+    if (beruehmtLeiste) beruehmtLeiste.zeige();
     O.Oberflaeche.zeigeTeleskop();
     if (karte.teil) karte.zeige(karte.teil, teleskop, O.zustand);
     merken();
@@ -136,6 +146,16 @@
   }
 
   baueTeleskop();
+
+  // ---------- Berühmte Teleskope ----------
+
+  beruehmtLeiste = new O.BeruehmtLeiste(document.getElementById('beruehmt'), function (id) {
+    if (okularansicht.offen) okularansicht.schliesse();
+    waehle(null);
+    O.zustand.beruehmt = id;
+    baueTeleskop();
+    kameraNachziehen(true);
+  });
 
   // ---------- Konfigurator ----------
 
@@ -180,7 +200,8 @@
     if (okularansicht.offen) return;
     waehle(null);
     if (ansicht.modus === 'zerlegt') ansicht.setze('ganz', true);
-    if (O.zustand.zielt) okularansicht.oeffne();
+    // Berühmte Teleskope schwenken nicht – sie zeigen, was gewählt ist
+    if (O.zustand.zielt || teleskop.beruehmt) okularansicht.oeffne();
     else beobachten.waehle(O.zustand.objektId, function () { okularansicht.oeffne(); });
   }
 
@@ -205,8 +226,9 @@
 
   // Nach dem Umbau: Blickrichtung behalten, aber Abstand und Mitte so
   // nachführen, dass das neue Teleskop wieder gut ins Bild passt
-  function kameraNachziehen() {
-    if (ansicht.modus === 'zerlegt') return;
+  // immer: auch in der Ansicht „zerlegt“ (beim Wechsel des Teleskops)
+  function kameraNachziehen(immer) {
+    if (ansicht.modus === 'zerlegt' && !immer) return;
     var k = buehne.kamera;
     var s = buehne.steuerung;
     var z = blickZiel();

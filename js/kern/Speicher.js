@@ -38,6 +38,7 @@
       if (typeof roh.lichtAn === 'boolean') z.lichtAn = roh.lichtAn;
       if (O.HIMMEL.objekte.some(function (o) { return o.id === roh.objektId; })) z.objektId = roh.objektId;
       if (O.HIMMEL.luft.some(function (l) { return l.id === roh.luftId; })) z.luftId = roh.luftId;
+      if (O.TELESKOPE.liste.indexOf(roh.beruehmt) >= 0) z.beruehmt = roh.beruehmt;
       return { zustand: z, ansicht: ANSICHTEN.indexOf(roh.ansicht) >= 0 ? roh.ansicht : null };
     },
 
@@ -52,6 +53,7 @@
           lichtAn: zustand.lichtAn,
           objektId: zustand.objektId,
           luftId: zustand.luftId,
+          beruehmt: zustand.beruehmt,
           ansicht: ansicht
         }));
       } catch (e) {

@@ -3,15 +3,17 @@
 Ein Teleskop in 3D unter einem Sternenhimmel – zum Drehen, Aufschrauben und
 Durchschauen.
 
-![Ein Linsenfernrohr mit nur einer Linse: Rot und Blau haben verschiedene Brennpunkte](screenshots/etappe-6.png)
+![Der Yerkes-Refraktor: 19 m Rohr auf einer 12 m hohen Säule, daneben ein Mensch](screenshots/etappe-7-yerkes.png)
 
 > **Im Aufbau.** Fertig sind Etappe 1 bis 6 von 8: ein Spiegelteleskop
 > (Dobson) und ein Linsenfernrohr zum Ansehen, Aufschneiden, Zerlegen und
 > Selbstbauen, mit dem Licht eines Sterns, das man bis ins Okular laufen
 > sieht – und zum Hindurchschauen, so wie genau dieses Teleskop den
 > Himmel zeigen würde. Beim Linsenfernrohr sieht man, warum eine einzelne
-> Linse bunte Ränder macht und wie zwei Glassorten das beheben. Was noch
-> kommt – berühmte Teleskope – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
+> Linse bunte Ränder macht und wie zwei Glassorten das beheben. Dazu drei
+> berühmte Teleskope zum Aufschrauben: Galileis Fernrohr (1609/10), Newtons
+> erstes Spiegelteleskop (1668) und der Yerkes-Refraktor (1897). Was noch
+> kommt – Hubble und Webb – steht in [`OPTIK-Plan.md`](OPTIK-Plan.md).
 
 ## Starten
 
@@ -30,7 +32,8 @@ Seite lädt **nichts** aus dem Netz. Gebraucht wird ein Browser mit WebGL
 | Klick auf ein Teil oder Schild | Infokarte: wozu, woraus, Zahlen, ein Fakt |
 | `Esc` | Infokarte schließen |
 | `L` | Sternlicht an/aus; Regler: Stern neben die Mitte schieben |
-| `O` / Durchschauen | durchs Okular schauen (vorher schwenkt das Teleskop zum Objekt), `Esc` zurück |
+| `O` / Durchschauen | durchs Okular schauen (vorher schwenkt das Teleskop zum Objekt), `Esc` zurück – auch durch Galileis, Newtons und das Yerkes-Teleskop |
+| Links: Berühmte Teleskope | Galilei, Newton, Yerkes – mit Steckbrief; „Meins“ zurück zum eigenen |
 | Links: Beobachten | Objekt und Luft wählen |
 | Links: Selbst bauen | Vorlagen, Öffnung, Brennweite, Okular – das Teleskop baut sich sofort um |
 | Links: Datenblatt | Zeile anklicken für die Erklärung |

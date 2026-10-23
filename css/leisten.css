@@ -67,41 +67,6 @@
   color: #1d1606;
 }
 
-/* ---------- Brennpunkt-Lupe (oben rechts) ---------- */
-
-.brennpunkt-lupe {
-  position: fixed;
-  top: var(--abstand);
-  right: var(--abstand);
-  z-index: 1;
-  width: 300px;
-  height: 200px;
-  margin: 0;
-  border: 1px solid var(--gold);
-  border-radius: var(--radius);
-  pointer-events: none;
-}
-
-.brennpunkt-lupe[hidden],
-.karte:not([hidden]) ~ .brennpunkt-lupe,
-.im-okular .brennpunkt-lupe {
-  display: none;
-}
-
-.brennpunkt-lupe figcaption {
-  position: absolute;
-  left: 8px;
-  bottom: 6px;
-  color: var(--gold);
-  font-size: 11px;
-}
-
-@media (max-width: 600px) {
-  .brennpunkt-lupe {
-    display: none;
-  }
-}
-
 /* ---------- Sternlicht (unten rechts) ---------- */
 
 .licht {

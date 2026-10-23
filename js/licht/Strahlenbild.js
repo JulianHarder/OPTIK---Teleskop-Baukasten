@@ -102,7 +102,7 @@
   }
 
   // Wo bündeln sich die Strahlen? Mittel der Trefferpunkte an der Feldblende
-  function brennfleck(pfade) {
+  function brennfleck(pfade, massstab) {
     var summe = new THREE.Vector3();
     var n = 0;
     pfade.forEach(function (p) {
@@ -118,7 +118,7 @@
       depthWrite: false, depthTest: false, toneMapped: false
     }));
     s.position.copy(summe.multiplyScalar(1 / n));
-    s.scale.setScalar(34);
+    s.scale.setScalar(34 * massstab);
     s.renderOrder = 5;
     return s;
   }
@@ -127,20 +127,23 @@
     FARBE: FARBE,
     fleck: fleck,
 
-    // licht = Ergebnis von Optik.licht → THREE.Group
-    erzeuge: function (licht) {
+    // licht = Ergebnis von Optik.licht → THREE.Group;
+    // massstab = Größe des Brennflecks (1 = für Teleskope um einen Meter)
+    erzeuge: function (licht, massstab) {
       var g = new THREE.Group();
       // Mehrere Farben (Refraktor): jeder Kegel zarter, damit es zusammen
       // nicht heller wird als ein Kegel beim Spiegel
-      var deck = 0.075 / Math.sqrt(licht.ringe.length);
+      // licht.dichte: lange, dichte Bündel (Yerkes, 19 m) würden sonst ganz weiß
+      var dichte = licht.dichte || 1;
+      var deck = 0.075 / Math.sqrt(licht.ringe.length) * dichte;
       var alleRinge = [];
       licht.ringe.forEach(function (r) {
         g.add(kegel(r.pfade, deck));
-        g.add(linien(r.pfade, 0.18));
+        g.add(linien(r.pfade, 0.18 * dichte));
         alleRinge = alleRinge.concat(r.pfade);
       });
-      g.add(linien(licht.faecher, licht.ringe.length > 1 ? 0.6 : 0.85));
-      var bf = brennfleck(licht.faecher.concat(alleRinge));
+      g.add(linien(licht.faecher, (licht.ringe.length > 1 ? 0.6 : 0.85) * dichte));
+      var bf = brennfleck(licht.faecher.concat(alleRinge), massstab || 1);
       if (bf) g.add(bf);
       g.traverse(function (o) { o.renderOrder = Math.max(o.renderOrder, 4); });
       return g;

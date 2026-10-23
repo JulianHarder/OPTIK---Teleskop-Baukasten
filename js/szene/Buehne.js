@@ -131,36 +131,8 @@
       r.clearDepth();
     }
     r.render(this.szene, this.kamera);
-    this.zeichneLupe();
     for (var i = 0; i < this.nachBild.length; i++) this.nachBild[i]();
     this.zaehle();
-  };
-
-  // ---------- Brennpunkt-Lupe ----------
-
-  // Ein zweites, kleines Bild in einem Rahmen über der Bühne: eigene
-  // Kamera, nur Ebene 1 (das Licht), schwarzer Grund. lupe = { kamera,
-  // element, stelle() } oder null. stelle() richtet die Kamera vor jedem Bild.
-  Buehne.prototype.zeichneLupe = function () {
-    var l = this.lupe;
-    if (!l || l.element.hidden) return;
-    var r = this.renderer;
-    var leinwand = r.domElement.getBoundingClientRect();
-    var rahmen = l.element.getBoundingClientRect();
-    if (rahmen.width < 2) return;
-    var x = rahmen.left - leinwand.left;
-    var y = leinwand.height - (rahmen.bottom - leinwand.top);     // WebGL zählt von unten
-    l.stelle();
-    l.kamera.aspect = rahmen.width / rahmen.height;
-    l.kamera.updateProjectionMatrix();
-    r.setScissorTest(true);
-    r.setScissor(x, y, rahmen.width, rahmen.height);
-    r.setViewport(x, y, rahmen.width, rahmen.height);
-    r.setClearColor(0x000000, 1);
-    r.clear(true, true);
-    r.render(this.szene, l.kamera);
-    r.setScissorTest(false);
-    r.setViewport(0, 0, leinwand.width, leinwand.height);
   };
 
   // ---------- Übergänge ----------

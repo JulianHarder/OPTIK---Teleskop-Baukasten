@@ -1,0 +1,130 @@
+/*
+  Leiste „Berühmte Teleskope“ mit Steckbrief (js/ui/Beruehmt.js).
+  Ist ein berühmtes Teleskop gewählt (body.zeigt-beruehmt), treten
+  Bauen, Datenblatt und Beobachten zurück. Licht und Durchschauen gehen.
+*/
+
+.beruehmt-leiste {
+  padding: 12px 14px;
+}
+
+.beruehmt-knoepfe {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.beruehmt-knopf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.beruehmt-knopf:hover {
+  border-color: var(--gold);
+}
+
+.beruehmt-knopf[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: rgba(232, 189, 90, 0.16);
+}
+
+.beruehmt-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.beruehmt-jahr {
+  color: var(--text-leise);
+  font-size: 10px;
+  font-family: var(--schrift-mono);
+}
+
+/* ---------- Steckbrief ---------- */
+
+.steckbrief {
+  margin-top: 12px;
+}
+
+.steckbrief[hidden] {
+  display: none;
+}
+
+.steckbrief-name {
+  margin: 0;
+  color: var(--gold);
+  font-size: 17px;
+}
+
+.steckbrief-zeile {
+  margin: 2px 0 10px;
+  color: var(--text-leise);
+  font-size: 12px;
+}
+
+.steckbrief-daten {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+
+.steckbrief-daten dt {
+  color: var(--text-leise);
+}
+
+.steckbrief-daten dd {
+  margin: 0;
+}
+
+.steckbrief-text {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.steckbrief-vergleich {
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border-left: 3px solid var(--akzent);
+  background: rgba(124, 196, 255, 0.08);
+  font-size: 12px;
+}
+
+/* Der Fakt sieht aus wie in der Infokarte (css/karten.css) */
+.steckbrief .karte-fakt p {
+  font-size: 12px;
+}
+
+/* ---------- Was bei berühmten Teleskopen ruht ---------- */
+
+.zeigt-beruehmt .beobachten,
+.zeigt-beruehmt .bauen,
+.zeigt-beruehmt .datenblatt {
+  display: none;
+}
+
+/* Handy: wie Bauen und Datenblatt hinter dem Knopf „Menü“ */
+@media (max-width: 600px) {
+  .beruehmt-leiste {
+    display: none;
+  }
+
+  .bauen-offen .beruehmt-leiste {
+    display: block;
+  }
+
+  .zeigt-beruehmt.bauen-offen .beobachten,
+  .zeigt-beruehmt.bauen-offen .bauen,
+  .zeigt-beruehmt.bauen-offen .datenblatt {
+    display: none;
+  }
+}

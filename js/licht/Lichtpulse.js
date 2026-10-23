@@ -33,9 +33,11 @@
     return 1;
   }
 
-  // pfade = Liste aus dem Strahlverfolger, jeProPfad = Pulse pro Strahl
-  function Lichtpulse(pfade, jeProPfad) {
+  // pfade = Liste aus dem Strahlverfolger, jeProPfad = Pulse pro Strahl,
+  // massstab = Größe und Tempo (1 = für Teleskope um einen Meter)
+  function Lichtpulse(pfade, jeProPfad, massstab) {
     var self = this;
+    this.tempo = TEMPO_MM_S * (massstab || 1);
     this.strecken = [];
     pfade.forEach(function (p, i) {
       var st = strecke(p);
@@ -50,7 +52,7 @@
     g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(n * 3), 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(n * 3), 3));
     this.punkte = new THREE.Points(g, new THREE.PointsMaterial({
-      map: O.Strahlenbild.fleck(), size: GROESSE_MM, sizeAttenuation: true,
+      map: O.Strahlenbild.fleck(), size: GROESSE_MM * (massstab || 1), sizeAttenuation: true,
       vertexColors: true, blending: THREE.AdditiveBlending,
       transparent: true, depthWrite: false, toneMapped: false
     }));
@@ -64,7 +66,7 @@
     var pos = this.punkte.geometry.attributes.position;
     var farbe = this.punkte.geometry.attributes.color;
     var f = O.Strahlenbild.FARBE;
-    var weg = zeit / 1000 * TEMPO_MM_S;
+    var weg = zeit / 1000 * this.tempo;
     var hilf = this.hilf;
 
     this.strecken.forEach(function (e, i) {

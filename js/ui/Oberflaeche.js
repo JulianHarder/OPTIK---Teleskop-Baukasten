@@ -13,6 +13,10 @@
   }
 
   function teleskopZeile(zustand) {
+    if (zustand.beruehmt) {
+      var b = O.TELESKOPE[zustand.beruehmt];
+      return O.TEXTE.beruehmt.teleskopZeile.replace('{name}', b.name).replace('{jahr}', b.jahr);
+    }
     var D = zustand.oeffnungMm;
     var f = zustand.brennweiteMm;
     var bauart = O.TEXTE.bauarten[zustand.bauart];

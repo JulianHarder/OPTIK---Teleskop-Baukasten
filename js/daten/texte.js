@@ -43,7 +43,6 @@
 
     licht: {
       knopf: 'Licht',
-      lupe: 'Brennpunkt aus der Nähe · {mm} mm',
       titel: 'Sternlicht',
       versatz: 'Stern neben der Mitte',
       feld: 'Dieses Okular zeigt {feld}° Himmel – so breit wie {mond} Vollmonde.',
@@ -155,6 +154,15 @@
       achte: 'Achte auf',
       ehrlich: 'Simulation: Sie vergleicht Teleskope richtig. So hell und so fein ' +
         'wie ein echtes Okular ist aber kein Bildschirm.'
+    },
+
+    beruehmt: {
+      titel: 'Berühmte Teleskope',
+      mein: 'Meins',
+      meinZusatz: 'selbst gebaut',
+      teleskopZeile: '{name} · {jahr}',
+      mehrLicht: 'Dein Teleskop ({D} mm) sammelt {x}-mal so viel Licht wie dieses.',
+      wenigerLicht: 'Es sammelt {x}-mal so viel Licht wie dein Teleskop ({D} mm).'
     },
 
     karte: {

@@ -336,6 +336,8 @@ soll es nach Teleskop aussehen.
    Farbsaum im Okular), Achromat als Lösung.
 7. **Berühmte Teleskope.** Newton 1668, Yerkes, Hubble, Webb mit
    Steckbriefen, Mensch zum Größenvergleich, Weltraum-Hintergrund.
+   Geteilt in **7a** (Galilei, Newton 1668, Yerkes – fertig 23.10.2026) und
+   **7b** (Hubble und Webb vor dem Weltraum).
 8. **Feinschliff und Portfolio.** Hilfe, Link zum eigenen Teleskop, Handy,
    README, Kopie ins Portfolio, Eintrag in `projekte-entdecken.js`.
    **Push erst auf Zuruf.**

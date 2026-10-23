@@ -162,8 +162,23 @@
       teflon: new THREE.MeshStandardMaterial({ color: 0xf2f2ee, roughness: 0.5, metalness: 0 }),
       akzent: new THREE.MeshStandardMaterial({ color: 0x2f6fd0, roughness: 0.35, metalness: 0.3 }),
       gold: new THREE.MeshStandardMaterial({ color: 0xd6a740, roughness: 0.3, metalness: 1 }),
+
+      // ---------- berühmte Teleskope ----------
+      // Spiegelmetall (Kupfer und Zinn): warm, nicht ganz so hell wie Aluminium
+      speculum: new THREE.MeshStandardMaterial({
+        color: 0xe2d2b4, roughness: 0.08, metalness: 1, envMapIntensity: 1.3, side: THREE.DoubleSide
+      }),
+      messing: new THREE.MeshStandardMaterial({ color: 0xc9a352, roughness: 0.32, metalness: 1 }),
+      // altes, dunkles Holz (Galileis Ständer, Newtons Tisch)
+      holzAlt: new THREE.MeshStandardMaterial({ map: holz, color: 0x8a6448, roughness: 0.75, metalness: 0 }),
+      // Gusseisen, dunkel lackiert (Säule und Montierung in Yerkes)
+      eisen: new THREE.MeshStandardMaterial({ color: 0x2a3034, roughness: 0.6, metalness: 0.35 }),
+      // Lack des Yerkes-Rohrs
+      lackGrau: new THREE.MeshPhysicalMaterial({
+        color: 0x56616b, roughness: 0.45, metalness: 0.2, clearcoat: 0.4, clearcoatRoughness: 0.3
+      }),
       wiese: new THREE.MeshStandardMaterial({
-        map: alsTextur(wieseTextur(), 60), roughness: 1, metalness: 0
+        map: alsTextur(wieseTextur(), 200), roughness: 1, metalness: 0   // eine Kachel ≈ 1 m
       })
     };
   }

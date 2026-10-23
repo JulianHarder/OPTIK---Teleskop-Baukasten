@@ -25,7 +25,11 @@
   // Das Auge trennt etwa eine Bogenminute im Okular, das sind bei 52°
   // scheinbarem Feld rund 3 100 Bildpunkte quer übers Feld. Die Lupe
   // zeigt die Bildmitte mit genau dieser Feinheit: 1 Pixel = 1 Augenpunkt.
-  var AUGE_PUNKTE_IM_FELD = O.Optik.SCHEINBARES_FELD_GRAD * 60;
+  // Bei Galileis winzigem Feld (5°) sind es nur 300 – weniger als der
+  // Bildschirm hat; dann zeigt schon das ganze Bild alles.
+  function augePunkte(scheinbarGrad) {
+    return scheinbarGrad * 60;
+  }
   var SIGMA_MAX_PX = 7;       // mehr Unschärfe lohnt nicht zu rechnen
 
   // sRGB-Byte ↔ linear (Näherung mit Gamma 2,2 – reicht hier)
@@ -86,6 +90,7 @@
   var FARBKANAL_ANTEIL = 0.8;
   var HOF_ANTEIL = 0.5;
 
+  // m = Bild-Optik (siehe bildOptik): D, f, farbFokus
   function farbUnschaerfeBs(m) {
     if (!m.farbFokus) return [0, 0, 0];
     var faktor = FARBKANAL_ANTEIL * m.D / (m.f * m.f) * 206264.8 / 4;    // Scheibe → σ
@@ -143,28 +148,46 @@
 
   // ---------- Bild ----------
 
+  // Was das Bild über die Optik wissen muss (Form wie in
+  // physik/Historisch.js, okular). Berühmte Teleskope bringen das mit
+  // (p.optik), beim eigenen wird es aus Öffnung, Brennweite und Bauart
+  // gerechnet. Bildlage: Newton dreht um 180°, Linse + Zenitspiegel
+  // spiegelt seitenverkehrt.
+  function bildOptik(p) {
+    if (p.optik) return p.optik;
+    var m = O.Optik.masse({ oeffnungMm: p.D, brennweiteMm: p.f, bauart: p.bauart, objektiv: p.objektiv });
+    var refraktor = m.bauart === 'refraktor';
+    return {
+      D: m.D, f: m.f, okularMm: p.okularMm,
+      feldGrad: O.Optik.wahresFeldGrad(m, p.okularMm),
+      scheinbarGrad: O.Optik.SCHEINBARES_FELD_GRAD,
+      farbFokus: m.farbFokus || null,
+      sx: -1, sy: refraktor ? 1 : -1,
+      zackenWinkel: refraktor ? null : m.fokusWinkel + Math.PI
+    };
+  }
+
   /*
     canvas: Ziel (quadratisch, N × N Gerätepixel)
-    p = { objekt, D, f, okularMm, luftBs, bauart, objektiv }
+    p = { objekt, luftBs } und entweder { D, f, okularMm, bauart, objektiv }
+        (eigenes Teleskop) oder { optik } (berühmtes, siehe bildOptik)
     lupe: true = nur die Bildmitte, so fein wie das Auge sieht
     Ergebnis: Kennzahlen des Bilds (für die Anzeige und Prüfungen)
   */
   function rendere(canvas, p, lupe) {
     var n = canvas.width;
-    var m = O.Optik.masse({ oeffnungMm: p.D, brennweiteMm: p.f, bauart: p.bauart, objektiv: p.objektiv });
-    var refraktor = m.bauart === 'refraktor';
-    var ganzesFeldBs = O.Optik.wahresFeldGrad(m, p.okularMm) * 3600;
-    var feldBs = lupe ? ganzesFeldBs * n / AUGE_PUNKTE_IM_FELD : ganzesFeldBs;
+    var m = bildOptik(p);
+    var ganzesFeldBs = m.feldGrad * 3600;
+    var feldBs = lupe ? ganzesFeldBs * n / Math.max(n, augePunkte(m.scheinbarGrad)) : ganzesFeldBs;
     var bsProPx = feldBs / n;
-    var V = p.f / p.okularMm;
-    var ap = p.D / V;
-    var sigmaBs = O.Sehen.sigmaBs(p.D, p.luftBs);
+    var V = m.f / m.okularMm;
+    var ap = m.D / V;
+    var sigmaBs = O.Sehen.sigmaBs(m.D, p.luftBs);
     var farbe = farbUnschaerfeBs(m);
     var sigmaPx = farbe.map(function (s) { return Math.sqrt(sigmaBs * sigmaBs + s * s) / bsProPx; });
-    // Bildlage: Newton dreht um 180°, Linse + Zenitspiegel spiegelt seitenverkehrt
-    var sx = -1;
-    var sy = refraktor ? 1 : -1;
-    var grenz = O.Sehen.grenzgroesse(p.D);
+    var sx = m.sx;
+    var sy = m.sy;
+    var grenz = O.Sehen.grenzgroesse(m.D);
     // Empfundene Helligkeit wächst nur mit der Wurzel der Leuchtdichte
     // (Stevens-Gesetz) – und das Auge passt sich an. Halbe Austritts-
     // pupille heißt deshalb nicht „viermal so dunkel“, sondern etwa halb.
@@ -212,7 +235,6 @@
 
     // 5. Sterne
     var sichtbar = 0;
-    var zackenWinkel = m.fokusWinkel + Math.PI;
     O.Objekte.sterne(p.objekt).forEach(function (st) {
       var w = sternWirkung(st.mag, grenz);
       if (!w) return;
@@ -234,8 +256,8 @@
         }
       }
       // nur sehr helle Sterne zeigen die Zacken der Spinne (nur Newton)
-      if (!refraktor && helligkeit > 8.5) {
-        zacken(kanaele, n, x, y, sigma[1] * 3 * (helligkeit - 7.5), w * 0.14, st.farbe, zackenWinkel);
+      if (m.zackenWinkel !== null && helligkeit > 8.5) {
+        zacken(kanaele, n, x, y, sigma[1] * 3 * (helligkeit - 7.5), w * 0.14, st.farbe, m.zackenWinkel);
       }
     });
 
@@ -274,6 +296,7 @@
       unschaerfeBs: sigmaBs * 2.3548,
       farbsaumBs: farbe.map(function (s) { return s * 4; }),
       grenzgroesse: grenz,
+      lupenFaktor: augePunkte(m.scheinbarGrad) / n,
       sterneSichtbar: sichtbar,
       kanaele: kanaele,
       n: n
@@ -282,7 +305,10 @@
 
   O.Okularblick = {
     rendere: rendere,
-    // Wie viel stärker die Lupe vergrößert als das ganze Bild (bei n Pixeln)
-    lupenFaktor: function (n) { return AUGE_PUNKTE_IM_FELD / n; }
+    // Wie viel stärker die Lupe vergrößert als das ganze Bild (bei n
+    // Pixeln); unter 1 zeigt schon das ganze Bild alles, was das Auge sieht
+    lupenFaktor: function (n, scheinbarGrad) {
+      return augePunkte(scheinbarGrad || O.Optik.SCHEINBARES_FELD_GRAD) / n;
+    }
   };
 })(globalThis.OPTIK = globalThis.OPTIK || {});

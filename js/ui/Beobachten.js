@@ -51,9 +51,12 @@
     this.auffrischen();
   }
 
+  // Bei berühmten Teleskopen ruht das Beobachten: Ring am Himmel und
+  // Schild verschwinden, bis das eigene Teleskop zurück ist.
   Beobachten.prototype.neuesTeleskop = function (teleskop, ansicht) {
     this.teleskop = teleskop;
     this.ansicht = ansicht;
+    this.marke.visible = !!this.markiert && !teleskop.beruehmt;
   };
 
   // ---------- Oberfläche ----------
@@ -166,6 +169,7 @@
     this.marke.position.copy(d).multiplyScalar(r);
     this.marke.scale.setScalar(r * 0.05);
     this.marke.visible = true;
+    this.markiert = true;
     this.schild.textContent = T.zieltAuf.replace('{name}', o.name);
   };
 
@@ -182,6 +186,14 @@
     z.zielt = false;
     this.auffrischen();
     this.zeigeMarke(o);
+
+    // Berühmte Teleskope stehen fest: nur das Objekt wechseln (im Okular).
+    // Das eigene Teleskop schwenkt später hin, wenn es wieder da ist.
+    if (t.beruehmt) {
+      this.marke.visible = false;
+      if (fertig) fertig();
+      return;
+    }
 
     var vonH = z.hoeheGrad;
     var vonA = z.azimutGrad;

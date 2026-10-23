@@ -149,6 +149,7 @@
   }
 
   O.Refraktor = {
+    linse: linse,       // auch für den Yerkes-Refraktor
     // Der ganze Tubus im Tubus-System. userData.teile wie bei Newton.js
     erzeuge: function (m) {
       var M = O.Material.alle();

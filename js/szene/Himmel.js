@@ -168,7 +168,10 @@
       welle.forEach(function (q) { h += Math.sin(w * q.f + q.p) * q.a; });
       h = 300 + (h + 3) * 170;
       if (z() < 0.12) h += 120 + z() * 260;    // einzelne Baumspitzen
-      pos.push(Math.cos(w) * r, -3000, Math.sin(w) * r);
+      // Unterkante weit unter dem Horizont: Steht die Kamera hoch (Yerkes:
+      // 40 m weit weg, über 10 m hoch), liegt der Rand der Wiese tief unter
+      // der Augenhöhe – dazwischen darf kein Himmel durchscheinen
+      pos.push(Math.cos(w) * r, -r * 0.6, Math.sin(w) * r);
       pos.push(Math.cos(w) * r, h, Math.sin(w) * r);
       if (s < n) {
         var o = s * 2;

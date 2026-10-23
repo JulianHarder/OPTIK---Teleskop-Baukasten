@@ -199,9 +199,25 @@
     };
   }
 
+  // Für die berühmten Linsenfernrohre (physik/Historisch.js): Objektiv-
+  // flächen und wo jede Farbe die Achse kreuzt (Scheitel bei z = 0).
+  // obj = { flaechen: [{ z, R, plus, minus }] } – flache Seite: R = Infinity
+  function achromat(D, f) {
+    L = O.Glas.LINIEN;
+    return objektivFlaechen(D, f, 'achromat');
+  }
+
+  function kreuzungen(obj, D) {
+    L = O.Glas.LINIEN;
+    return { C: achsenKreuzung(obj, D, L.C), d: achsenKreuzung(obj, D, L.d), F: achsenKreuzung(obj, D, L.F) };
+  }
+
   O.Linsenoptik = {
     FARBEN: FARBEN,
     FALTUNG_MM: FALTUNG_MM,
+    achromat: achromat,
+    kreuzungen: kreuzungen,
+    flaecheZuElement: flaecheZuElement,
     masseRefraktor: masseRefraktor,
     elementeRefraktor: elementeRefraktor,
     lichtRefraktor: lichtRefraktor,

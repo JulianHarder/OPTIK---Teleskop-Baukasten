@@ -63,11 +63,16 @@
       return g;
     },
 
-    // Neben das Teleskop stellen, Blick zum Teleskop
+    // Neben das Teleskop stellen, Blick zum Teleskop. Berühmte Teleskope
+    // sagen selbst, wo er stehen soll (teleskop.mensch).
     stelle: function (mensch, teleskop) {
-      var huelle = O.Dobson.huelle(teleskop);
-      var abstand = Math.max(900, huelle.radius * 0.7 + 250);
-      mensch.position.copy(SEITE).multiplyScalar(abstand).addScaledVector(HINTEN, abstand * 0.35);
+      if (teleskop.mensch) {
+        mensch.position.copy(teleskop.mensch);
+      } else {
+        var huelle = O.Dobson.huelle(teleskop);
+        var abstand = Math.max(900, huelle.radius * 0.7 + 250);
+        mensch.position.copy(SEITE).multiplyScalar(abstand).addScaledVector(HINTEN, abstand * 0.35);
+      }
       mensch.rotation.y = Math.atan2(-mensch.position.x, -mensch.position.z);
     }
   };

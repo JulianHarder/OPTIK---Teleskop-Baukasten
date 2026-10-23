@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/karten.css">
   <link rel="stylesheet" href="css/seite.css">
   <link rel="stylesheet" href="css/okular.css">
+  <link rel="stylesheet" href="css/beruehmt.css">
 </head>
 <body>
 
@@ -26,6 +27,7 @@
       <div class="teleskop-zeile" id="teleskop-zeile"></div>
       <button type="button" class="bauen-knopf" id="bauen-knopf" aria-expanded="false"></button>
     </header>
+    <section class="beruehmt-leiste leiste" id="beruehmt" aria-label="Berühmte Teleskope"></section>
     <section class="beobachten leiste" id="beobachten" aria-label="Beobachten"></section>
     <section class="bauen leiste" id="bauen" aria-label="Selbst bauen"></section>
     <section class="datenblatt leiste" id="datenblatt" aria-label="Datenblatt"></section>
@@ -61,6 +63,8 @@
   <!-- Daten -->
   <script src="js/daten/texte.js"></script>
   <script src="js/daten/teile.js"></script>
+  <script src="js/daten/teile-beruehmt.js"></script>
+  <script src="js/daten/teleskope.js"></script>
   <script src="js/daten/bauarten.js"></script>
   <script src="js/daten/himmel.js"></script>
 
@@ -79,6 +83,7 @@
   <script src="js/physik/Flaeche.js"></script>
   <script src="js/physik/Optik.js"></script>
   <script src="js/physik/Linsenoptik.js"></script>
+  <script src="js/physik/Historisch.js"></script>
   <script src="js/physik/Kennzahlen.js"></script>
   <script src="js/physik/Sehen.js"></script>
 
@@ -98,6 +103,10 @@
   <script src="js/modell/Refraktor.js"></script>
   <script src="js/modell/Stativ.js"></script>
   <script src="js/modell/Mensch.js"></script>
+  <script src="js/modell/Beruehmt.js"></script>
+  <script src="js/modell/Galilei.js"></script>
+  <script src="js/modell/Newton1668.js"></script>
+  <script src="js/modell/Yerkes.js"></script>
 
   <!-- Licht -->
   <script src="js/licht/Strahlenbild.js"></script>
@@ -116,6 +125,7 @@
   <script src="js/ui/Datenblatt.js"></script>
   <script src="js/ui/Beobachten.js"></script>
   <script src="js/ui/Okularansicht.js"></script>
+  <script src="js/ui/Beruehmt.js"></script>
 
   <!-- Einstieg -->
   <script src="js/main.js"></script>

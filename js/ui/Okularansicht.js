@@ -6,12 +6,19 @@
   Im Okular lassen sich Okular, Luft und Objekt wechseln. Esc oder
   „Zurück“ fliegt wieder hinaus.
 
+  Berühmte Teleskope bringen ihre Optik mit (teleskop.okularOptik, aus
+  physik/Historisch.js) und haben ihr eigenes, festes Okular – dann fehlt
+  die Okular-Reihe, und ein Satz zur Geschichte steht im Kopf. Wo das
+  Feld so klein ist, dass das Auge nicht mehr erkennt als der Bildschirm
+  zeigt (Galilei), fehlt auch die Lupe.
+
   bei = { okular(mm), luft(), objekt(id, fertig) } – Rückrufe an main.js
 */
 (function (O) {
   'use strict';
 
   var FLUG_MS = 1200;
+  var LUPE_AB_GRAD = 20;     // scheinbares Feld, ab dem die Lupe mehr zeigt als das Bild
   var DUNKEL_MS = 350;
   var T;
 
@@ -51,6 +58,8 @@
     kopf.appendChild(this.name);
     kopf.appendChild(this.art);
     kopf.appendChild(this.zahlen);
+    this.historisch = el('p', 'ok-historisch');
+    kopf.appendChild(this.historisch);
     var achte = el('div', 'ok-achte');
     achte.appendChild(el('strong', null, T.achte));
     this.achte = el('p');
@@ -62,6 +71,7 @@
     this.leinwand = el('canvas', 'ok-leinwand');
     feld.appendChild(this.leinwand);
     var lupe = el('figure', 'ok-lupe');
+    this.lupenRahmen = lupe;
     this.lupe = el('canvas', 'ok-lupe-leinwand');
     lupe.appendChild(this.lupe);
     var lt = el('figcaption', null, T.lupe);
@@ -121,11 +131,18 @@
   Okularansicht.prototype.rendere = function () {
     var z = O.zustand;
     var o = this.beobachten.objekt();
+    var t = this.teleskop;
+    var optik = t.okularOptik || null;
+    var mitLupe = !optik || optik.scheinbarGrad >= LUPE_AB_GRAD;
+    this.lupenRahmen.hidden = !mitLupe;
+    this.okularReihe.parentElement.hidden = !!optik;
+    this.historisch.hidden = !t.beruehmt;
+    this.historisch.textContent = t.beruehmt ? O.TELESKOPE[t.beruehmt].okular : '';
     var dpr = Math.min(2, window.devicePixelRatio || 1);
     var platz = this.leinwand.parentElement.getBoundingClientRect();
     // Feld und Lupe nebeneinander (breit) oder untereinander (Handy)
     var nebeneinander = platz.width > platz.height;
-    var LUPE = 0.55;
+    var LUPE = mitLupe ? 0.55 : 0;
     var groesse = nebeneinander
       ? Math.min(platz.height, (platz.width - 30) / (1 + LUPE))
       : Math.min(platz.width, (platz.height - 40) / (1 + LUPE));
@@ -138,7 +155,7 @@
     this.lupe.style.width = this.lupe.style.height = lupe + 'px';
     this.leinwand.parentElement.classList.toggle('untereinander', !nebeneinander);
 
-    var p = {
+    var p = optik ? { objekt: o, luftBs: this.beobachten.luftBs(), optik: optik } : {
       objekt: o,
       D: z.oeffnungMm,
       f: z.brennweiteMm,
@@ -148,7 +165,7 @@
       objektiv: z.objektiv
     };
     var e = O.Okularblick.rendere(this.leinwand, p);
-    O.Okularblick.rendere(this.lupe, p, true);
+    if (mitLupe) O.Okularblick.rendere(this.lupe, p, true);
 
     this.name.textContent = o.name;
     this.art.textContent = o.art + ' – ' + o.text;
@@ -170,10 +187,20 @@
     var self = this;
     var b = this.buehne;
     var t = this.teleskop;
-    var ok = t.teile.okular;
     t.wurzel.updateMatrixWorld(true);
-    var oben = ok.localToWorld(new THREE.Vector3(0, 50, 0));
-    var achse = new THREE.Vector3(0, 1, 0).transformDirection(ok.matrixWorld);
+    // Wo das Auge hinkommt: oben auf dem Okular (Achse +y) – oder, wo man
+    // längs des Rohrs schaut (Galilei, Yerkes), so wie das Teleskop sagt
+    var oben;
+    var achse;
+    if (t.auge) {
+      var a = t.auge();
+      oben = a.punkt;
+      achse = a.achse;
+    } else {
+      var ok = t.teile.okular;
+      oben = ok.localToWorld(new THREE.Vector3(0, 50, 0));
+      achse = new THREE.Vector3(0, 1, 0).transformDirection(ok.matrixWorld);
+    }
 
     this.vorher = { pos: b.kamera.position.clone(), ziel: b.steuerung.target.clone() };
     var nachPos = oben.clone().addScaledVector(achse, 110);

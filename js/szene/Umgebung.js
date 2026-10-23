@@ -14,6 +14,8 @@
   'use strict';
 
   var mond = null;
+  var NEBEL = { nah: 5000, fern: 26000 };
+  var WIESE_RADIUS = 100000;      // groß genug für das 19-m-Rohr in Yerkes
   var MOND_RICHTUNG = new THREE.Vector3(-2600, 3800, 1900).normalize();
 
   function licht(szene) {
@@ -45,13 +47,22 @@
 
   function wiese(szene) {
     var boden = new THREE.Mesh(
-      new THREE.CircleGeometry(30000, 72),
+      new THREE.CircleGeometry(WIESE_RADIUS, 96),
       O.Material.alle().wiese
     );
     boden.rotation.x = -Math.PI / 2;
     boden.receiveShadow = true;
     szene.add(boden);
-    szene.fog = new THREE.Fog(O.Himmel.FARBEN.huegel, 5000, 26000);
+    szene.fog = new THREE.Fog(O.Himmel.FARBEN.huegel, NEBEL.nah, NEBEL.fern);
+  }
+
+  // Dunst nach der Größe des Teleskops: Bei einem 19-m-Rohr steht die
+  // Kamera 40 m weit weg – mit dem Dunst für einen Dobson wäre es grau.
+  // Spätestens am Rand der Wiese ist alles im Dunst verschwunden.
+  function nebelFuer(szene, huelle) {
+    var s = Math.max(1, huelle.radius / 2000);
+    szene.fog.near = NEBEL.nah * s;
+    szene.fog.far = Math.min(WIESE_RADIUS * 0.95, NEBEL.fern * s);
   }
 
   // Weiche Umgebung für Spiegelungen (equirektangular, 512 × 256)
@@ -108,6 +119,7 @@
 
   O.Umgebung = {
     schattenFuer: schattenFuer,
+    nebelFuer: nebelFuer,
 
     erzeuge: function (szene, renderer) {
       licht(szene);

@@ -14,9 +14,9 @@ es sah nicht nach Teleskop aus. Seitdem gilt: **Es muss nach dem Ding
 aussehen, um das es geht.** Erleben vor technischer Zeichnung; die Physik
 arbeitet darunter und sorgt dafür, dass alles stimmt.
 
-## Stand (22.10.2026)
+## Stand (23.10.2026)
 
-**Fertig: Etappen 1 bis 6.**
+**Fertig: Etappen 1 bis 6 und 7a.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -75,13 +75,40 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    Strahlen tragen ihre Wellenlänge), Refraktor-Optik mit Achromat aus der
    Formel (`physik/Linsenoptik.js`). Modell: blaues Rohr, Taukappe, Linsen
    in echter Form, Zahntrieb, Zenitspiegel, Rohrschellen, Montierungskopf,
-   Stativ (`modell/Refraktor.js`, `Stativ.js`). Licht in drei Farben,
-   **Brennpunkt-Lupe** oben rechts (30 mm, je Farbe die Randstrahlen).
+   Stativ (`modell/Refraktor.js`, `Stativ.js`). Licht in drei Farben.
    Okular-Blick mit Farbhof und seitenverkehrtem Bild (Zenitspiegel).
    Datenblatt-Zeile „Farbsaum“, Infokarten für die neuen Teile.
 
-Als Nächstes: **Etappe 7** – Berühmte Teleskope (dazu jetzt auch Galileis
-Fernrohr, das aus Etappe 6 hierher gewandert ist).
+7a. **Berühmte Teleskope, Teil 1** – Leiste „Berühmte Teleskope“ oben links
+   (Meins · Galilei · Newton · Yerkes, `js/ui/Beruehmt.js`) mit Steckbrief
+   (Daten mit Quellen in `js/daten/teleskope.js`, Vergleich „sammelt
+   x-mal so viel Licht wie dein Teleskop“, ein Fakt). Drei Modelle:
+   **Galileis Fernrohr** (Inv. 2428: Lederrohr mit Goldprägung auf Canvas,
+   Linse 37 mm mit 15-mm-Blende, Zerstreuungs-Okular, ausgedachter
+   Holzständer), **Newtons Spiegelteleskop 1668** (16-cm-Rohr,
+   Spiegelmetall, Fangspiegel unter 45°, Kugelgelenk, auf einem Tisch),
+   **Yerkes-Refraktor** (19-m-Rohr, 102-cm-Achromat, deutsche Montierung
+   mit Polachse 42,6°, Gegengewicht, 12-m-Säule). Alle vier Ansichten,
+   Schilder und Infokarten (`js/daten/teile-beruehmt.js`), Mensch daneben.
+   **Licht** auch hier, aus dem Strahlverfolger (`physik/Historisch.js`,
+   Modelle holen ihre Maße von dort): Galilei in drei Farben durch
+   Kugellinse, 15-mm-Blende und Zerstreuungslinse (danach wieder parallel),
+   Newton mit Kugelspiegel, Yerkes als Achromat mit Brennpunkt im
+   Okularende. **Durchschauen** auch hier (`O`): eigene Okular-Optik aus
+   `Historisch.okular(id)` – Galilei 21-fach, Feld 15′, Bild aufrecht,
+   Farbsaum der Einzellinse, keine Lupe (scheinbares Feld nur 5°); Newton
+   35-fach, Feld angenommen; Yerkes 483-fach mit violettem Saum des
+   Achromaten. Festes Okular, ein Satz zur Geschichte im Kopf; Flug ins
+   Okular längs des Rohrs (`teleskop.auge()`). Bauen, Datenblatt, die
+   Leiste „Beobachten“ und die Sternlicht-Leiste ruhen bei berühmten
+   Teleskopen; das Objekt wählt man im Okular. Gemerkt wird auch, welches
+   gewählt ist.
+   Nach Julians Durchsicht (23.10.2026): **Brennpunkt-Lupe entfernt**
+   („zu viel“), Hügelring reicht weit unter den Horizont (bei Yerkes
+   klaffte eine Lücke zwischen Wiese und Hügeln).
+
+Als Nächstes: **Etappe 7b** – Hubble und Webb vor Weltraum-Hintergrund
+(statt Wiese), dann Etappe 8.
 
 ### Wo vom Plan abgewichen wurde
 
@@ -145,10 +172,9 @@ Fernrohr, das aus Etappe 6 hierher gewandert ist).
 - **Galileis Fernrohr wandert nach Etappe 7** (Plan: Etappe 6). Es braucht
   ein Zerstreuungs-Okular und ein eigenes Modell; dort steht es neben den
   anderen historischen Teleskopen.
-- **Brennpunkt-Lupe** ist dazugekommen: Die drei Farbkegel liegen nur
-  Millimeter auseinander und mischen sich im Hauptbild zu Weiß. Die Lupe
-  zeigt den Brennpunkt 30 mm breit, nur die äußersten Strahlen je Farbe
-  (Ebene 2) und die Feldblende – echter Maßstab, nichts übertrieben.
+- **Die Brennpunkt-Lupe (Etappe 6) ist wieder weg** – Julian fand sie zu
+  viel. Die Farbbrennpunkte des Refraktors sieht man damit nur noch beim
+  Heranzoomen; der Farbsaum steht im Datenblatt und im Okular-Blick.
 - **Farbhof im Okular**: R- und B-Kanal halb scharf, halb als Hof mit
   Durchmesser D·Δz/f² (Δz aus der Strahlverfolgung, ×0,8). Ganz unscharfe
   Kanäle hätten Sternkerne grün und Planeten rosa gefärbt.
@@ -157,6 +183,35 @@ Fernrohr, das aus Etappe 6 hierher gewandert ist).
   fragen nur noch das Teleskop, nicht mehr `O.Dobson`.
 - Schilder wechseln selbst die Seite, wenn rechts oder links kein Platz ist
   (Handy); `schild: 'links'` in `teile.js` legt die bevorzugte Seite fest.
+- **Etappe 7 ist geteilt**: 7a Galilei, Newton, Yerkes (auf der Wiese), 7b
+  Hubble und Webb (Weltraum). So kann Julian früher prüfen.
+- **Berühmte Teleskope sind fest**: kein Umbau, kein Schwenken, festes
+  Okular, Stern immer in der Mitte (keine Sternlicht-Leiste).
+- **Okular-Blick mit mitgebrachter Optik**: `Okularblick.rendere` nimmt
+  statt Öffnung/Brennweite/Bauart auch `p.optik` (Form siehe
+  `bildOptik` bzw. `Historisch.okular`). Annahmen, die auf der Seite
+  stehen: Newtons Okular 30° scheinbares Feld (nicht überliefert), Yerkes
+  mit heutigem 40-mm-Okular (52°). Galileis Feld (15′) ist vom Museo
+  Galileo, sein Okular (−47,5 mm) ein Ersatz aus dem 19. Jahrhundert. Licht ja (Julians Wunsch),
+  mit eigenem Maßstab für Pulse und Brennfleck (`lichtMassstab`: Newton
+  0,3, Galilei 0,7, Yerkes 6) und gedämpftem Bündel bei Yerkes
+  (`licht.dichte`, sonst ist das 19-m-Bündel nur weiß).
+- **Galileis Glas ist Kronglas (BK7)** – Daten zu Galileis venezianischem
+  Glas gibt es nicht. Newtons Okular hat keine Feldblende; als „Feldblende“
+  dient im Strahlverfolger die Fassung der 6-mm-Okularlinse.
+- **Newton 1668 steht auf einem Tisch** – ein 16-cm-Rohr auf der Wiese
+  neben einem Menschen wäre kaum zu finden. Der Rohrdurchmesser (2,25 Zoll)
+  stammt vom zweiten Teleskop (1671), vom ersten ist keiner überliefert.
+- **Galileis Ständer und Yerkes' Säulenform sind ausgedacht** bzw.
+  vereinfacht; die Infokarten sagen das. Yerkes steht auf der Wiese statt
+  in seiner Kuppel; Kuppel und Hebeboden stehen im Steckbrief.
+- **Die Wiese ist 100 m groß** (vorher 30 m), und der Dunst richtet sich
+  nach der Größe des Teleskops (`Umgebung.nebelFuer`) – sonst stünde das
+  Yerkes-Rohr aus 40 m Abstand im Grau. Auch die Zoomgrenzen hängen jetzt
+  am Teleskop (`maxDistance`, `minDistance` in `baueTeleskop`).
+- **Yerkes' Gruppen**: `azimut` ist die Stundenachse (in einer um 42,6°
+  geneigten Polachsen-Gruppe), `hoehe` die Deklinationsachse. Die Namen
+  bleiben wie beim Dobson, damit Ansicht und Zerlegen sie finden.
 
 ## Stack
 - Vanilla JavaScript, **Three.js r128** (UMD, `lib/three.min.js` +
@@ -190,6 +245,17 @@ Fernrohr, das aus Etappe 6 hierher gewandert ist).
   hat immer: `bauart, teile, wurzel, azimut, hoehe, tubus, masse,
   okularHoeheMm, randschicht, zerlegeZiele()`; `teile.okular` mit +y als
   Okularachse. Neue Bauarten müssen genau das liefern.
+- **Berühmte Teleskope** entstehen über `O.Beruehmt.teleskop({...})`
+  (`modell/Beruehmt.js`), jedes Modell meldet sich mit
+  `O.Beruehmt.melde(id, erzeuge)` an. Zusätzlich: `beruehmt` (id),
+  `licht()` (Ergebnis wie `Optik.licht`), `lichtMassstab`, `okularOptik`,
+  `auge()` (optional, wo man längs des Rohrs hineinschaut), `mensch`
+  (Standort, optional); `masse` braucht nur `D, zHinten, zVorne, rAussen,
+  laenge`. Wer Beobachten, Durchschauen oder das Datenblatt anfasst, muss
+  `teleskop.beruehmt` beachten.
+- Schildpunkte (`userData.anker`) von Hand setzen, wo die Mitte der Netze
+  ins Leere zeigt (Loch einer Blende, Arm statt Spiegel) – prüfen mit
+  `OPTIK.klickAuf(…)` in der Ansicht „zerlegt“.
 - **Optik für beide Bauarten** über `O.Optik.masse(zustand)` und
   `O.Optik.licht(m, zustand, feld)`. Licht-Ergebnis: `faecher` (Pfade mit
   `farbe` oder null), `ringe: [{farbe, pfade}]`, `imBild`.
@@ -233,7 +299,10 @@ Fernrohr, das aus Etappe 6 hierher gewandert ist).
 
 ## Fallstricke
 - **Additive Farben werden weiß**: Rot, Gelb und Blau übereinander ergeben
-  Weiß. Farbunterschiede nur dort zeigen, wo sie sich trennen (Lupe).
+  Weiß. Farbunterschiede nur dort zeigen, wo sie sich trennen.
+- **Hohe Kamera, Lücke am Horizont:** Die Hügel hängen an der Kamera, die
+  Wiese nicht. Steht die Kamera hoch (Yerkes), liegt der Wiesenrand tief
+  unter Augenhöhe – deshalb reicht der Hügelring bis −0,6 · Radius hinab.
 - **Strahlen tragen ihre Wellenlänge** (`strahl.lambda`). Wer ein neues
   Element schreibt, muss sie im Ergebnis von `wirke` weitergeben
   (`imRahmen` und der Strahlverfolger tun es, wenn sie fehlt).

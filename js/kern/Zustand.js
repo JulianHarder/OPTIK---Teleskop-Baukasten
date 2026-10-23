@@ -23,7 +23,8 @@
     sternVersatzGrad: 0,  // wie weit der Stern neben der Blickrichtung steht
     objektId: 'saturn',   // was beobachtet wird (js/daten/himmel.js)
     luftId: 'normal',     // wie ruhig die Luft ist
-    zielt: false          // zeigt das Teleskop gerade auf das Objekt?
+    zielt: false,         // zeigt das Teleskop gerade auf das Objekt?
+    beruehmt: null        // statt des eigenen ein berühmtes Teleskop (js/daten/teleskope.js)
   };
 
   O.Zustand = {
