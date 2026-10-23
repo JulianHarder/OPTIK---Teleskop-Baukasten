@@ -253,12 +253,14 @@
     return radius / Math.sin(Math.min(senkrecht, waagerecht) / 2);
   };
 
-  // Mausrad: Die Kamera rückt auf den Punkt unter der Maus zu (oder von
-  // ihm weg) – entlang des Strahls durch die Maus, so bleibt er unter der
-  // Maus stehen, und die Blickrichtung ändert sich nicht. Der Punkt ist,
-  // was die Maus trifft (Teleskop, Mensch, Wiese), sonst die Ebene durch
-  // den Drehpunkt. Danach liegt der Drehpunkt wieder in der Tiefe des
-  // Teleskops (zoomMitte) – sonst dreht man sich um einen Punkt davor.
+  // Mausrad: Die Kamera fährt auf dem Strahl durch die Maus – so bleibt,
+  // was unter der Maus liegt, dort stehen, und die Blickrichtung ändert
+  // sich nicht. Die Schrittweite ist immer 6 % pro Raste vom Abstand zur
+  // Teleskopmitte (zoomMitte), egal ob die Maus auf dem Teleskop liegt
+  // oder daneben (Julian: sonst mal langsam, mal schnell). Nur wenn eine
+  // getroffene Fläche näher ist, zählt deren Abstand – sonst führe man
+  // hindurch. Danach liegt der Drehpunkt wieder in der Tiefe des
+  // Teleskops – sonst dreht man sich um einen Punkt davor.
   Buehne.prototype.zoomZurMaus = function (e) {
     var s = this.steuerung;
     var k = this.kamera;
@@ -273,28 +275,30 @@
     var strahl = new THREE.Raycaster();
     strahl.setFromCamera(maus, k);
 
-    var punkt = null;
+    var flaeche = Infinity;
     var treffer = strahl.intersectObjects(this.zoomZiele().filter(Boolean), true);
-    for (var i = 0; i < treffer.length && !punkt; i++) {
-      if (sichtbar(treffer[i].object) && this.zoomFilter(treffer[i])) punkt = treffer[i].point;
-    }
-    var blick = s.target.clone().sub(k.position).normalize();
-    if (!punkt) {
-      punkt = new THREE.Vector3();
-      var ebene = new THREE.Plane().setFromNormalAndCoplanarPoint(blick, s.target);
-      if (!strahl.ray.intersectPlane(ebene, punkt)) punkt.copy(s.target);
+    for (var i = 0; i < treffer.length; i++) {
+      if (sichtbar(treffer[i].object) && this.zoomFilter(treffer[i])) {
+        flaeche = treffer[i].distance;
+        break;
+      }
     }
 
-    var pos = k.position.clone().sub(punkt).multiplyScalar(f).add(punkt);
-    // nicht näher als 5 cm an den Punkt
-    if (pos.distanceTo(punkt) < NAH_MM) {
-      if (k.position.distanceTo(punkt) <= NAH_MM) return;
-      pos.sub(punkt).setLength(NAH_MM).add(punkt);
-    }
-    // nicht weiter weg als doppelt so weit, wie es braucht, damit alles ins Bild passt
     var m = this.zoomMitte();
+    var blick = s.target.clone().sub(k.position).normalize();
+    var basis = Math.max(s.minDistance, m.drehpunkt.clone().sub(k.position).dot(blick));
+    basis = Math.min(basis, flaeche);
+    var schritt = basis * (1 - f);              // > 0: hinein, < 0: hinaus
+    // nicht näher als 5 cm an die Fläche unter der Maus
+    if (schritt > 0) {
+      schritt = Math.min(schritt, flaeche - NAH_MM);
+      if (schritt <= 0.01) return;
+    }
+    var pos = k.position.clone().addScaledVector(strahl.ray.direction, schritt);
+
+    // nicht weiter weg als doppelt so weit, wie es braucht, damit alles ins Bild passt
     var grenze = this.abstandFuer(m.radius) * 2;
-    if (f > 1 && pos.distanceTo(m.drehpunkt) > grenze) {
+    if (schritt < 0 && pos.distanceTo(m.drehpunkt) > grenze) {
       if (k.position.distanceTo(m.drehpunkt) >= grenze) return;
       pos.sub(m.drehpunkt).setLength(grenze).add(m.drehpunkt);
     }

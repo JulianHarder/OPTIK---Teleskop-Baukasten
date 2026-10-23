@@ -285,9 +285,11 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   Grund: per Doppelklick über `file://` blockieren Browser ES-Module. Neuere
   Three.js-Versionen gibt es nur noch als Module – deshalb bleibt es bei r128.
 - **Mausrad zoomt zur Maus** (`Buehne.zoomZurMaus`, Julians Wunsch): Die
-  Kamera rückt längs des Strahls durch die Maus auf den getroffenen Punkt
-  zu (Teleskop, Mensch, Wiese – `buehne.zoomZiele` in main.js), sonst auf
-  die Ebene durch den Drehpunkt; 6 % pro Raste. Danach liegt der
+  Kamera fährt auf dem Strahl durch die Maus. Schrittweite immer 6 % pro
+  Raste vom Abstand zur Teleskopmitte – nicht vom Abstand zum Punkt
+  unter der Maus, sonst zoomt es auf dem Teleskop langsam und daneben
+  schnell (Julian). Nur eine nähere getroffene Fläche (Teleskop, Mensch,
+  Wiese – `buehne.zoomZiele` in main.js) begrenzt den Schritt. Danach liegt der
   Drehpunkt auf der Blickachse in der Tiefe der Teleskopmitte
   (`zoomMitte`) – rückte er mit, drehte man sich um einen Punkt vor dem
   Teleskop (Julian). Höchstens doppelt so weit weg, wie es fürs ganze
@@ -299,6 +301,13 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   auch über den Schildern. OrbitControls r128 kann nicht zur Maus zoomen;
   sein Rad-Zoom bekommt das Ereignis nicht (Capture auf `window`),
   Kneifen auf dem Handy bleibt bei OrbitControls.
+- **Fokus beim Zerlegen** (Julians Wunsch, `fokussiere` in main.js): Klick
+  auf ein Bauteil oder sein Schild fährt die Kamera heran (Abstand fürs
+  Bauteil × 1,6, Blickrichtung bleibt); Drehpunkt und Mausrad-Bezug
+  (`zoomMitte`) sind dann die Mitte des Bauteils. Welche Gruppe gemeint
+  ist, sagt das getroffene Netz (`auswahl.getroffen`) – sonst wären beide
+  Höhenräder ein Teil. Klick daneben (oder Karte schließen): zurück aufs
+  ganze zerlegte Teleskop. Ein Ansichtswechsel löst den Fokus.
 - **„Ganz“ führt in die Ausgangsstellung zurück** (`ansicht.startBlick`
   aus main.js), egal wie gezoomt oder gedreht – wie „Zerlegt“ die Kamera
   passend setzt. Beim Umbau bleibt die Kamera, wo sie ist.

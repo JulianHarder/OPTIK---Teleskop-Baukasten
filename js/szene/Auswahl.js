@@ -69,6 +69,7 @@
     for (var i = 0; i < treffer.length; i++) {
       var t = treffer[i];
       if (t.object.userData.teil && t.object.visible && this.o.istSichtbar(t)) {
+        this.getroffen = t.object;     // welches Netz genau (für den Fokus beim Zerlegen)
         return t.object.userData.teil;
       }
     }

@@ -51,6 +51,7 @@
     beiWahl: function (teil) {
       if (teil) karte.zeige(teil, teleskop, O.zustand);
       else karte.schliesse();
+      if (ansicht && ansicht.modus === 'zerlegt') fokussiere(teil);
     },
     beiSchweben: function (teil, x, y) { karte.schwebe(teil, x, y); }
   });
@@ -59,9 +60,61 @@
     auswahl.waehle(teil);
   }
 
+  // ---------- Fokus beim Zerlegen ----------
+  // Klick auf ein Bauteil: Die Kamera fährt heran, der Drehpunkt ist die
+  // Mitte des Bauteils (auch fürs Mausrad, zoomMitte). Klick daneben:
+  // zurück auf das ganze zerlegte Teleskop.
+
+  var fokus = null;   // { drehpunkt, radius } des Bauteils oder null
+
+  // Die Bauteil-Gruppe zum getroffenen Netz – nur ihre sichtbaren Netze
+  // desselben Teils zählen (das zweite Höhenrad ist eine eigene Gruppe)
+  function bauteilKugel(teil) {
+    var gruppen = Object.keys(teleskop.teile).map(function (k) { return teleskop.teile[k]; }).concat([mensch]);
+    var g = auswahl.getroffen;
+    while (g && gruppen.indexOf(g) < 0) g = g.parent;
+    if (!g) g = gruppen.filter(function (x) { return x.userData.teil === teil; })[0];
+    if (!g) return null;
+    var box = new THREE.Box3();
+    g.updateMatrixWorld(true);
+    g.traverse(function (o) {
+      var an = o.isMesh && o.userData.teil === teil && o.material.visible !== false;
+      for (var p = o; an && p; p = p.parent) if (!p.visible) an = false;
+      if (an) box.expandByObject(o);
+    });
+    return box.isEmpty() ? null : box.getBoundingSphere(new THREE.Sphere());
+  }
+
+  function fokussiere(teil) {
+    var kugel = teil ? bauteilKugel(teil) : null;
+    if (!kugel) {
+      if (fokus) {
+        fokus = null;
+        ansicht.kameraNachfuehren();   // zurück: alles Zerlegte im Bild
+      }
+      return;
+    }
+    fokus = { drehpunkt: kugel.center.clone(), radius: kugel.radius };
+    var k = buehne.kamera;
+    var s = buehne.steuerung;
+    var richtung = k.position.clone().sub(s.target).normalize();
+    var abstand = Math.max(s.minDistance, buehne.abstandFuer(kugel.radius) * 1.6);
+    var vonZiel = s.target.clone();
+    var vonPos = k.position.clone();
+    var nachPos = kugel.center.clone().addScaledVector(richtung, abstand);
+    if (buehne.bodenDa() && nachPos.y < 40) nachPos.y = 40;
+    buehne.animiere('kamera', 700, function (t) {
+      s.target.lerpVectors(vonZiel, kugel.center, t);
+      k.position.lerpVectors(vonPos, nachPos, t);
+    });
+  }
+
+  O.Ereignisse.an('ansicht-geaendert', function () { fokus = null; });
+
   // Mausrad zoomt zu dem, was unter der Maus liegt (Buehne.zoomZurMaus)
   buehne.zoomZiele = function () { return [teleskop.wurzel, mensch, O.Umgebung.boden()]; };
   buehne.zoomMitte = function () {
+    if (fokus && ansicht.modus === 'zerlegt') return fokus;
     return { drehpunkt: O.Dobson.huelle(teleskop).center, radius: blickZiel().radius };
   };
   buehne.bodenDa = function () { return !!O.Umgebung.boden(); };
@@ -94,7 +147,12 @@
     Object.keys(teleskop.teile).forEach(function (schluessel) {
       var objekt = teleskop.teile[schluessel];
       var info = O.TEILE[objekt.userData.teil];
-      if (info) beschriftung.neu(schluessel, objekt, info.name, waehle, info.schild === 'links');
+      if (info) {
+        beschriftung.neu(schluessel, objekt, info.name, function (teil) {
+          auswahl.getroffen = objekt;
+          waehle(teil);
+        }, info.schild === 'links');
+      }
     });
 
     auswahl.neuesTeleskop();
