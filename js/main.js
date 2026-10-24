@@ -322,6 +322,8 @@
   // ---------- Tasten ----------
 
   var bildrate = document.getElementById('bildrate');
+  // Beim Start eine kurze Führung, die man überspringen kann
+  var hilfe = new O.Hilfe();
   var ansichtTaste = { 1: 'ganz', 2: 'aufgeschnitten', 3: 'zerlegt', 4: 'roentgen' };
 
   window.addEventListener('keydown', function (e) {
@@ -353,6 +355,9 @@
       case 'o':
         durchschauen();
         break;
+      case 'h':
+        hilfe.zeige();
+        break;
       case 'p':
         bildrate.hidden = !bildrate.hidden;
         if (!bildrate.hidden) buehne.zeigeBildrate(bildrate);
@@ -375,5 +380,7 @@
   O.okularansicht = okularansicht;
   O.durchschauen = durchschauen;
   O.ganzesTeleskop = ganzesTeleskop;
+  O.hilfe = hilfe;
   buehne.zeichneBald();
+  hilfe.zeige();
 })(globalThis.OPTIK);

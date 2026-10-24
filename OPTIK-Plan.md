@@ -21,7 +21,7 @@ Die Leitfrage bleibt:
 > Öffnung – und die Form der Spiegel, das Glas und die Luft darüber.
 
 Portfolio-Kategorie: **„Entdecken“** (neben SOL und FRAKTAL, weil man sich
-darin umsieht). Das wird bei Etappe 8 noch einmal abgestimmt.
+darin umsieht). Bei Etappe 8 bestätigt.
 
 ---
 
@@ -340,7 +340,8 @@ soll es nach Teleskop aussehen.
    **7b** (Hubble und Webb vor dem Weltraum – fertig 23.10.2026).
 8. **Feinschliff und Portfolio.** Hilfe, Link zum eigenen Teleskop, Handy,
    README, Kopie ins Portfolio, Eintrag in `projekte-entdecken.js`.
-   **Push erst auf Zuruf.**
+   **Push erst auf Zuruf.** Fertig 24.10.2026, ohne den Link zum eigenen
+   Teleskop (Julian: weglassen).
 
 ---
 

@@ -244,6 +244,27 @@
   margin-bottom: 3px;
 }
 
+/* ---------- Schriftzug unten rechts ---------- */
+
+.signatur {
+  position: fixed;
+  right: calc(var(--abstand) + 2px);
+  bottom: 8px;
+  z-index: 1;
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-leise);
+  opacity: 0.6;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Die Sternlicht-Leiste liegt in derselben Ecke */
+.licht-an .signatur {
+  display: none;
+}
+
 /* ---------- Handy: Bauen und Datenblatt eingeklappt ---------- */
 
 @media (max-width: 600px) {
@@ -287,6 +308,18 @@
   .bauen-offen .beobachten,
   .bauen-offen .bauen,
   .bauen-offen .datenblatt {
+    display: block;
+  }
+
+  /* unten liegt die Ansicht-Leiste: Schriftzug unter den Kopf */
+  .signatur {
+    top: 90px;
+    bottom: auto;
+    right: calc(var(--abstand) + 4px);
+    font-size: 11px;
+  }
+
+  .licht-an .signatur {
     display: block;
   }
 }

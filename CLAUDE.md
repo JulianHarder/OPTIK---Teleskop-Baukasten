@@ -14,9 +14,9 @@ es sah nicht nach Teleskop aus. Seitdem gilt: **Es muss nach dem Ding
 aussehen, um das es geht.** Erleben vor technischer Zeichnung; die Physik
 arbeitet darunter und sorgt dafür, dass alles stimmt.
 
-## Stand (23.10.2026)
+## Stand (24.10.2026)
 
-**Fertig: Etappen 1 bis 7 (7a und 7b).**
+**Fertig: alle acht Etappen.**
 
 1. **Ein Teleskop unter Sternen** – Three.js r128 lokal (aus SOL), Bühne mit
    Zeichnen bei Bedarf, Nachthimmel (Farbverlauf, ~4 000 Sterne,
@@ -156,7 +156,24 @@ Hof, Saturns Ringe aus einem Radialprofil (über die Pixelbreite
 gemittelt, damit Encke- und Cassini-Lücke nicht flimmern), Schatten
 Ring ↔ Kugel.
 
-Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
+8. **Feinschliff und Portfolio** (24.10.2026) – **Hilfe** beim Start
+   (`js/ui/Hilfe.js`, `css/hilfe.css`, Texte in `texte.js` → `hilfe`):
+   sechs Schritte mit Lichtkegel auf dem Bedienteil, „Überspringen“/Esc,
+   Pfeiltasten; wieder mit Knopf „?“ im Kopf oder Taste `H`. Sie kommt bei
+   jedem Laden (es wird nichts gemerkt, „Fester Anfang“). `ansicht.sh`
+   schließt sie vor dem Screenshot (`HILFE=1` lässt sie offen). **Handy**
+   geprüft (375 × 812): Namen der unteren Leiste brechen mit weichen
+   Trennstrichen um. **README** mit neuen Bildern (`screenshots/optik-*.png`).
+   **Portfolio**: Kopie mit `tools/in-portfolio-kopieren.sh` nach
+   `PortfolioWebseiteCloudflare/projekte/optik`, Eintrag in
+   `projekte-entdecken.js` (Aufhänger: Julian hatte selbst ein Teleskop),
+   Vorschaubild `optik.webp`, Lizenzen im Impressum. Schriftzug „OPTIK – by Julian Harder“ unten rechts
+   (Handy: unter dem Kopf; weg, solange die Sternlicht-Leiste offen ist).
+   Der **Link zum
+   eigenen Teleskop** aus dem Plan entfällt (Julian).
+
+**OPTIK ist fertig.** Nach Änderungen das Kopierskript erneut laufen
+lassen und im Portfolio committen.
 
 ### Wo vom Plan abgewichen wurde
 

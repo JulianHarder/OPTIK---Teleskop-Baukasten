@@ -1,6 +1,7 @@
 /*
   Die schwebenden Leisten über der 3D-Bühne: Name des Teleskops oben
-  links, Bedienhinweise unten, Bildrate (Taste P) oben rechts.
+  links, Bedienhinweise unten, Bildrate (Taste P) oben rechts, Schriftzug
+  „by Julian Harder“ unten rechts.
 */
 (function (O) {
   'use strict';
@@ -31,6 +32,7 @@
   O.Oberflaeche = {
     baue: function () {
       O.Oberflaeche.zeigeTeleskop();
+      document.body.appendChild(el('p', 'signatur', O.TEXTE.signatur));
 
       var fuss = document.getElementById('fuss');
       O.TEXTE.fuss.forEach(function (eintrag) {

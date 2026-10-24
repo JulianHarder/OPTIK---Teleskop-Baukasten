@@ -180,10 +180,14 @@
   }
 
   .ansicht-knopf {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     flex-direction: column;
     gap: 2px;
-    padding: 6px 4px;
+    padding: 6px 2px;
     font-size: 12px;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;      /* lange Namen trennen (weiche Trennstriche) */
   }
 }

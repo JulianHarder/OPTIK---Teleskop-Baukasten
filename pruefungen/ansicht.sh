@@ -26,6 +26,8 @@ trap 'rm -rf "$tmp"' EXIT
 sed -e "s#src=\"#src=\"file://$projekt/#g" -e "s#href=\"css/#href=\"file://$projekt/css/#g" \
   "$projekt/index.html" > "$tmp/seite.html"
 cat > "$tmp/pruef.js" <<EOF
+// Die Hilfe beim Start verdeckt sonst die Szene (mit HILFE=1 bleibt sie offen)
+if (OPTIK.hilfe && "${HILFE:-}" !== "1") OPTIK.hilfe.schliesse();
 ${js};
 if (OPTIK.buehne) OPTIK.buehne.zeichne();
 EOF

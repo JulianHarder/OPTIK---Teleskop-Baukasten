@@ -1,0 +1,174 @@
+/*
+  Hilfe beim Start (js/ui/Hilfe.js): Karte in der Mitte, Lichtkegel auf
+  dem Bedienteil, um das es gerade geht.
+*/
+
+.hilfe-faenger {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.hilfe-faenger[hidden] {
+  display: none;
+}
+
+/* Der Lichtkegel: ein Rahmen, dessen Schatten alles andere abdunkelt */
+.hilfe-kegel {
+  position: fixed;
+  border: 2px solid var(--gold);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: 0 0 0 200vmax rgba(4, 7, 14, 0.55), 0 0 24px rgba(232, 189, 90, 0.45);
+  pointer-events: none;
+  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+.hilfe-kegel.ohne-ziel {
+  border-color: transparent;
+  box-shadow: 0 0 0 200vmax rgba(4, 7, 14, 0.45);
+}
+
+.hilfe-karte {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(400px, calc(100% - 2 * var(--abstand)));
+  padding: 18px 20px 16px;
+  border: 1px solid var(--leiste-rand);
+  border-radius: var(--radius);
+  background: rgba(14, 21, 34, 0.94);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: hilfe-rein 0.25s ease-out;
+}
+
+@keyframes hilfe-rein {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.hilfe-zaehler {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--akzent);
+}
+
+.hilfe-titel {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 650;
+  color: var(--gold);
+}
+
+.hilfe-text {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.hilfe-punkte {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.hilfe-punkt {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rand);
+}
+
+.hilfe-punkt.an {
+  background: var(--gold);
+}
+
+.hilfe-knoepfe {
+  display: flex;
+  gap: 8px;
+}
+
+.hilfe-knoepfe button {
+  padding: 7px 14px;
+  border: 1px solid var(--rand);
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.hilfe-knoepfe button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hilfe-knoepfe button[hidden] {
+  display: none;
+}
+
+/* Überspringen links, Zurück und Weiter rechts */
+.hilfe-ueberspringen {
+  margin-right: auto;
+  border-color: transparent !important;
+  color: var(--text-leise) !important;
+}
+
+.hilfe-knoepfe .hilfe-weiter {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #0a1020;
+  font-weight: 600;
+}
+
+.hilfe-knoepfe .hilfe-weiter:hover {
+  background: #f2cc72;
+}
+
+/* Knopf „?“ oben rechts im Kopf */
+.seite .kopf {
+  position: relative;
+  top: auto;
+  left: auto;
+}
+
+.hilfe-knopf {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--rand);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-leise);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hilfe-knopf:hover {
+  border-color: var(--akzent);
+  color: var(--akzent);
+}
+
+/* Handy: Karte unten (oder oben, wenn das Ziel unten liegt) */
+@media (max-width: 600px) {
+  .hilfe-karte {
+    top: auto;
+    bottom: var(--abstand);
+    transform: translateX(-50%);
+    animation: none;
+  }
+
+  .hilfe-karte.oben {
+    top: var(--abstand);
+    bottom: auto;
+  }
+
+  .hilfe-knopf {
+    right: 92px;
+  }
+}

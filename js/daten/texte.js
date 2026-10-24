@@ -17,6 +17,9 @@
     // Untertitel unter dem Namen, {D} {f} {N} werden ersetzt
     teleskopZeile: '{bauart} {D}/{f} · Öffnungsverhältnis f/{N}',
 
+    // Schriftzug unten rechts (Handy: oben rechts unter dem Kopf)
+    signatur: 'OPTIK – by Julian Harder',
+
     fehlerWebgl:
       'Dein Browser kann hier kein 3D zeichnen (WebGL fehlt oder ist ' +
       'abgeschaltet). OPTIK braucht WebGL – versuch es mit einem aktuellen ' +
@@ -30,13 +33,15 @@
       ['L', 'Sternlicht'],
       ['O', 'durchs Okular schauen'],
       ['F', 'ganzes Teleskop'],
+      ['H', 'Hilfe'],
       ['P', 'Bildrate']
     ],
 
     // Ansicht-Schalter unten; Taste = Ziffer davor
     ansichten: [
       { id: 'ganz', name: 'Ganz' },
-      { id: 'aufgeschnitten', name: 'Aufgeschnitten' },
+      // weiche Trennstriche (\u00AD): auf dem Handy brechen die Namen um
+      { id: 'aufgeschnitten', name: 'Auf\u00ADge\u00ADschnitten' },
       { id: 'zerlegt', name: 'Zerlegt' },
       { id: 'roentgen', name: 'Röntgen' }
     ],
@@ -144,7 +149,7 @@
       zieltAuf: 'zielt auf {name}',
       ort: 'Die Richtungen am Himmel sind ausgedacht – sie zeigen nur, wie das ' +
         'Teleskop zielt, nicht wo das Objekt heute Nacht steht.',
-      durchschauen: 'Durchschauen',
+      durchschauen: 'Durch\u00ADschau\u00ADen',
       zurueck: 'Zurück',
       okular: 'Okular',
       lupe: 'Lupe: so fein sieht dein Auge',
@@ -173,6 +178,48 @@
     karte: {
       woraus: 'Woraus:',
       fakt: 'Schon gewusst?'
+    },
+
+    // Kurze Führung beim Start (Hilfe.js). ziel: Elemente, auf die der
+    // Lichtkegel fällt – das erste sichtbare (auf dem Handy liegen die
+    // linken Leisten hinter dem Knopf „Menü“)
+    hilfe: {
+      knopf: '?',
+      knopfTitel: 'Hilfe (H)',
+      ueberspringen: 'Überspringen',
+      zurueck: 'Zurück',
+      weiter: 'Weiter',
+      los: 'Los geht’s',
+      schritt: '{n} von {gesamt}',
+      schritte: [
+        { titel: 'Willkommen bei OPTIK',
+          text: 'Ein Teleskop in 3D unter dem Nachthimmel. Hier findest du ' +
+            'heraus, was ein Teleskop gut macht – nicht die Vergrößerung, ' +
+            'sondern Öffnung, Spiegel, Glas und die Luft darüber.' },
+        { titel: 'Drehen und anfassen',
+          text: 'Ziehen dreht um das Teleskop, das Mausrad zoomt dorthin, wo ' +
+            'die Maus steht (am Handy: zwei Finger). Ein Klick auf ein Teil ' +
+            'erklärt, wozu es da ist.' },
+        { titel: 'Aufschrauben',
+          text: 'Unten schneidest du das Teleskop auf, zerlegst es oder ' +
+            'machst es durchsichtig. Mit „Licht“ siehst du, wie das Licht ' +
+            'eines Sterns bis ins Okular läuft.',
+          ziel: ['#ansicht'] },
+        { titel: 'Selbst bauen',
+          text: 'Stell Öffnung, Brennweite und Okular ein – das Teleskop baut ' +
+            'sich sofort um. Das Datenblatt sagt, was dein Teleskop taugt.',
+          ziel: ['#bauen', '#bauen-knopf'] },
+        { titel: 'Durchschauen',
+          text: 'Wähl Saturn, Jupiter, den Mond oder einen Stern und schau mit ' +
+            '„Durchschauen“ (Taste O) hindurch – so, wie genau dieses ' +
+            'Teleskop den Himmel zeigen würde.',
+          ziel: ['#beobachten', '#bauen-knopf'] },
+        { titel: 'Berühmte Teleskope',
+          text: 'Galileis Fernrohr, Newtons erstes Spiegelteleskop, der ' +
+            'Yerkes-Refraktor, Hubble und Webb – zum Aufschrauben und ' +
+            'Durchschauen. Die Hilfe kommt jederzeit mit „?“ oder H zurück.',
+          ziel: ['#beruehmt', '#bauen-knopf'] }
+      ]
     },
 
     // Beschriftung auf dem Tubus
