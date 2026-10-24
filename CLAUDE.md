@@ -140,6 +140,22 @@ arbeitet darunter und sorgt dafür, dass alles stimmt.
    je nach `teleskop.weltall`; die Weltall-Figur heißt `astronaut` und hat
    ihre eigene Infokarte (`teile-weltall.js`).
 
+Nach Etappe 7 (24.10.2026, Julian: Planeten „sehr künstlich“, Mond
+„grauenhaft“): **Mond, Jupiter und Saturn werden Pixel für Pixel
+gerechnet** statt aus Ellipsen und Farbverläufen gemalt
+(`js/okular/Raster.js`: Gerätepixel → Himmelspunkt, Wertrauschen).
+**Mond** (`Mond.js`, `Mondkrater.js`, Karte `js/daten/mondkarte.js`):
+Mare, 57 benannte Krater und drei Gebirge an ihren echten Orten, dazu
+gewürfelte Krater in Größenstufen (Dichte ~D^−2, im Mare weniger), Höhen,
+Licht nach Lommel-Seeliger, Schattenwurf durch Ablaufen jeder Bildzeile
+von der Sonnenseite (die Sonne steht in der Zeilenebene). Terminator bei
+7° W, die Lupe zeigt Alphonsus mit Ptolemaeus und Arzachel. **Jupiter**
+und **Saturn** (`Planeten.js`): Bänder nach Breite mit verwirbelten
+Rändern, Minnaert-Randverdunklung, Girlanden, Roter Fleck mit hellem
+Hof, Saturns Ringe aus einem Radialprofil (über die Pixelbreite
+gemittelt, damit Encke- und Cassini-Lücke nicht flimmern), Schatten
+Ring ↔ Kugel.
+
 Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
 
 ### Wo vom Plan abgewichen wurde
@@ -461,6 +477,14 @@ Als Nächstes: **Etappe 8** – Feinschliff und Portfolio.
   (r nach rechts, y nach oben), sonst zeigen die Flächen nach innen.
 - **`requestAnimationFrame` läuft im verdeckten Fenster nicht** –
   `zeichneBald()` hat deshalb einen Rückfall-Timer.
+- **Rechenzeit im Okular-Blick:** Der Mond braucht ~0,4 s fürs ganze
+  Feld (820 px) und ~0,6 s für die Lupe. Was sich langsam ändert (Mare,
+  grobe Hügel, Flecken), rechnet `Mond.js` nur auf jedem 4. Pixel und
+  mittelt dazwischen (`lagen(…, nurUnter)` für die feinen Lagen); das
+  Rauschen läuft über Tabellen statt Hash – beides zusammen ~5× schneller.
+- **Browser-Pane und Okularbilder:** `pruefungen/okular-ansehen.html`
+  braucht kein WebGL und läuft im Pane. Das Pane hält aber alte Skripte
+  im Zwischenspeicher – nach Änderungen die Skripte mit `?t=…` neu laden.
 - **Zoom zum Mauszeiger** stimmt nur, wenn die Mitte *nach* der
   Maßstabsänderung korrigiert wird (aus der 2D-Fassung, gilt wieder für
   den Okular-Blick).

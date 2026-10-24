@@ -18,191 +18,15 @@
     return 'rgba(' + r + ',' + g + ',' + b + ',' + (a === undefined ? 1 : a) + ')';
   }
 
-  // ---------- Saturn ----------
+  // ---------- Jupiters Monde ----------
 
-  function saturn(ctx, o) {
-    var R = o.durchmesserBs / 2;
-    var Rp = R * o.abplattung;
-    var k = R / o.aequatorKm;                 // ″ pro km
-    var s = Math.sin(o.ringneigungGrad * Math.PI / 180);
-    var ringe = [
-      { r: o.ringeKm.C, farbe: rgb(120, 108, 92, 0.55) },
-      { r: o.ringeKm.B, farbe: rgb(236, 222, 190) },
-      { r: o.ringeKm.cassini, farbe: rgb(25, 22, 18, 0.9) },
-      { r: o.ringeKm.A, farbe: rgb(205, 190, 160) }
-    ];
-
-    function zeichneRinge() {
-      ringe.forEach(function (ring) {
-        ctx.beginPath();
-        ctx.ellipse(0, 0, ring.r[1] * k, ring.r[1] * k * s, 0, 0, Math.PI * 2);
-        ctx.ellipse(0, 0, ring.r[0] * k, ring.r[0] * k * s, 0, 0, Math.PI * 2);
-        ctx.fillStyle = ring.farbe;
-        ctx.fill('evenodd');
-      });
-    }
-
-    function haelfte(oben) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(-3 * R, oben ? -3 * R : 0, 6 * R, 3 * R);
-      ctx.clip();
-      zeichneRinge();
-      ctx.restore();
-    }
-
-    // hinterer Teil der Ringe (oben), dann die Kugel, dann der vordere Teil
-    haelfte(true);
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(0, 0, R, Rp, 0, 0, Math.PI * 2);
-    ctx.clip();
-    var baender = ctx.createLinearGradient(0, -Rp, 0, Rp);
-    [[0, rgb(150, 150, 135)], [0.18, rgb(200, 185, 145)], [0.3, rgb(225, 205, 160)],
-      [0.42, rgb(196, 168, 120)], [0.5, rgb(238, 220, 175)], [0.6, rgb(190, 160, 115)],
-      [0.72, rgb(222, 200, 155)], [0.86, rgb(180, 165, 130)], [1, rgb(140, 140, 125)]]
-      .forEach(function (h) { baender.addColorStop(h[0], h[1]); });
-    ctx.fillStyle = baender;
-    ctx.fillRect(-R, -Rp, 2 * R, 2 * Rp);
-    randAbdunkeln(ctx, R, Rp);
-    // Schatten der Ringe auf der Kugel: ein schmales Band knapp unter dem Ring
-    ctx.fillStyle = rgb(40, 32, 22, 0.55);
-    ctx.beginPath();
-    ctx.ellipse(0, Rp * 0.06, o.ringeKm.B[1] * k, o.ringeKm.B[1] * k * s * 1.02, 0, 0, Math.PI);
-    ctx.ellipse(0, Rp * 0.06, o.ringeKm.B[1] * k, o.ringeKm.B[1] * k * s * 0.8, 0, Math.PI, 0, true);
-    ctx.fill();
-    ctx.restore();
-
-    haelfte(false);
-  }
-
-  // Planeten sind am Rand dunkler als in der Mitte
-  function randAbdunkeln(ctx, R, Rp) {
-    ctx.save();
-    ctx.scale(1, Rp / R);
-    var g = ctx.createRadialGradient(0, 0, R * 0.45, 0, 0, R);
-    g.addColorStop(0, 'rgba(0,0,0,0)');
-    g.addColorStop(1, 'rgba(0,0,0,0.5)');
-    ctx.fillStyle = g;
-    ctx.fillRect(-R, -R, 2 * R, 2 * R);
-    ctx.restore();
-  }
-
-  // ---------- Jupiter ----------
-
-  function jupiter(ctx, o) {
-    var R = o.durchmesserBs / 2;
-    var Rp = R * o.abplattung;
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(0, 0, R, Rp, 0, 0, Math.PI * 2);
-    ctx.clip();
-    // Zonen hell, Bänder braun (Norden oben)
-    var g = ctx.createLinearGradient(0, -Rp, 0, Rp);
-    [[0, rgb(150, 140, 125)], [0.14, rgb(190, 175, 150)], [0.2, rgb(150, 115, 85)],
-      [0.24, rgb(215, 200, 170)], [0.33, rgb(160, 110, 75)], [0.42, rgb(150, 100, 70)],
-      [0.46, rgb(235, 225, 200)], [0.55, rgb(232, 220, 195)], [0.58, rgb(165, 115, 80)],
-      [0.68, rgb(150, 105, 75)], [0.72, rgb(220, 205, 175)], [0.8, rgb(170, 140, 110)],
-      [0.86, rgb(200, 185, 160)], [1, rgb(140, 132, 120)]]
-      .forEach(function (h) { g.addColorStop(h[0], h[1]); });
-    ctx.fillStyle = g;
-    ctx.fillRect(-R, -Rp, 2 * R, 2 * Rp);
-    // Großer Roter Fleck am Südrand des südlichen Bandes
-    ctx.fillStyle = rgb(190, 110, 80, 0.85);
-    ctx.beginPath();
-    ctx.ellipse(R * 0.3, Rp * 0.42, R * 0.16, Rp * 0.09, 0, 0, Math.PI * 2);
-    ctx.fill();
-    randAbdunkeln(ctx, R, Rp);
-    ctx.restore();
-  }
-
+  // Mond, Jupiter und Saturn selbst zeichnen Mond.js und Planeten.js
   function jupiterMonde(o) {
     var R = o.durchmesserBs / 2;
     var helligkeit = { Io: 5.0, Europa: 5.3, Ganymed: 4.6, Kallisto: 5.7 };
     return o.monde.map(function (m) {
       return { x: m.abstand * R, y: 0, mag: helligkeit[m.name], farbe: [1, 0.96, 0.88] };
     });
-  }
-
-  // ---------- Mond ----------
-
-  // Halbmond, etwas mehr als halb beleuchtet. Die Bildmitte liegt auf dem
-  // Terminator – dort sind die Krater am schönsten.
-  var TERMINATOR = -0.12;      // Lage des Terminators in Mondradien (links von der Mitte)
-
-  function mond(ctx, o) {
-    var R = o.durchmesserBs / 2;
-    var z = O.Zufall(1610);
-    ctx.save();
-    ctx.translate(-TERMINATOR * R, 0);
-
-    // Erdschein auf der Nachtseite: kaum zu ahnen (die Fläche wird später
-    // stark aufgehellt, deshalb hier fast schwarz)
-    ctx.fillStyle = rgb(2, 2, 3);
-    ctx.beginPath();
-    ctx.arc(0, 0, R, 0, Math.PI * 2);
-    ctx.fill();
-
-    // beleuchteter Teil: rechte Hälfte + Halbellipse bis zum Terminator
-    ctx.beginPath();
-    ctx.arc(0, 0, R, -Math.PI / 2, Math.PI / 2, false);
-    ctx.ellipse(0, 0, Math.abs(TERMINATOR) * R, R, 0, Math.PI / 2, -Math.PI / 2, false);
-    ctx.closePath();
-    ctx.save();
-    ctx.clip();
-    ctx.fillStyle = rgb(178, 174, 166);
-    ctx.fillRect(-R, -R, 2 * R, 2 * R);
-
-    // Mare: große dunkle Flecken
-    for (var i = 0; i < 14; i++) {
-      var w = z() * Math.PI * 2;
-      var a = Math.sqrt(z()) * R * 0.75;
-      ctx.fillStyle = rgb(95, 95, 98, 0.35 + z() * 0.25);
-      ctx.beginPath();
-      ctx.ellipse(Math.cos(w) * a, Math.sin(w) * a, R * (0.08 + z() * 0.16), R * (0.06 + z() * 0.12), z() * 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Krater: viele kleine, wenige große. Licht kommt von rechts – je näher
-    // am Terminator, desto tiefer steht die Sonne und desto länger der Schatten.
-    // 650 über den ganzen Mond, dazu 2500 kleine um die Bildmitte am
-    // Terminator – dort schaut die Lupe hin
-    for (var k = 0; k < 3150; k++) {
-      var nah = k >= 650;
-      var r = nah ? 1.5 + Math.pow(z(), 5) * 22 : 3 + Math.pow(z(), 6) * 75;
-      var x = nah ? TERMINATOR * R + (z() * 2 - 1) * R * 0.35 : (z() * 2 - 1) * R;
-      var y = nah ? (z() * 2 - 1) * R * 0.35 : (z() * 2 - 1) * R;
-      if (x * x + y * y > (R - r) * (R - r)) continue;
-      var sonne = Math.max(0, (x / R - TERMINATOR) / (1 - TERMINATOR));   // 0 am Terminator
-      var schatten = r * 0.9 * Math.max(0.15, 1 - sonne * 2.5);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.fillStyle = rgb(45, 45, 48, 0.85);
-      ctx.fill();
-      ctx.fillStyle = rgb(165, 161, 154);
-      ctx.beginPath();
-      ctx.arc(x - schatten, y, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-      // heller Rand auf der Sonnenseite
-      ctx.strokeStyle = rgb(225, 222, 214, 0.7);
-      ctx.lineWidth = Math.max(0.6, r * 0.12);
-      ctx.beginPath();
-      ctx.arc(x, y, r, -Math.PI * 0.45, Math.PI * 0.45);
-      ctx.stroke();
-    }
-
-    // Zum Terminator hin dunkler (flaches Licht)
-    var t = ctx.createLinearGradient(TERMINATOR * R, 0, TERMINATOR * R + R * 0.45, 0);
-    t.addColorStop(0, 'rgba(0,0,0,0.65)');
-    t.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = t;
-    ctx.fillRect(-R, -R, 2 * R, 2 * R);
-    ctx.restore();
-    ctx.restore();
   }
 
   // ---------- Doppelsterne ----------
@@ -291,6 +115,7 @@
       var s = epsilonLyrae(o);
       return { x: (s[0].x + s[1].x) / 2, y: (s[0].y + s[1].y) / 2 };    // das Paar ε1
     }
+    if (o.id === 'mond') return O.Mond.lupenMitte(o);
     return { x: 0, y: 0 };
   }
 
@@ -303,9 +128,9 @@
     hell: { saturn: 1, jupiter: 1.8, mond: 1.7, m13: 0.6, albireo: 0, epsilonlyrae: 0 },
 
     ausgedehnt: function (ctx, o, grenz) {
-      if (o.id === 'saturn') saturn(ctx, o);
-      else if (o.id === 'jupiter') jupiter(ctx, o);
-      else if (o.id === 'mond') mond(ctx, o);
+      if (o.id === 'saturn') O.Planeten.saturn(ctx, o);
+      else if (o.id === 'jupiter') O.Planeten.jupiter(ctx, o);
+      else if (o.id === 'mond') O.Mond.zeichne(ctx, o);
       else if (o.id === 'm13') m13Nebel(ctx, o, grenz);
     },
 
